@@ -33,6 +33,7 @@
       - This could involve a timeline view where users can set the number of notes and how spread out they are over time.
 
 
+
 ### Some Approach Options:
    - Frontend
       - Use a framework like React, Vue.js, or Angular for the UI.
@@ -46,6 +47,7 @@
    - Testing and Feedback
       - Once an iteration is made, we will need to develop tests to ensure the effectiveness of the site.
       - Could get the help of Shashank on this.
+
 
 
 ### Example Workflow for Users:
