@@ -91,12 +91,11 @@ class Cores(BaseClass):
             self.value = random.randint(0, self.cores_per_side)
         index = random.randint(0, 2)
         if index == 0:
-            self.text = f'{self.value}/{self.cores_per_side} {side} cores positive'
+            self.text = f'{self.value}/{self.cores_per_side} {side.value} cores positive'
         elif index == 1:
-            self.text = f'{self.value} of {self.cores_per_side} {side} cores positive'
+            self.text = f'{self.value} of {self.cores_per_side} {side.value} cores positive'
         else:
-            self.text = f'{self.value} of {self.cores_per_side} {side} cores (+)'
-
+            self.text = f'{self.value} of {self.cores_per_side} {side.value} cores (+)'
 
 class AUA(BaseClass):
     def __init__(self):
