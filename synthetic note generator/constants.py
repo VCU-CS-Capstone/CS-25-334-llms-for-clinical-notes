@@ -32,7 +32,7 @@ problem_list = ['Acute osteomyelitis of hand', 'Anxiety', 'Asthma', 'Atrial fibr
 surgery_list = [
     'Left Inguinal Hernia Repair', 's/p Tonsillectomy', 'LT KNEE ARTHROSCOPY W / DEBRIDEMENT',
     'UMBILICAL HERNIA REPAIR', 'MEDIASTINOSCOPY', 'Cardiac stent', 'LEFT TOTAL KNEE REPLACEMENT',
-    'RIGHT TOTAL KNEE ARTHROPLASTY', 'Ablation for AFIB', 'carpal tunnel release', 'None'
+    'RIGHT TOTAL KNEE ARTHROPLASTY', 'Ablation for AFIB', 'carpal tunnel release'
 ]
 
 medication_list = [
