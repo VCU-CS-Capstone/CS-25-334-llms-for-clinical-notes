@@ -1,0 +1,218 @@
+Radiation Oncology Consultation Note
+ 
+Diagnosis: 1.4 cm RUL nodule, presumed NSCLC
+Stage: cT1b N0 Mx (PET Pending), Stage IA2
+Prognostic factors: prior smoker, 1.5 ppd x 14 years, quit 1980
+ 
+Prior Radiation: denies
+History of connective tissue diseases: denies 
+History of implanted cardiac device: denies
+Pregnancy status: n/a
+ 
+HPI: (Obtained from patient and chart review)
+Unnamed is a 75yo MALE with history of aortic insufficiency 
+status post aortic valve root repair with bioprosthetic valve, with a growing 
+RUL nodule, now 1.4 cm, concerning for NSCLC, cT1b N0 Mx (PET Pending), Stage 
+IA2. 
+
+CT Chest 3/8/24 
+Impression:
+      Enlarging right upper lobe nodule which has been present since
+      2020, but shows further increase in size compared with the
+      9/8/2023 exam. Findings concerning for very slow growing 
+      neoplasm.  Please see the REPORT for the complete list of
+      findings. 
+
+Mr. Unnamed continues to have significant difficulty with balance following 
+trauma in 2017 where a tree fell on him. However, he is active and independent 
+at home. He reports walking multiple times a week as well as chopping and 
+carrying his own firewood at home. Denies any SOB, DOE, or cough. 
+ 
+Review of systems: 12 point ROS reviewed and negative except and noted in HPI.
+ 
+ 
+PMH:
+ACTIVE PROBLEM
+History of male erectile disorder
+Acute Venous Embolism and Thrombosi
+Long Term (current) use of Anticoag
+Personal History of Venous Thrombos
+Neuralgic amyotrophy (SNOMED CT 266
+Abdominal aortic aneurysm
+Hyperlipidemia
+Hypertension
+Pelvic fracture
+Anemia
+Sensorineural hearing loss, bilater
+Cognitive deficit in communication
+AF- Atrial Fibrillation (SCT 494360
+Polyp of colon
+Syncope
+ECHO CARDIOGRAM 1/27/2019 AT MWH
+Coronary artery disease
+Multiple nodules of lung
+Thoracic aortic aneurysm without ru
+Mitral valve disease
+Abnormal gait
+Cardiomyopathy
+Bacteremia
+Bradycardia
+Dizziness
+Rotator cuff tear arthropathy
+Rotator cuff arthropathy of left sh
+Allergic rhinitis
+Lesion of tongue
+DISEASE OF TONGUE, UNSPECIFIED
+Benign localized hyperplasia of pro
+Congestive heart failure
+ 
+PSH:
+Surgery - Principal Procedures:
+1.  LAPAROSCOPIC BILATERAL INGUINAL HERNIA REPAIR on AUG 21,2018@08:00
+2.  TEE on JUL 7,2020
+3.  TEE on AUG 5,2020
+4.  AORTIC ROOT REPLACEMENT(BENTALL PROCEDURE) on SEP 21,2020@07:58
+5.  RIGHT REVERSE SHOULDER ARTHROPLASTY on MAY 6,2021@13:38
+ 
+Medications
+Active Outpatient Medications:
+   METOPROLOL SUCCINATE 25MG SA TAB
+   TRAZODONE HCL 100MG TAB
+   DOCUSATE NA 100MG CAP
+   OMEPRAZOLE 20MG EC CAP
+   TAMSULOSIN HCL 0.4MG CAP
+   FLUTICASONE PROP 50MCG 120D NASAL INHL
+   FERROUS SO4 325MG TAB UD
+   CARBOXYMETHYLCELLULOSE NA 1% OPH GEL
+   APIXABAN 5MG TAB
+   ATORVASTATIN CALCIUM 40MG TAB
+   LORATADINE 10MG TAB
+   SACUBITRIL 49MG/VALSARTAN 51MG TAB
+   ASCORBIC ACID 500MG TAB
+NonVA Medications:
+   MULTIVITS W/MINERALS TAB/CAP (NO VIT K)
+   ASPIRIN 81MG EC TAB
+   ZZFISH OIL (DHA/EPA) CAP,ORAL
+   SULFAMETHOXAZOLE 800/TRIMETH 160MG TAB
+   PHENAZOPYRIDINE HCL 95MG TAB
+   SULFAMETHOXAZOLE 800/TRIMETH 160MG TAB
+ 
+Medication Reconciliation Statement: During the course of this encounter
+the patient reviewed his current medications as they appear in CPRS,
+discrepancies were reconciled, and changes were documented and discussed with
+the patient.
+ 
+Potential drug interactions reviewed.
+ 
+ 
+Allergies: Patient has answered NKA
+ 
+Social History
+Smoking: 1.5 ppd x 14 years, quit 1980
+Marital Status: MARRIED
+ 
+Family History: No family history of lung cancer 
+ 
+KPS:
+Physical Exam:
+Date              Vital             Measurement      Qualifiers
+03/22/2024 12:56  Temp F (C)        98 (36.7)        Oral
+   "        "     Pulse             63
+   "        "     Respir            16               Spontaneous
+   "        "     BP                101/56           R Arm, Sitting, Adult
+                                                     Cuff, Cuff-Automated
+   "        "     Ht in (cm)        76 (193.04)      Actual
+   "        "     Wt lbs (kg)[BMI]  213.2 (96.71)[26]Actual, Standing Weight
+   "        "     C/G in (cm)       Unavailable
+   "        "     Pain              0
+   "        "     POx (L/Min)(%)    97               Room Air
+General: Well appearing Male, no acute distress
+HEENT: No scleral icterus
+Neck: No palpable lymphadenopathy
+Cardiovascular: Warm well perfused extremities
+Pulmonary: Respirations non-labored
+Abd: Soft, nontender, nondistended
+Musculoskeletal: No lower extremity edema
+Psych: Normal affect
+Neuro: Alert, awake, oriented x 3. Moves all extremities spontaneously.
+ 
+Labs:
+CBC - NONE FOUND
+ 
+CHEM 8 - NONE FOUND
+ 
+LIVER PANEL - NONE FOUND
+ 
+Path: personally reviewed and described in HPI
+ 
+Imaging: personally reviewed and described in HPI
+CT Chest 3/8/24
+Findings: Previously noted right upper lobe nodule definitely 
+      increased between 2022 and 2023 and shows further increase in 
+      size and 3 9/28/2023 exam including all components of the nodule 
+      the diameter is 14 mm anterior to posterior compared with 13 mm 
+      on the prior exam and 8 mm left to right transverse compared with 
+      6 mm on the prior exam findings again consistent with very slow 
+      growing neoplasm. The location, while difficult, may be amenable 
+      to percutaneous biopsy. Recommend PET/CT. 
+ 
+      Previously noted opacity in the right middle lobe anterior 
+      bronchial image 214 of series 9 from the prior exam is again seen 
+      on today's exam, image 227 of series 5 measuring 2 to 3 mm and 
+      perhaps adjacent to the bronchus? This area appears stable in 
+      size and could be followed up on prior exams. 
+ 
+      Evaluation of the superficial soft tissues and axilla 
+      demonstrates no definite evidence of acute pathology. Imaging of 
+      the mediastinal structures reveals no definite interval change. 
+ 
+      Imaging of the subdiaphragmatic structures reveals no definite 
+      evidence of significant interval change. 
+ 
+      Evaluation of the osseous structures reveals bridging anterior 
+      osteophytes. Negative for evidence of vertebral body compression 
+      fracture. 
+ 
+      Microsoft teams not apparently working. CPRS note written to 
+      referring provider 
+ 
+
+    Impression:
+      Enlarging right upper lobe nodule which has been present since
+      2020, but shows further increase in size compared with the
+      9/8/2023 exam. Findings concerning for very slow growing 
+      neoplasm.  Please see the REPORT for the complete list of
+      findings. 
+
+ 
+Assessment and Plan:
+Unnamed is a 75yo MALE with history of aortic insufficiency 
+status post aortic valve root repair with bioprosthetic valve, with a growing 
+RUL nodule, now 1.4 cm, concerning for NSCLC, cT1b N0 Mx (PET Pending), Stage 
+IA2. 
+ 
+The patient's diagnosis, prognosis and treatment options were discussed in
+detail.
+
+Unfortunately, the location of this lesion makes it challenging for CT guided or 
+navigational bronch biopsy. However, the RUL lesion has been growing over time 
+and is concerning for NSCLC. We discussed the treatment options for early stage 
+lung cancer. We discussed that lobectomy is still considered the standard of 
+care. However, SBRT is a good alternative for those who are not surgical 
+candidates or are not interested in surgery. We reviewed the logistics and side 
+effects of lung SBRT with Mr. Unnamed.
+ 
+-PFTs completed earlier today 
+-PET scheduled 3/29/24 
+
+Mr. Unnamed will plan to follow up after PET scan to finalize treatment 
+options and decision. 
+
+Dr. XYZ was encouraged to call us if he has any questions or
+concerns. We appreciate the opportunity to participate in this
+patients care.
+ 
+Social Work: n/a
+Smoking Cessation: n/a
+Pain management: n/a; no complaints of cancer related pain
+ 
