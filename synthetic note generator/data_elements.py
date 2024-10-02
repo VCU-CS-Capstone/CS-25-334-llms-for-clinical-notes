@@ -439,7 +439,7 @@ class ProblemList:
             if num_problems <= 0:
                 num_problems = 1
             if num_surgeries <= 0:
-                num_surgeries = 1
+                num_surgeries = 0
 
             if num_problems >= len(problem_list):
                 problems = random.choice(problem_list, len(problem_list), replace=False).tolist()
@@ -457,6 +457,8 @@ class ProblemList:
                 self.active_problems = list(problems)
             if len(surgeries) > 0:
                 self.surgical_history = list(surgeries)
+            if len(surgeries) == 0:
+                self.surgical_history = ["None"]
 
             titles = ['PAST MEDICAL AND SURGICAL HISTORY\n',
                       'PAST MEDICAL\nComputerized Problem List is the source of the following:\n',
