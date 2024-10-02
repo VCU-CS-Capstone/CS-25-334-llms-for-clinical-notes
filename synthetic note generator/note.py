@@ -139,7 +139,7 @@ class ConsultNote(BaseNote):
         return psa_entries
 
     def hpi(self):
-        hpi_index = random.randint(0, 10)
+        hpi_index = random.randint(0, 13)
 
         if hpi_index == 0:
             if self.current_biopsy.biopsy_type is None:
@@ -153,7 +153,7 @@ class ConsultNote(BaseNote):
                    f'{self.base_date.year - random.randint(1, 5)} but this has responded to medication and he says he only ' \
                    f'rare nocturia and good bladder control. {self.colonoscopy}'
         elif hpi_index == 1:
-            text = f'Mr. {self.patient.last_name} is a {self.patient.age} y/o {self.patient.race} {self.patient.sex} who ' \
+            text =  f'Mr. {self.patient.last_name} is a {self.patient.age} y/o {self.patient.race} {self.patient.sex.value} who ' \
                    f'presented to Urology with elevated PSA of {self.current_psa.psa_score} drawn on {self.current_psa.psa_date}. He underwent a ' \
                    f'{self.current_biopsy.biopsy_type} with pathology on {self.current_biopsy.biopsy_date} showing ' \
                    f'{self.current_biopsy.gleason}. {self.colonoscopy} Diagnosis: {self.staging.tnm}, {self.staging.risk} ' \
@@ -269,6 +269,31 @@ class ConsultNote(BaseNote):
                    f'Bone scan on {self.bone_scan} was ' \
                    f'negative for metastases.{self.prostatectomy} {self.colonoscopy}' \
                    f'He was referred by urology to discuss treatment options.'
+
+        elif hpi_index == 10:
+            text = f'A {self.patient.age}-year-old male, Mr {self.patient.last_name}, presented to discuss his newly diagnosed prostate cancer. ' \
+                    f'He had undergone a PSA screening, which revealed a PSA level of {self.current_psa.psa_score}, leading to a referral to urology.' \
+                    f' A {self.biopsy_history[-1].biopsy_type} was performed on {self.biopsy_history[-1].biopsy_date}, and the pathology report revealed a {self.biopsy_history[-1].gleason}.' \
+                    f'The left base was found to be the site of the {self.current_biopsy.left_cores}. ' \
+                    f'Mr. {self.patient.last_name} scheduled a future appointment to discuss treatment options.' \
+
+        elif hpi_index == 11:
+            text = f'Mr {self.patient.first_name} {self.patient.last_name}, a {self.patient.age}-year-old {self.patient.sex.value}, was found to have an elevated PSA level of {self.current_psa.psa_score} during routine screening, ' \
+                    f'followed by a {self.biopsy_history[-1].biopsy_type} on {self.biopsy_history[-1].biopsy_date} revealing a right nodule. ' \
+                    f'Subsequent biopsies confirmed prostate adenocarcinoma, {self.current_biopsy.gleason}, in {self.current_biopsy.total_cores}. ' \
+                    f'Staging scans, including a bone scan and CT abdomen/pelvis, showed no evidence of metastatic disease. ' \
+                    f'He also reports significant urinary symptoms, including urgency, frequency, and nocturia, ' \
+                    f'and is currently being evaluated for radiation therapy to treat his prostate cancer.' \
+                    
+        elif hpi_index == 12:
+            text = f'{self.patient.first_name} {self.patient.last_name}, a {self.patient.age}-year-old {self.patient.sex.value}, presented for a routine follow-up visit on {self.current_psa.psa_date}, ' \
+                    f'where an elevated PSA level of {self.current_psa.psa_score} was discovered. This prompted a urology workup, ' \
+                    f'which revealed a diagnosis of high-risk prostate adenocarcinoma with glandular scores of {self.current_biopsy.gleason} through a {self.current_biopsy.biopsy_type}. ' \
+                    f'The pathology report indicated that the cancer was localized to the left side of the prostate, ' \
+                    f'with co-existing acute and chronic prostatitis on the right side. ' \
+                    f'At the time of his current visit, Mr. {self.patient.last_name} reports feeling well, continues to work full-time, ' \
+                    f'and experiences no urinary symptoms or sexual dysfunction. He is sexually active and has had no changes in his sexual activity or experience.' \
+
         else:
             text = ''
         return text
