@@ -6,12 +6,13 @@
 **Preetam Ghosh:**
 
 ## 1) Accomplishments this week ##
-   - Got Python note generator code working. Gained better understanding of code. 
+   - Created web tool outline and got Flask working
+   - Used Grok to generate some rephrasings of the note generator
 
 ## 2) Milestones to be completed next week ##
-   - Start work on Tasks and prepare to show something next week
-   - Understand the note generator repository and prepare questions for advisor
-   - Get some progress on proposal
+   - Create some milestone due dates for subtasks
+   - Work on creating a working version of the web tool
+   - Continue changing note generator code
 
 ## 3) Issues, problems or concerns ##
    - No issues to report!
