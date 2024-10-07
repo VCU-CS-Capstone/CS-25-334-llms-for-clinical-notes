@@ -9,6 +9,7 @@
    - Customization Options
       - (see below)
 
+&nbsp;
 
 ### Customization Options:
    - Type of clinical note 
@@ -32,6 +33,7 @@
       - Offer the option for generating chronological synthetic notes over a patient’s entire treatment period (e.g., from diagnosis to follow-up).
       - This could involve a timeline view where users can set the number of notes and how spread out they are over time.
 
+&nbsp;
 
 ### Some Approach Options:
    - Frontend
@@ -47,6 +49,7 @@
       - Once an iteration is made, we will need to develop tests to ensure the effectiveness of the site.
       - Could get the help of Shashank on this.
 
+&nbsp;
 
 ### Example Workflow for Users:
    1. **Choose Single or Whole Treatment Period** (User will choose first whether they would like to create a single note or a collection of notes which simulate the whole treatment period of a patient.)
