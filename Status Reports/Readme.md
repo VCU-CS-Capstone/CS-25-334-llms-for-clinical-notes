@@ -18,7 +18,7 @@ Status Report Fall Week XX.md is a template for to copy-paste into new Status re
 | Week 5 Status Report | Familiarize with Python Code. Come up more explicit questions for next meeting. | Issue task assignments. Looking into ChatGPT and Llama. | Github Repo access issues. (Resolved) |
 | Week 6 Status Report | Have something to bring for each task for next meeting. | Run Python note generator and understand code. | No Problems to report! |
 | Week 7 Status Report | Created web tool outline and got Flask working ; Used Grok to generate some rephrasings of the note generator | Create some milestone due dates for subtasks ; Work on creating a working version of the web tool ; Continue changing note generator code | No Problems to report! |
-| Week 8 Status Report | | | |
+| Week 8 Status Report | Continue working on our tasks | Worked on our tasks | No problems to report!|
 | Week 9 Status Report | | | |
 | Week 10 Status Report | | | |
 | Week 11 Status Report | | | |
