@@ -1,0 +1,30 @@
+Look at how to add a new disease site or note:
+
+Step 1: Identify the new disease site
+- Determine the name of the new disease site and its corresponding clinical notes.
+- Research the disease and its treatment options to determine the necessary information for the new disease site.
+Step 2: Update data_elements.py
+- Open data_elements.py and navigate to the DiseaseSite class.
+- Add a new attribute to the DiseaseSite class for the new disease site.
+- Update the disease_sites dictionary to include the new disease site.
+Step 3: Update note.py
+- Open note.py and navigate to the Note class.
+- Add a new attribute to the Note class for the new note type.
+- Update the note_types dictionary to include the new note type.
+Step 4: Create a new note class for the new disease site
+- Create a new file called new_disease_note.py (or a name of your choice).
+- In this file, define a new class that inherits from the Note class.
+- Implement the logic for generating the clinical note for the new disease site.
+Step 5: Update note_generator.py
+- Open note_generator.py and navigate to the NoteGenerator class.
+- Update the generate_note method to include the logic for generating the note for the new disease site.
+Step 6: Update data_elements.py (continued)
+- Open data_elements.py and navigate to the DoseData class.
+- Update the DoseData class to include the new disease site.
+Step 7: Update training.json
+- Open training.json and navigate to the patients list.
+- Add a new entry for a patient with the new disease site.
+- Add a new entry for the corresponding clinical note.
+Step 8: Test the new note and disease site
+- Run the application and test the new note and disease site by generating a clinical note for a patient with the new disease site.
+
