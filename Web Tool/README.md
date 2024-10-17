@@ -7,6 +7,7 @@ Please enter venv whenever changes are to be made.
 1. To enter venv use command (powershell): 
     - ".\env\Scripts\activate"
 2. To install requirements use command: "python -m pip install -r requirements.txt"
+3. When done using venv exit using: "deactivate"
 ***
 ## Running
 
