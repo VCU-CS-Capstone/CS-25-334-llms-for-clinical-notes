@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Synthetic Note Generator</title>
+</head>
+<body>
+    <h1>Synthetic Note Generator</h1>
+    <button id="generateNote">Generate Note</button>
+    <div id="noteOutput"></div>
+
+    <script>
+        document.getElementById('generateNote').addEventListener('click', function() {
+            fetch('/generate_note', {method: 'POST'})
+                .then(response => response.json())
+                .then(data => {
+                    document.getElementById('noteOutput').innerHTML = `
+                        <h2>Generated Note:</h2>
+                        <pre>${data.text}</pre>
+                        <h2>Note Data:</h2>
+                        <pre>${JSON.stringify(data.data, null, 2)}</pre>
+                    `;
+                });
+        });
+    </script>
+</body>
+</html>
