@@ -98,9 +98,13 @@ class Cores(BaseClass):
             self.text = f'{self.value} of {self.cores_per_side} {side.value} cores (+)'
 
 class AUA(BaseClass):
-    def __init__(self):
+    def __init__(self, value=None):
         super().__init__()
-        self.value = random.randint(0, 35)
+        if value is not None:
+            self.value = value  # Use provided value
+        else:
+            self.value = random.randint(0, 35)  # Randomize if no value is given
+
         index = random.randint(0, 2)
         if index == 0:
             self.text = f'AUA {self.value}'
@@ -110,10 +114,14 @@ class AUA(BaseClass):
             self.text = f'AUA {self.value}/35'
 
 
+
 class SHIM(BaseClass):
-    def __init__(self):
+    def __init__(self, value=None):
         super().__init__()
-        self.value = random.randint(1, 25)
+        if value is not None:
+            self.value = value
+        else:
+            self.value = random.randint(1, 25)
         index = random.randint(0, 3)
         if index == 0:
             self.text = f'SHIM {self.value}'
@@ -126,10 +134,12 @@ class SHIM(BaseClass):
 
 
 class IPSS(BaseClass):
-    def __init__(self):
+    def __init__(self, value=None):
         super().__init__()
-
-        self.value = random.randint(0, 35)
+        if value is not None:
+            self.value = value
+        else:
+            self.value = random.randint(0, 35)
         index = random.randint(0, 3)
         if index == 0:
             self.text = f'IPSS {self.value}'
@@ -142,9 +152,13 @@ class IPSS(BaseClass):
 
 
 class ECOG(BaseClass):
-    def __init__(self):
+    def __init__(self, value=None):
         super().__init__()
-        self.value = random.randint(0, 4)
+        if value is not None:
+            self.value = value
+        else:
+            self.value = random.randint(0, 4)
+
         index = random.randint(0, 2)
         if index == 0:
             self.text = f'ECOG {self.value}'

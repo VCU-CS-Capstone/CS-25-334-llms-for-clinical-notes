@@ -32,20 +32,23 @@ class BaseNote:
 
 
 class ConsultNote(BaseNote):
-    def __init__(self):
+    def __init__(self, **kwargs):
         super().__init__()
         self.note_type = 'consult'
-        self.psa_history = self.generate_psa()
-        self.current_psa = self.psa_history[0]
         self.psa_date = NoteDate(reference_date=self.base_date.value, direction=DateOffset.BEFORE, offset_days=200)
         self.biopsy_history = self.generate_biopsies()
         self.current_biopsy = self.biopsy_history[0]
         self.colonoscopy = Colonoscopy()
         self.prostatectomy = Prostatectomy(patient_last_name=self.patient.last_name)
-        self.aua = AUA()
-        self.shim = SHIM()
-        self.ipss = IPSS()
-        self.ecog = ECOG()
+        
+        # Pass input values to their respective classes, defaulting to None
+        self.aua = AUA(value=kwargs.get('aua', None))  # If aua is None, it is randomized
+        self.ipss = IPSS(value=kwargs.get('ipss', None))
+        self.shim = SHIM(value=kwargs.get('shim', None))
+        self.ecog = ECOG(value=kwargs.get('ecog', None))
+        self.psa_history = self.generate_psa(value=kwargs.get('psa_values', None))
+        self.current_psa = self.psa_history[0]
+
         self.vitals = Vitals()
         self.problem_list = ProblemList()
         self.pelvic_ct = Imaging(image_type='pelvic_ct', base_date=self.base_date.value)
@@ -132,7 +135,7 @@ class ConsultNote(BaseNote):
             biopsy_entries.append(Biopsy(base_date=biopsy_entries[-1].biopsy_date.value))
         return biopsy_entries
 
-    def generate_psa(self):
+    def generate_psa(self, value=None):
         psa_entries = [PSA(base_date=self.base_date.value)]
         for i in range(random.randint(1, 6)):
             psa_entries.append(PSA(base_date=psa_entries[-1].psa_date.value, previous_score=psa_entries[-1].psa_score))

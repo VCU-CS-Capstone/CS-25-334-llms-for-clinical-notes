@@ -1,27 +1,57 @@
-<!DOCTYPE html>
-<html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Synthetic Note Generator</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
 </head>
+
 <body>
     <h1>Synthetic Note Generator</h1>
+    <h2> Optional input values</h2>
+    <!-- INPUT (text fields)-->
+    <label for="aua">AUA Value:</label>
+    <input type="text" id="aua" placeholder="Enter AUA value">
+    
+    <label for="ipss">IPSS Value:</label>
+    <input type="text" id="ipss" placeholder="Enter IPSS value">
+
+    <label for="ipss">SHIM Value:</label>
+    <input type="text" id="shim" placeholder="Enter SHIM value">
+    
+    <label for="ipss">ECOG Value:</label>
+    <input type="text" id="ecog" placeholder="Enter ECOG value">
+
+    <label for="psa">PSA Values (space-separated):</label>
+    <input type="text" id="psa" placeholder="Enter PSA values">
+
     <button id="generateNote">Generate Note</button>
     <div id="noteOutput"></div>
 
+
+    <!-- SCRIPT -->
     <script>
         document.getElementById('generateNote').addEventListener('click', function() {
-            fetch('/generate_note', {method: 'POST'})
-                .then(response => response.json())
-                .then(data => {
-                    document.getElementById('noteOutput').innerHTML = `
-                        <h2>Generated Note:</h2>
-                        <pre>${data.text}</pre>
-                        <h2>Note Data:</h2>
-                        <pre>${JSON.stringify(data.data, null, 2)}</pre>
-                    `;
-                });
+            const auaValue = document.getElementById('aua').value;
+            const ipssValue = document.getElementById('ipss').value;
+            const shimValue = document.getElementById('shim').value;
+            const ecogValue = document.getElementById('ecog').value;
+
+            fetch('/generate_note', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ aua: auaValue, ipss: ipssValue, shim: shimValue, ecog: ecogValue})
+            })
+            .then(response => response.json())
+            .then(data => {
+                document.getElementById('noteOutput').innerHTML = `
+                    <h2>Generated Note:</h2>
+                    <pre>${data.text}</pre>
+                    <h2>Note Data:</h2>
+                    <pre>${JSON.stringify(data.data, null, 2)}</pre>
+                `;
+            });
         });
     </script>
 </body>
