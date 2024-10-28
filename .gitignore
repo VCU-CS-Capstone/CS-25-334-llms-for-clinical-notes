@@ -2,4 +2,4 @@
 .env
 
 # Ignore personal virtual environment for web tool
-./Web Tool/env
+'.\Web Tool\env'
