@@ -2,9 +2,10 @@
 ***
 ## Set Up
 
-### The Web Tool is developed in a Virtual Environment (VENV)
+### Develop within a virtual environment
 Please enter venv whenever changes are to be made.
-1. To enter venv use command (powershell): 
+1. To create a venv (within Web Tool directory): "python -m venv env"
+2. To enter venv use command (powershell): 
     - ".\env\Scripts\activate"
 2. To install requirements use command: "python -m pip install -r requirements.txt"
 3. When done using venv exit using: "deactivate"
