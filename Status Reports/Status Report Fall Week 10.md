@@ -6,10 +6,10 @@
 **Preetam Ghosh:**
 
 ## 1) Accomplishments this week ##
-   - Worked on our tasks.
+   - Add more fields to Web Tool
 
 ## 2) Milestones to be completed next week ##
-   - Continue Working on tasks and prepare to show more by next meeting.
+   -  Working Version of web tool that accepts field values
 
 ## 3) Issues, problems or concerns ##
    - No issues to report!
