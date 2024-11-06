@@ -1,6 +1,40 @@
 import datetime
 import random
+from groq import Groq
+import os
+from dotenv import load_dotenv
 
+load_dotenv()
+key = os.environ.get("GROQ_API_KEY")
+
+def regenerate(note):
+    request = f"Regenerate this note in a formal matter. Do not change any variables and" \
+              f"do not add any helping phrases like 'Here you go' or using first-person phrases."
+    request += note
+
+    client = Groq(
+    api_key=key
+    )
+    completion = client.chat.completions.create(
+        model="llama3-8b-8192",
+        messages=[
+            {
+                "role": "user",
+                "content": request
+            }
+        ],
+        temperature=1,
+        max_tokens=2048,
+        top_p=1,
+        stream=True,
+        stop=None,
+    )
+
+    result = ""
+    for chunk in completion:
+        result += chunk.choices[0].delta.content or ""
+    print(result)
+    return result
 
 def get_feature_probabilities():
     probabilities = {

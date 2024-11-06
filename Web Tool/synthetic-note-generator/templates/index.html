@@ -24,6 +24,15 @@
     <label for="psa">PSA Values (space-separated):</label>
     <input type="text" id="psa" placeholder="Enter PSA values">
 
+    <div>
+        <input type="checkbox" id="regenerateAssessmentPlan">
+        <label for="regenerateAssessmentPlan">Regenerate assessment plan?</label>
+    </div>
+    <div>
+        <input type="checkbox" id="regenerateHPI">
+        <label for="regenerateHPI">Regenerate HPI?</label>
+    </div>
+
     <button id="generateNote">Generate Note</button>
     <div id="noteOutput"></div>
 
@@ -36,12 +45,22 @@
             const shimValue = document.getElementById('shim').value;
             const ecogValue = document.getElementById('ecog').value;
 
+            const regenerateAssessmentPlan = document.getElementById('regenerateAssessmentPlan').checked;
+            const regenerateHPI = document.getElementById('regenerateHPI').checked;
+
             fetch('/generate_note', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'
                 },
-                body: JSON.stringify({ aua: auaValue, ipss: ipssValue, shim: shimValue, ecog: ecogValue})
+                body: JSON.stringify({ 
+                    aua: auaValue, 
+                    ipss: ipssValue, 
+                    shim: shimValue, 
+                    ecog: ecogValue,
+                    reg_hpi:regenerateHPI,
+                    reg_assmtplan: regenerateAssessmentPlan
+                })
             })
             .then(response => response.json())
             .then(data => {
@@ -53,6 +72,6 @@
                 `;
             });
         });
-    </script>
-</body>
+        </script>
+    </body>
 </html>

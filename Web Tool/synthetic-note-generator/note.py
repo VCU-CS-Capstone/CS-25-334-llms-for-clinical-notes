@@ -2,11 +2,10 @@ import datetime
 import random
 import calendar
 from constants import states, header_titles
-from utils import get_feature_probabilities, random_time_period, format_date
+from utils import get_feature_probabilities, random_time_period, format_date, regenerate
 from data_elements import Patient, Author, PSA, Biopsy, Colonoscopy, Prostatectomy, AUA, SHIM, IPSS, ECOG, Vitals, \
     NoteDate, ProblemList, Imaging, SocialHistory, FamilyHistory, PriorTreatment, Allergies, Medications, \
     PerformanceScore, Staging, Dose, DateOffset
-
 
 class BaseNote:
     def __init__(self):
@@ -46,6 +45,10 @@ class ConsultNote(BaseNote):
         self.ipss = IPSS(value=kwargs.get('ipss', None))
         self.shim = SHIM(value=kwargs.get('shim', None))
         self.ecog = ECOG(value=kwargs.get('ecog', None))
+
+        self.reg_hpi = kwargs.get('reg_hpi', False)
+        self.reg_assmtplan = kwargs.get('reg_assmtplan', False)
+
         self.psa_history = self.generate_psa(value=kwargs.get('psa_values', None))
         self.current_psa = self.psa_history[0]
 
@@ -108,7 +111,13 @@ class ConsultNote(BaseNote):
 
     def generate_note(self):
         self.note_text += self.get_header()
-        self.note_text += self.hpi()
+
+        # There might be a "cleaner" way to do this but not sure
+        if self.reg_hpi:
+            self.note_text += self.hpi(regenHPI=True)
+        else:
+            self.note_text += self.hpi()
+
         self.note_text += self.physical_exam()
         self.note_text += str(self.problem_list)
         self.note_text += str(self.medications)
@@ -119,6 +128,12 @@ class ConsultNote(BaseNote):
         self.note_text += str(self.social_history)
         self.note_text += str(self.family_history)
         self.note_text += str(self.prior_treatment)
+
+        if self.reg_assmtplan:
+            self.note_text += self.assessment_plan(regenAP=True)
+        else:
+            self.note_text += self.assessment_plan()
+
         self.note_text += self.assessment_plan()
         self.note_text += self.get_footer()
 
@@ -141,7 +156,7 @@ class ConsultNote(BaseNote):
             psa_entries.append(PSA(base_date=psa_entries[-1].psa_date.value, previous_score=psa_entries[-1].psa_score))
         return psa_entries
 
-    def hpi(self):
+    def hpi(self, regenHPI=False):
         hpi_index = random.randint(0, 13)
 
         if hpi_index == 0:
@@ -299,6 +314,9 @@ class ConsultNote(BaseNote):
 
         else:
             text = ''
+        # ----- Regenerate note --------
+        if regenHPI:
+            text = regenerate(text)
         return text
 
     def get_header(self):
@@ -327,7 +345,7 @@ class ConsultNote(BaseNote):
             text += f'Signed: {self.base_date}\n'
         return text
 
-    def assessment_plan(self):
+    def assessment_plan(self, regenAP=False):
         self.dose_data = Dose()
         index = random.randint(1, 10)
         if index == 1:
@@ -530,4 +548,7 @@ class ConsultNote(BaseNote):
         else:
             text = ''
             assert 'invalid note index'
+        # ----- Regenerate note --------
+        if regenAP:
+            text = regenerate(text)
         return text
