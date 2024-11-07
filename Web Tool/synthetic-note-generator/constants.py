@@ -10,7 +10,7 @@ states = [
     'Vermont', 'Virginia', 'Washington', 'West Virginia', 'Wisconsin', 'Wyoming'
 ]
 
-race = ['white', 'black', 'asian', 'Native American']
+RACES = ['white', 'black', 'asian', 'Native American']
 
 ethnicity = ['HISPANIC OR LATINO', 'NOT HISPANIC OR LATINO ']
 

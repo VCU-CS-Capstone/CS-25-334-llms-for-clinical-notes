@@ -1,7 +1,15 @@
 import datetime
 from enum import Enum
 from utils import get_feature_probabilities, format_date
-from constants import problem_list, medication_list, surgery_list, allergy_list, race, ethnicity
+from constants import (
+    RACES, 
+    medication_list, 
+    surgery_list, 
+    allergy_list, 
+    states, 
+    ethnicity,
+    problem_list  
+)
 from numpy import random
 import names
 import math
@@ -50,36 +58,67 @@ class BaseClass:
         self._value = value
 
 
-class PSA:
-    def __init__(self, base_date, days_offset=None, previous_score=None):
-        super().__init__()
-        if previous_score is None:
-            self.psa_score = round(random.uniform(2, 20), 2)
+class Patient:
+    def __init__(self, age=None, sex=None, race=None, first_name=None, last_name=None, reference_date=datetime.datetime.now()):
+        self.sex = Sex[sex.upper()] if sex else Sex.MALE
+        self.race = race if race else random.choice(RACES)
+        self.ethnicity = random.choice(ethnicity)
+        self.first_name = first_name if first_name else names.get_first_name(gender=self.sex.value)
+        self.last_name = last_name if last_name else names.get_last_name()
+        
+        if age is not None:
+            self.age = age
+            birth_year = reference_date.year - age
+            self.date_of_birth = NoteDate(reference_date=datetime.date(birth_year, random.randint(1, 12), random.randint(1, 28)))
         else:
+            date_of_birth = datetime.date(random.randint(1940, 1980), random.randint(1, 12), random.randint(1, 28))
+            self.age = reference_date.year - date_of_birth.year - ((reference_date.month, reference_date.day) < (
+                date_of_birth.month, date_of_birth.day))
+            self.date_of_birth = NoteDate(reference_date=date_of_birth)
+            
+        self.value = {
+            'sex': self.sex.value,
+            'race': self.race,
+            'ethnicity': self.ethnicity,
+            'first_name': self.first_name,
+            'last_name': self.last_name,
+            'date_of_birth': format_date(self.date_of_birth.value, date_format=2),
+            'age': self.age
+        }
+
+
+class PSA:
+    def __init__(self, base_date, days_offset=None, previous_score=None, score=None):
+        if score is not None:
+            self.psa_score = score
+        elif previous_score is not None:
             self.psa_score = round(previous_score * random.uniform(0.6, 1.1), 2)
+        else:
+            self.psa_score = round(random.uniform(2, 20), 2)
 
         if days_offset is None:
             days_offset = random.randint(90, 365)
         self.psa_date = NoteDate(reference_date=base_date, offset_days=days_offset, direction=DateOffset.BEFORE)
-        self.value = {'date': '', 'score': self.psa_score}
+        self.value = {'date': format_date(self.psa_date.value, date_format=2), 'score': self.psa_score}
 
 
 class Author(BaseClass):
-    def __init__(self, create=True):
+    def __init__(self, create=True, name=None):
         super().__init__()
         if create:
-            self._value = 'Dr. ' + names.get_last_name()
+            self._value = name if name else 'Dr. ' + names.get_last_name()
         else:
             self._value = None
         self._text = self._value
 
 
 class Cores(BaseClass):
-    def __init__(self, side=None, left_side=None, right_side=None):
+    def __init__(self, side=None, left_side=None, right_side=None, value=None):
         super().__init__()
         if side != CoresSide.LEFT and side != CoresSide.RIGHT and side != CoresSide.TOTAL:
             print(f'Error: side must be left or right, found {side}')
             exit(-1)
+        
         if side == 'both':
             if left_side is None or right_side is None:
                 print(f'Error: both left and right sides must be set')
@@ -88,7 +127,8 @@ class Cores(BaseClass):
             self.value = left_side.value + right_side.value
         else:
             self.cores_per_side = 6
-            self.value = random.randint(0, self.cores_per_side)
+            self.value = value if value is not None else random.randint(0, self.cores_per_side)
+            
         index = random.randint(0, 2)
         if index == 0:
             self.text = f'{self.value}/{self.cores_per_side} {side.value} cores positive'
@@ -100,11 +140,8 @@ class Cores(BaseClass):
 class AUA(BaseClass):
     def __init__(self, value=None):
         super().__init__()
-        if value is not None:
-            self.value = value  # Use provided value
-        else:
-            self.value = random.randint(0, 35)  # Randomize if no value is given
-
+        self.value = value if value is not None else random.randint(0, 35)
+        
         index = random.randint(0, 2)
         if index == 0:
             self.text = f'AUA {self.value}'
@@ -114,14 +151,11 @@ class AUA(BaseClass):
             self.text = f'AUA {self.value}/35'
 
 
-
 class SHIM(BaseClass):
     def __init__(self, value=None):
         super().__init__()
-        if value is not None:
-            self.value = value
-        else:
-            self.value = random.randint(1, 25)
+        self.value = value if value is not None else random.randint(1, 25)
+        
         index = random.randint(0, 3)
         if index == 0:
             self.text = f'SHIM {self.value}'
@@ -136,10 +170,8 @@ class SHIM(BaseClass):
 class IPSS(BaseClass):
     def __init__(self, value=None):
         super().__init__()
-        if value is not None:
-            self.value = value
-        else:
-            self.value = random.randint(0, 35)
+        self.value = value if value is not None else random.randint(0, 35)
+        
         index = random.randint(0, 3)
         if index == 0:
             self.text = f'IPSS {self.value}'
@@ -154,11 +186,8 @@ class IPSS(BaseClass):
 class ECOG(BaseClass):
     def __init__(self, value=None):
         super().__init__()
-        if value is not None:
-            self.value = value
-        else:
-            self.value = random.randint(0, 4)
-
+        self.value = value if value is not None else random.randint(0, 4)
+        
         index = random.randint(0, 2)
         if index == 0:
             self.text = f'ECOG {self.value}'
@@ -263,9 +292,9 @@ class BiopsyType(BaseClass):
 
 
 class Gleason:
-    def __init__(self):
-        self.primary = random.randint(3, 5)
-        self.secondary = random.randint(3, 5)
+    def __init__(self, primary=None, secondary=None):
+        self.primary = primary if primary is not None else random.randint(3, 5)
+        self.secondary = secondary if secondary is not None else random.randint(3, 5)
         self.total = self.primary + self.secondary
         self.text = ''
 
@@ -286,28 +315,12 @@ class Gleason:
         return self.text
 
 
-class Biopsy:
-    def __init__(self, base_date):
-        self.biopsy_type = BiopsyType()
-        self.biopsy_date = NoteDate(reference_date=base_date, offset_days=random.randint(0, 180),
-                                    direction=DateOffset.BEFORE)
-        self.gleason = Gleason()
-        self.left_cores = Cores(side=CoresSide.LEFT)
-        self.right_cores = Cores(side=CoresSide.RIGHT)
-        self.total_cores = Cores(side=CoresSide.TOTAL, left_side=self.left_cores, right_side=self.right_cores)
-        self.value = {'biopsy_type': self.biopsy_type.value, 'biopsy_date': format_date(self.biopsy_date.value, 2),
-                      'gleason': {'primary': self.gleason.primary, 'secondary': self.gleason.secondary,
-                                  'total': self.gleason.total},
-                      'left_cores': self.left_cores.value, 'right_cores': self.right_cores.value,
-                      'total_cores': self.total_cores.value}
-
-
 class TNM(BaseClass):
-    def __init__(self):
+    def __init__(self, t=None, n=None, m=None):
         super().__init__()
-        self.t = random.choice(['TX', 'T1', 'T1a', 'T1b' 'T1c', 'T2', 'T2a', 'T2b', 'T2c', 'T3', 'T3a', 'T3b', 'T4'])
-        self.n = random.choice(['NX', 'N0', 'N1'])
-        self.m = random.choice(['MX', 'M0', 'M1', 'M1a', 'M1b', 'M1c'])
+        self.t = t if t else random.choice(['TX', 'T1', 'T1a', 'T1b', 'T1c', 'T2', 'T2a', 'T2b', 'T2c', 'T3', 'T3a', 'T3b', 'T4'])
+        self.n = n if n else random.choice(['NX', 'N0', 'N1'])
+        self.m = m if m else random.choice(['MX', 'M0', 'M1', 'M1a', 'M1b', 'M1c'])
         self.value = f'{self.t}{self.n}{self.m}'
         if random.choice(['True', 'False']):
             self.text = self.value
@@ -316,15 +329,20 @@ class TNM(BaseClass):
 
 
 class Staging:
-    def __init__(self):
+    def __init__(self, risk_level=None):
         self.tnm = TNM()
-        # TODO: update to match to AJCC rules
         self.group_stage = random.choice(['I', 'IIA', 'IIB', 'IIC', 'IIIA', 'IIIB', 'IIIC', 'IVA', 'IVB'])
-        self.risk = random.choice(['low', 'intermediate', 'intermediate-favorable', 'intermediate-unfavorable', 'high',
-                                   'very high'])
+        self.risk = risk_level if risk_level else random.choice([
+            'low', 'intermediate', 'intermediate-favorable', 
+            'intermediate-unfavorable', 'high', 'very high'
+        ])
         self.histology = 'adenocarcinoma'
-        self.value = {'tnm': self.tnm.value, 'group_stage': self.group_stage, 'risk': self.risk,
-                      'histology': self.histology}
+        self.value = {
+            'tnm': self.tnm.value,
+            'group_stage': self.group_stage,
+            'risk': self.risk,
+            'histology': self.histology
+        }
 
 
 class Weight(BaseClass):
@@ -459,7 +477,7 @@ class ProblemList:
             else:
                 problems = random.choice(problem_list, num_problems, replace=False).tolist()
 
-            if num_problems >= len(surgery_list):
+            if num_surgeries >= len(surgery_list):
                 surgeries = random.choice(surgery_list, len(surgery_list), replace=False).tolist()
             else:
                 surgeries = random.choice(surgery_list, num_surgeries, replace=False).tolist()
@@ -582,6 +600,29 @@ class Allergies(BaseClass):
         self.text = text
 
 
+class Biopsy:
+    def __init__(self, base_date, gleason_primary=None, gleason_secondary=None):
+        self.biopsy_type = BiopsyType()
+        self.biopsy_date = NoteDate(reference_date=base_date, offset_days=random.randint(0, 180),
+                                    direction=DateOffset.BEFORE)
+        self.gleason = Gleason(primary=gleason_primary, secondary=gleason_secondary)
+        self.left_cores = Cores(side=CoresSide.LEFT)
+        self.right_cores = Cores(side=CoresSide.RIGHT)
+        self.total_cores = Cores(side=CoresSide.TOTAL, left_side=self.left_cores, right_side=self.right_cores)
+        self.value = {
+            'biopsy_type': self.biopsy_type.value,
+            'biopsy_date': format_date(self.biopsy_date.value, 2),
+            'gleason': {
+                'primary': self.gleason.primary,
+                'secondary': self.gleason.secondary,
+                'total': self.gleason.total
+            },
+            'left_cores': self.left_cores.value,
+            'right_cores': self.right_cores.value,
+            'total_cores': self.total_cores.value
+        }
+
+
 def alcohol_former_current(current_drinker):
     index = random.randint(0, 2)
     stopped_index = random.randint(0, 2)
@@ -657,8 +698,12 @@ class SmokingHistory:
             text = self.tobacco_former_current(current_smoker=True) + '. '
             self.smoking_status = 'current'
         self.text = text
-        self.value = {'smoking_status': self.smoking_status, 'years_smoked': self.years_smoked,
-                      'packs_per_year': self.packs_per_year, 'years_ago_stopped': self.years_ago_stopped}
+        self.value = {
+            'smoking_status': self.smoking_status,
+            'years_smoked': self.years_smoked,
+            'packs_per_year': self.packs_per_year,
+            'years_ago_stopped': self.years_ago_stopped
+        }
 
     def __str__(self):
         return self.text
@@ -714,10 +759,12 @@ class SocialHistory:
         text = '\n' + random.choice(titles) + '\n'
         sh_list = random.choice([True, False])
 
-        sh_list_formats = [{'alcohol': 'Alcohol Use: ', 'tobacco': 'Tobacco Use: '},
-                           {'alcohol': 'Alcohol use: ', 'tobacco': 'Tobacco use: '},
-                           {'alcohol': 'alcohol: ', 'tobacco': 'tobacco: '},
-                           {'alcohol': 'Alcohol Use Status: ', 'tobacco': 'Tobacco Use Status: '}]
+        sh_list_formats = [
+            {'alcohol': 'Alcohol Use: ', 'tobacco': 'Tobacco Use: '},
+            {'alcohol': 'Alcohol use: ', 'tobacco': 'Tobacco use: '},
+            {'alcohol': 'alcohol: ', 'tobacco': 'tobacco: '},
+            {'alcohol': 'Alcohol Use Status: ', 'tobacco': 'Tobacco Use Status: '}
+        ]
 
         if sh_list:
             list_index = random.randint(0, len(sh_list_formats) - 1)
@@ -732,7 +779,10 @@ class SocialHistory:
             text += str(self.alcohol_history)
             text += '\n'
         self.text = text
-        self.value = {'smoking_history': self.smoking_history.value, 'alcohol_history': self.alcohol_history.value}
+        self.value = {
+            'smoking_history': self.smoking_history.value,
+            'alcohol_history': self.alcohol_history.value
+        }
 
     def __str__(self):
         return self.text
@@ -791,10 +841,10 @@ class PriorTreatment:
         text += 'Radiation: '
         if rad_choice == 'Yes':
             text += f'Yes, {self.prior_rt_date}' + '\n'
-            self.previous_rt = True
+            self.prior_rt = True
         elif rad_choice == 'No':
             text += 'No\n'
-            self.previous_rt = False
+            self.prior_rt = False
         else:
             text += '\n'
         text += 'Chemotherapy: '
@@ -813,8 +863,7 @@ class PriorTreatment:
         hormone_choice = random.choice(['', 'Yes', 'No'])
         if hormone_choice == 'Yes':
             hormone_drug = random.choice(hormone_drugs)
-            text += random.choice(
-                ['', f'Yes, {self.hormone_therapy_date}']) + f' {hormone_drug}\n'
+            text += random.choice(['', f'Yes, {self.hormone_therapy_date}']) + f' {hormone_drug}\n'
             self.hormone_therapy_prescribed = True
         elif hormone_choice == 'No':
             text += 'No\n'
@@ -822,39 +871,16 @@ class PriorTreatment:
         else:
             text += '\n'
         self.text = text
-        self.value = {'prior_rt': self.prior_rt, 'prior_rt_date': format_date(self.prior_rt_date.value, date_format=2),
-                      'chemotherapy_prescribed': self.chemotherapy_prescribed,
-                      'chemotherapy_drugs_prescribed': self.chemotherapy_drugs_prescribed,
-                      'hormone_therapy_prescribed': self.hormone_therapy_prescribed}
+        self.value = {
+            'prior_rt': self.prior_rt,
+            'prior_rt_date': format_date(self.prior_rt_date.value, date_format=2),
+            'chemotherapy_prescribed': self.chemotherapy_prescribed,
+            'chemotherapy_drugs_prescribed': self.chemotherapy_drugs_prescribed,
+            'hormone_therapy_prescribed': self.hormone_therapy_prescribed
+        }
 
     def __str__(self):
         return self.text
-
-
-class Dose:
-    def __init__(self):
-        self.dose_per_fraction = 180
-        self.num_fractions = random.randint(36, 44)
-        self.total_dose = self.num_fractions * self.dose_per_fraction
-        self.weeks_of_rt = int(math.ceil(self.num_fractions / 5.))
-        self.value = {'dose_per_fraction': self.dose_per_fraction, 'num_fractions': self.num_fractions,
-                      'total_dose': self.total_dose, 'weeks_of_rt': self.weeks_of_rt}
-
-
-class Patient:
-    def __init__(self, reference_date=datetime.datetime.now()):
-        self.sex = Sex.MALE
-        self.race = random.choice(race)
-        self.ethnicity = random.choice(ethnicity)
-        self.first_name = names.get_first_name(gender=self.sex)
-        self.last_name = names.get_last_name()
-        date_of_birth = datetime.date(random.randint(1940, 1980), random.randint(1, 12), random.randint(1, 28))
-        self.age = reference_date.year - date_of_birth.year - ((reference_date.month, reference_date.day) < (
-            date_of_birth.month, date_of_birth.day))
-        self.date_of_birth = NoteDate(reference_date=date_of_birth)
-        self.value = {'sex': self.sex.value, 'race': self.race, 'ethnicity': self.ethnicity,
-                      'first_name': self.first_name, 'last_name': self.last_name,
-                      'date_of_birth': format_date(self.date_of_birth.value, date_format=2), 'age': self.age}
 
 
 class NoteDate(BaseClass):
@@ -879,3 +905,17 @@ class NoteDate(BaseClass):
         self.month = self._value.month
         self.day = self._value.day
         self._text = format_date(self._value, date_format=date_format)
+
+
+class Dose:
+    def __init__(self):
+        self.dose_per_fraction = 180
+        self.num_fractions = random.randint(36, 44)
+        self.total_dose = self.num_fractions * self.dose_per_fraction
+        self.weeks_of_rt = int(math.ceil(self.num_fractions / 5.))
+        self.value = {
+            'dose_per_fraction': self.dose_per_fraction,
+            'num_fractions': self.num_fractions,
+            'total_dose': self.total_dose,
+            'weeks_of_rt': self.weeks_of_rt
+        }

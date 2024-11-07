@@ -7,6 +7,7 @@ from data_elements import Patient, Author, PSA, Biopsy, Colonoscopy, Prostatecto
     NoteDate, ProblemList, Imaging, SocialHistory, FamilyHistory, PriorTreatment, Allergies, Medications, \
     PerformanceScore, Staging, Dose, DateOffset
 
+
 class BaseNote:
     def __init__(self):
         self.note_text = ''
@@ -33,37 +34,84 @@ class BaseNote:
 class ConsultNote(BaseNote):
     def __init__(self, **kwargs):
         super().__init__()
-        self.note_type = 'consult'
-        self.psa_date = NoteDate(reference_date=self.base_date.value, direction=DateOffset.BEFORE, offset_days=200)
-        self.biopsy_history = self.generate_biopsies()
+        
+        # Initialize note type
+        self.note_type = kwargs.get('clinical_note_type', 'consult')
+        self.note_generation_type = kwargs.get('note_generation_type', 'single')
+        
+        # Initialize section toggles
+        self.include_sections = {
+            'hpi': kwargs.get('include_hpi', True),
+            'vitals': kwargs.get('include_vitals', True),
+            'social': kwargs.get('include_social', True),
+            'medical': kwargs.get('include_medical', True),
+            'exam': kwargs.get('include_exam', True),
+            'imaging': kwargs.get('include_imaging', True),
+            'plan': kwargs.get('include_plan', True)
+        }
+
+        # Groq regeneration True/False
+        self.regen_sections = {
+            'hpi_regen': kwargs.get('regen_hpi', False),
+            'assessment_regen': kwargs.get('regen_assmplan', False)
+        }
+
+        # Print the regen_sections dictionary
+        print("\nRegen Sections:", self.regen_sections)
+        
+        # Print the individual values
+        print("HPI Regen:", self.regen_sections['hpi_regen'])
+        print("Assessment Regen:", self.regen_sections['assessment_regen'])
+        
+        # Initialize base date and patient
+        self.base_date = NoteDate(offset_days=random.randint(0, 1000), direction=DateOffset.AFTER)
+        self.patient = Patient(
+            age=kwargs.get('patient_age'),
+            sex=kwargs.get('patient_sex'),
+            race=kwargs.get('patient_race'),
+            first_name=kwargs.get('patient_first_name'),
+            last_name=kwargs.get('patient_last_name')
+        )
+        
+        # Initialize PSA history with provided value if available
+        psa_value = kwargs.get('psa_score')
+        self.psa_history = self.generate_psa(psa_value)
+        self.current_psa = self.psa_history[0]
+        
+        # Initialize biopsy with Gleason scores if provided
+        self.biopsy_history = self.generate_biopsies(
+            gleason_primary=kwargs.get('gleason_primary'),
+            gleason_secondary=kwargs.get('gleason_secondary')
+        )
         self.current_biopsy = self.biopsy_history[0]
+        
+        # Initialize other medical values
+        self.aua = AUA(value=kwargs.get('aua'))
+        self.ipss = IPSS(value=kwargs.get('ipss'))
+        self.shim = SHIM(value=kwargs.get('shim'))
+        self.ecog = ECOG(value=kwargs.get('ecog'))
+        
+        # Initialize remaining components
         self.colonoscopy = Colonoscopy()
         self.prostatectomy = Prostatectomy(patient_last_name=self.patient.last_name)
-        
-        # Pass input values to their respective classes, defaulting to None
-        self.aua = AUA(value=kwargs.get('aua', None))  # If aua is None, it is randomized
-        self.ipss = IPSS(value=kwargs.get('ipss', None))
-        self.shim = SHIM(value=kwargs.get('shim', None))
-        self.ecog = ECOG(value=kwargs.get('ecog', None))
-
-        self.reg_hpi = kwargs.get('reg_hpi', False)
-        self.reg_assmtplan = kwargs.get('reg_assmtplan', False)
-
-        self.psa_history = self.generate_psa(value=kwargs.get('psa_values', None))
-        self.current_psa = self.psa_history[0]
-
         self.vitals = Vitals()
         self.problem_list = ProblemList()
+        self.staging = Staging(risk_level=kwargs.get('risk_level'))
+        
+        # Initialize imaging and dates
+        self.psa_date = NoteDate(reference_date=self.base_date.value, direction=DateOffset.BEFORE, offset_days=200)
         self.pelvic_ct = Imaging(image_type='pelvic_ct', base_date=self.base_date.value)
         self.pelvic_mri = Imaging(image_type='pelvic_mri', base_date=self.base_date.value)
         self.bone_scan = Imaging(image_type='bone_scan', base_date=self.base_date.value)
+                
+        # Initialize histories
         self.social_history = SocialHistory(reference_date=self.base_date.value)
         self.family_history = FamilyHistory()
         self.prior_treatment = PriorTreatment(reference_date=self.base_date.value)
         self.allergies = Allergies()
         self.medications = Medications()
         self.performance_score = PerformanceScore()
-        self.staging = Staging()
+        
         self.mri_date = NoteDate(reference_date=self.base_date.value, direction=DateOffset.BEFORE, offset_days=200)
 
     def get_text(self):
@@ -110,31 +158,40 @@ class ConsultNote(BaseNote):
         return data_fields
 
     def generate_note(self):
+        """Modified to respect section toggles"""
+        self.note_text = ''
         self.note_text += self.get_header()
-
-        # There might be a "cleaner" way to do this but not sure
-        if self.reg_hpi:
-            self.note_text += self.hpi(regenHPI=True)
-        else:
-            self.note_text += self.hpi()
-
-        self.note_text += self.physical_exam()
-        self.note_text += str(self.problem_list)
-        self.note_text += str(self.medications)
-        self.note_text += str(self.allergies)
-        self.note_text += str(self.pelvic_ct)
-        self.note_text += str(self.pelvic_mri)
-        self.note_text += str(self.bone_scan)
-        self.note_text += str(self.social_history)
-        self.note_text += str(self.family_history)
-        self.note_text += str(self.prior_treatment)
-
-        if self.reg_assmtplan:
-            self.note_text += self.assessment_plan(regenAP=True)
-        else:
-            self.note_text += self.assessment_plan()
-
-        self.note_text += self.assessment_plan()
+        
+        if self.include_sections['hpi']:
+            if self.regen_sections['hpi_regen']:
+                self.note_text += self.hpi(regen=True)
+            else:
+                self.note_text += self.hpi()
+        
+        if self.include_sections['exam']:
+            self.note_text += self.physical_exam()
+            
+        if self.include_sections['medical']:
+            self.note_text += str(self.problem_list)
+            self.note_text += str(self.medications)
+            self.note_text += str(self.allergies)
+            
+        if self.include_sections['imaging']:
+            self.note_text += str(self.pelvic_ct)
+            self.note_text += str(self.pelvic_mri)
+            self.note_text += str(self.bone_scan)
+            
+        if self.include_sections['social']:
+            self.note_text += str(self.social_history)
+            self.note_text += str(self.family_history)
+            self.note_text += str(self.prior_treatment)
+            
+        if self.include_sections['plan']:
+            if self.regen_sections['assessment_regen']:
+                self.note_text += self.assessment_plan(regen=True)
+            else:
+                self.note_text += self.assessment_plan()
+            
         self.note_text += self.get_footer()
 
     def physical_exam(self):
@@ -144,19 +201,24 @@ class ConsultNote(BaseNote):
         text += f'ECOG: {self.ecog}\n'
         return text
 
-    def generate_biopsies(self):  # TODO: currently defaulted to just two biopsies
-        biopsy_entries = [Biopsy(base_date=self.base_date.value)]
+    def generate_biopsies(self, gleason_primary=None, gleason_secondary=None):
+        """Modified to accept Gleason scores"""
+        biopsy_entries = [Biopsy(base_date=self.base_date.value, 
+                                gleason_primary=gleason_primary,
+                                gleason_secondary=gleason_secondary)]
         for _ in [0, 1]:
             biopsy_entries.append(Biopsy(base_date=biopsy_entries[-1].biopsy_date.value))
         return biopsy_entries
 
-    def generate_psa(self, value=None):
-        psa_entries = [PSA(base_date=self.base_date.value)]
+    def generate_psa(self, initial_value=None):
+        """Modified to accept initial PSA value"""
+        psa_entries = [PSA(base_date=self.base_date.value, score=initial_value)]
         for i in range(random.randint(1, 6)):
-            psa_entries.append(PSA(base_date=psa_entries[-1].psa_date.value, previous_score=psa_entries[-1].psa_score))
+            psa_entries.append(PSA(base_date=psa_entries[-1].psa_date.value, 
+                                 previous_score=psa_entries[-1].psa_score))
         return psa_entries
 
-    def hpi(self, regenHPI=False):
+    def hpi(self, regen=False):
         hpi_index = random.randint(0, 13)
 
         if hpi_index == 0:
@@ -315,8 +377,9 @@ class ConsultNote(BaseNote):
         else:
             text = ''
         # ----- Regenerate note --------
-        if regenHPI:
+        if regen:
             text = regenerate(text)
+            print('regenerated assmplan')
         return text
 
     def get_header(self):
@@ -345,7 +408,7 @@ class ConsultNote(BaseNote):
             text += f'Signed: {self.base_date}\n'
         return text
 
-    def assessment_plan(self, regenAP=False):
+    def assessment_plan(self, regen=False):
         self.dose_data = Dose()
         index = random.randint(1, 10)
         if index == 1:
@@ -549,6 +612,7 @@ class ConsultNote(BaseNote):
             text = ''
             assert 'invalid note index'
         # ----- Regenerate note --------
-        if regenAP:
+        if regen:
             text = regenerate(text)
+            print('regenerated assmplan')
         return text

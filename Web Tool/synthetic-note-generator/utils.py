@@ -33,7 +33,6 @@ def regenerate(note):
     result = ""
     for chunk in completion:
         result += chunk.choices[0].delta.content or ""
-    print(result)
     return result
 
 def get_feature_probabilities():
@@ -45,8 +44,8 @@ def get_feature_probabilities():
         'ct': 1.0,
         'mri': 1.0,
         'bone_scan': 1.0,
-        'alcohol_status':  [0.0, 1/3., 1/3., 1/3.],
-        'smoking_status':  [0.0, 1/3., 1/3., 1/3.],
+        'alcohol_status': [0.0, 1/3., 1/3., 1/3.],
+        'smoking_status': [0.0, 1/3., 1/3., 1/3.],
     }
     return probabilities
 
