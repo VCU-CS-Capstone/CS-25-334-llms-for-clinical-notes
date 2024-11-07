@@ -55,13 +55,6 @@ class ConsultNote(BaseNote):
             'hpi_regen': kwargs.get('regen_hpi', False),
             'assessment_regen': kwargs.get('regen_assmplan', False)
         }
-
-        # Print the regen_sections dictionary
-        print("\nRegen Sections:", self.regen_sections)
-        
-        # Print the individual values
-        print("HPI Regen:", self.regen_sections['hpi_regen'])
-        print("Assessment Regen:", self.regen_sections['assessment_regen'])
         
         # Initialize base date and patient
         self.base_date = NoteDate(offset_days=random.randint(0, 1000), direction=DateOffset.AFTER)
@@ -379,7 +372,6 @@ class ConsultNote(BaseNote):
         # ----- Regenerate note --------
         if regen:
             text = regenerate(text)
-            print('regenerated assmplan')
         return text
 
     def get_header(self):
@@ -614,5 +606,4 @@ class ConsultNote(BaseNote):
         # ----- Regenerate note --------
         if regen:
             text = regenerate(text)
-            print('regenerated assmplan')
         return text

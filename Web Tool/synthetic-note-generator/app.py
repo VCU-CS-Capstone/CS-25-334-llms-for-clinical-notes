@@ -48,13 +48,6 @@ def generate_note():
         include_sections = data.get('includeSections', {})
         regen_sections = data.get('regenSections', {})
 
-        regen_hpi = regen_sections.get('regenerate_hpi', False)
-        regen_assmplan = regen_sections.get('regenerate_assmplan', False)
-
-        # Debug: Print the values of regen_hpi and regen_assmplan
-        print("Regenerate HPI in app.py:", regen_hpi)
-        print("Regenerate Assessment Plan in app.py:", regen_assmplan)
-
         # Process the data with validation
         processed_data = {
             # Note type settings

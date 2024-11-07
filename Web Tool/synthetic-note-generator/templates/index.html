@@ -142,19 +142,20 @@
         </section>
 
         <!-- Regenerate text -->
-        <div>
-            <input type="checkbox" id="regenerateAssessmentPlan">
-            <label for="regenerateAssessmentPlan">Regenerate assessment plan?</label>
-        </div>
-        <div>
-            <input type="checkbox" id="regenerateHPI">
-            <label for="regenerateHPI">Regenerate HPI?</label>
-        </div>
+        <section id="Regenerate">
+            <div class="regen">
+                <input type="checkbox" id="regenerateAssessmentPlan">
+                <label for="regenerateAssessmentPlan">Regenerate assessment plan?</label>
+            </div>
+            <div class="regen">
+                <input type="checkbox" id="regenerateHPI">
+                <label for="regenerateHPI">Regenerate HPI?</label>
+            </div>
 
-        <button id="generateNote">Generate Note</button>
+            <button id="generateNote">Generate Note</button>
+            <div id="noteOutput"></div>
+        </section>
 
-        <div id="noteOutput"></div>
-    </div>
 
     <script>
         document.getElementById('generateNote').addEventListener('click', function() {
