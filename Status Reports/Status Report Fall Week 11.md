@@ -6,10 +6,9 @@
 **Preetam Ghosh:**
 
 ## 1) Accomplishments this week ##
-   - Add more fields to Web Tool
-
+   - Finalized Front end of web tool. Implemented groq into Web tool.
 ## 2) Milestones to be completed next week ##
-   -  Working Version of web tool that accepts field values
-
+   - Merge new frontend and groq implementation versions.
 ## 3) Issues, problems or concerns ##
    - No issues to report!
+
