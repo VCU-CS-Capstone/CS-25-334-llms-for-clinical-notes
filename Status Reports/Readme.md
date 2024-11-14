@@ -23,7 +23,7 @@ Status Report Fall Week XX.md is a template for to copy-paste into new Status re
 | Week 10 Status Report | Continue working on our tasks | Worked on our tasks | No problems to report! |
 | Week 11 Status Report | Add more fields to Web Tool. | Working Version of web tool that accepts field values. | No problems to report! |
 | Week 12 Status Report | Merge new frontend and groq implementation versions. | Finalized Front end of web tool. Implemented groq into Web tool. | No Problems to Report! |
-| Week 13 Status Report | | | |
+| Week 13 Status Report | Finish Incorporating backend with final frontend | Continued Web Tool development. Incorporating Back and Final Frontend. | No Problems to Report! |
 | Week 14 Status Report | | | |
 | Week 15 Status Report | | | |
 | Week 16 Status Report | | | |
