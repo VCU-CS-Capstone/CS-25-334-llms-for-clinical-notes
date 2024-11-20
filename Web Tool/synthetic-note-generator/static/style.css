@@ -94,30 +94,3 @@ button:hover {
     margin: 10px 0;
     border-radius: 4px;
 }
-
-/* Space out the regenerate section */
-#Regenerate {
-    margin-top: 20px;
-}
-
-/* Flexbox layout for the regenerate section */
-.regen {
-    display: flex; /* Use flexbox to position the checkbox and label side by side */
-    align-items: center; /* Vertically center the checkbox and label */
-    margin-bottom: 10px; /* Space between the options */
-}
-
-/* Space between the checkbox and the label */
-.regen label {
-    margin-left: 8px; /* Add some space between the checkbox and the label */
-}
-
-/* Optional styling for the button and output */
-#generateNote {
-    margin-top: 15px;
-}
-
-#noteOutput {
-    margin-top: 15px;
-}
-

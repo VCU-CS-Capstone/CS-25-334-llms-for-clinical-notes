@@ -1,6 +1,7 @@
 from flask import Flask, render_template, request, jsonify
 from note import ConsultNote
 import traceback
+from datetime import datetime
 
 app = Flask(__name__)
 
@@ -32,6 +33,15 @@ def safe_float(value, default=None, min_val=None, max_val=None):
     except ValueError:
         return default
 
+def parse_date(date_str):
+    """Parse date string to datetime object"""
+    if not date_str:
+        return None
+    try:
+        return datetime.strptime(date_str, '%Y-%m-%d')
+    except ValueError:
+        return None
+
 @app.route('/')
 def index():
     return render_template('index.html')
@@ -41,36 +51,33 @@ def generate_note():
     try:
         data = request.get_json()
         
-        # Extract and validate medical values
-        medical_values = data.get('medicalValues', {})
-        demographics = data.get('demographics', {})
+        # Extract data from the new structure
+        patient = data.get('patient', {})
         note_type = data.get('noteType', {})
         include_sections = data.get('includeSections', {})
-        regen_sections = data.get('regenSections', {})
-
+        
         # Process the data with validation
         processed_data = {
             # Note type settings
             'note_generation_type': note_type.get('generation'),
             'clinical_note_type': note_type.get('clinical'),
             
-            # Demographics with validation
-            'patient_age': safe_int(demographics.get('age'), None, 18, 100),
-            'patient_sex': demographics.get('sex'),
-            'patient_race': demographics.get('race'),
-            'patient_first_name': demographics.get('firstName'),
-            'patient_last_name': demographics.get('lastName'),
+            # Patient demographics
+            'patient_age': safe_int(patient.get('age'), None, 18, 100),
+            'patient_sex': patient.get('sex'),
+            'patient_race': patient.get('race'),
+            'patient_first_name': patient.get('first_name'),
+            'patient_last_name': patient.get('last_name'),
             
-            # Medical values with validation
-            'aua': safe_int(medical_values.get('aua'), None, 0, 35),
-            'ipss': safe_int(medical_values.get('ipss'), None, 0, 35),
-            'shim': safe_int(medical_values.get('shim'), None, 1, 25),
-            'ecog': safe_int(medical_values.get('ecog'), None, 0, 4),
-            'psa_score': safe_float(medical_values.get('psaScore'), None, 0),
-            'disease_site': medical_values.get('diseaseSite'),
-            'risk_level': medical_values.get('riskLevel'),
-            'gleason_primary': safe_int(medical_values.get('gleasonPrimary'), None, 3, 5),
-            'gleason_secondary': safe_int(medical_values.get('gleasonSecondary'), None, 3, 5),
+            # Medical values
+            'aua': safe_int(data.get('aua')),
+            'ipss': safe_int(data.get('ipss')),
+            'shim': safe_int(data.get('shim')),
+            'ecog': safe_int(data.get('ecog')),
+            'psa_score': safe_float(data.get('psa', {}).get('score')),
+            
+            # Staging information
+            'risk_level': data.get('staging', {}).get('risk'),
             
             # Section toggles
             'include_hpi': include_sections.get('hpi', True),
@@ -80,10 +87,27 @@ def generate_note():
             'include_exam': include_sections.get('exam', True),
             'include_imaging': include_sections.get('imaging', True),
             'include_plan': include_sections.get('plan', True),
+            
+            # Additional data that might be needed by the note generator
+            'base_date': parse_date(data.get('base_date')),
+            'note_author': data.get('note_author'),
+            'note_cosigner': data.get('note_cosigner'),
+            
+            # Treatment information
+            'prostatectomy': data.get('prostatectomy'),
+            'colonoscopy': data.get('colonoscopy'),
+            
+            # Social history
+            'social_history': data.get('social_history'),
 
-            # Groq regeneration
-            'regen_hpi': regen_sections.get('regenerate_hpi', False),
-            'regen_assmplan': regen_sections.get('regenerate_assmplan', False)
+            # Regeneration options
+            'regen_hpi': data.get('regenSections', {}).get('regenerate_hpi', False),
+            'regen_assmplan': data.get('regenSections', {}).get('regenerate_assmplan', False),
+            
+            # Lists
+            'medications': data.get('medications', []),
+            'allergies': data.get('allergies', []),
+            'problem_list': data.get('problem_list', {})
         }
 
         # Generate the note with the processed data

@@ -19,6 +19,7 @@ class BaseNote:
         self.note_author = Author()
         self.note_cosigner = Author(create=self.is_cosigner)
         self.dose_data = None
+        
 
     def get_data_fields(self):
         self.dose_data = {
@@ -48,12 +49,6 @@ class ConsultNote(BaseNote):
             'exam': kwargs.get('include_exam', True),
             'imaging': kwargs.get('include_imaging', True),
             'plan': kwargs.get('include_plan', True)
-        }
-
-        # Groq regeneration True/False
-        self.regen_sections = {
-            'hpi_regen': kwargs.get('regen_hpi', False),
-            'assessment_regen': kwargs.get('regen_assmplan', False)
         }
         
         # Initialize base date and patient
@@ -96,7 +91,7 @@ class ConsultNote(BaseNote):
         self.pelvic_ct = Imaging(image_type='pelvic_ct', base_date=self.base_date.value)
         self.pelvic_mri = Imaging(image_type='pelvic_mri', base_date=self.base_date.value)
         self.bone_scan = Imaging(image_type='bone_scan', base_date=self.base_date.value)
-                
+        
         # Initialize histories
         self.social_history = SocialHistory(reference_date=self.base_date.value)
         self.family_history = FamilyHistory()
@@ -106,6 +101,11 @@ class ConsultNote(BaseNote):
         self.performance_score = PerformanceScore()
         
         self.mri_date = NoteDate(reference_date=self.base_date.value, direction=DateOffset.BEFORE, offset_days=200)
+
+        self.regen_sections = {
+            'hpi_regen': kwargs.get('regen_hpi', False),
+            'assessment_regen': kwargs.get('regen_assmplan', False)
+}
 
     def get_text(self):
         if self.note_text == '':
@@ -369,7 +369,6 @@ class ConsultNote(BaseNote):
 
         else:
             text = ''
-        # ----- Regenerate note --------
         if regen:
             text = regenerate(text)
         return text
@@ -603,7 +602,6 @@ class ConsultNote(BaseNote):
         else:
             text = ''
             assert 'invalid note index'
-        # ----- Regenerate note --------
         if regen:
             text = regenerate(text)
         return text

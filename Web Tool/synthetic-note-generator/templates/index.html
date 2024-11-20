@@ -56,12 +56,32 @@
                 </select>
             </div>
             <div class="input-group">
+                <label>Ethnicity:</label>
+                <select id="ethnicity">
+                    <option value="HISPANIC OR LATINO">Hispanic or Latino</option>
+                    <option value="NOT HISPANIC OR LATINO">Not Hispanic or Latino</option>
+                </select>
+            </div>
+            <div class="input-group">
                 <label>First Name:</label>
                 <input type="text" id="firstName">
             </div>
             <div class="input-group">
                 <label>Last Name:</label>
                 <input type="text" id="lastName">
+            </div>
+        </section>
+
+        <!-- Authors Section -->
+        <section id="authorsSection">
+            <h2>Authors</h2>
+            <div class="input-group">
+                <label>Note Author:</label>
+                <input type="text" id="noteAuthor" placeholder="Dr. ">
+            </div>
+            <div class="input-group">
+                <label>Note Cosigner:</label>
+                <input type="text" id="noteCosigner" placeholder="Dr. ">
             </div>
         </section>
 
@@ -89,10 +109,138 @@
                 <input type="number" id="psaScore" step="0.01" min="0">
             </div>
             <div class="input-group">
-                <label>Disease Site:</label>
-                <select id="diseaseSite">
-                    <option value="prostate">Prostate</option>
-                    <option value="lung">Lung</option>
+                <label>Performance Score:</label>
+                <input type="number" id="performanceScore" min="0" max="100">
+            </div>
+        </section>
+
+        <!-- Dates Section -->
+        <section id="datesSection">
+            <h2>Important Dates</h2>
+            <div class="input-group">
+                <label>Base Date:</label>
+                <input type="date" id="baseDate">
+            </div>
+            <div class="input-group">
+                <label>MRI Date:</label>
+                <input type="date" id="mriDate">
+            </div>
+            <div class="input-group">
+                <label>Pelvic CT Date:</label>
+                <input type="date" id="pelvicCtDate">
+            </div>
+            <div class="input-group">
+                <label>Pelvic MRI Date:</label>
+                <input type="date" id="pelvicMriDate">
+            </div>
+            <div class="input-group">
+                <label>Bone Scan Date:</label>
+                <input type="date" id="boneScanDate">
+            </div>
+        </section>
+
+        <!-- Medications Section -->
+        <section id="medicationsSection">
+            <h2>Medications</h2>
+            <div id="medicationsContainer"></div>
+            <button type="button" class="add-button" onclick="createDynamicFieldGroup('medicationsContainer', 'medication')">
+                Add Medication
+            </button>
+        </section>
+
+        <!-- Allergies Section -->
+        <section id="allergiesSection">
+            <h2>Allergies</h2>
+            <div id="allergiesContainer"></div>
+            <button type="button" class="add-button" onclick="createDynamicFieldGroup('allergiesContainer', 'allergy')">
+                Add Allergy
+            </button>
+        </section>
+
+        <!-- Problem List Section -->
+        <section id="problemListSection">
+            <h2>Problem List</h2>
+            <div id="problemsContainer"></div>
+            <button type="button" class="add-button" onclick="createDynamicFieldGroup('problemsContainer', 'problem')">
+                Add Problem
+            </button>
+        </section>
+
+        <!-- Surgical History Section -->
+        <section id="surgicalHistorySection">
+            <h2>Surgical History</h2>
+            <div id="surgicalHistoryContainer"></div>
+            <button type="button" class="add-button" onclick="createDynamicFieldGroup('surgicalHistoryContainer', 'surgery')">
+                Add Surgery
+            </button>
+        </section>
+
+        <!-- Vitals Section -->
+        <section id="vitalsSection">
+            <h2>Vitals</h2>
+            <div class="input-group">
+                <label>Temperature (°F):</label>
+                <input type="number" id="temperature" step="0.1" min="95" max="105">
+            </div>
+            <div class="input-group">
+                <label>Blood Pressure:</label>
+                <input type="number" id="systolic" placeholder="Systolic" min="70" max="200">
+                <span>/</span>
+                <input type="number" id="diastolic" placeholder="Diastolic" min="40" max="130">
+            </div>
+            <div class="input-group">
+                <label>Pulse:</label>
+                <input type="number" id="pulse" min="40" max="200">
+            </div>
+            <div class="input-group">
+                <label>Respiration:</label>
+                <input type="number" id="respiration" min="8" max="40">
+            </div>
+            <div class="input-group">
+                <label>Weight (lbs):</label>
+                <input type="number" id="weight" min="50" max="500">
+            </div>
+            <div class="input-group">
+                <label>Pain (0-10):</label>
+                <input type="number" id="pain" min="0" max="10">
+            </div>
+        </section>
+
+        <!-- Staging Section -->
+        <section id="stagingSection">
+            <h2>Staging</h2>
+            <div class="input-group">
+                <label>TNM Stage:</label>
+                <select id="stageT">
+                    <option value="">Select T Stage</option>
+                    <option value="TX">TX</option>
+                    <option value="T1">T1</option>
+                    <option value="T1a">T1a</option>
+                    <option value="T1b">T1b</option>
+                    <option value="T1c">T1c</option>
+                    <option value="T2">T2</option>
+                    <option value="T2a">T2a</option>
+                    <option value="T2b">T2b</option>
+                    <option value="T2c">T2c</option>
+                    <option value="T3">T3</option>
+                    <option value="T3a">T3a</option>
+                    <option value="T3b">T3b</option>
+                    <option value="T4">T4</option>
+                </select>
+                <select id="stageN">
+                    <option value="">Select N Stage</option>
+                    <option value="NX">NX</option>
+                    <option value="N0">N0</option>
+                    <option value="N1">N1</option>
+                </select>
+                <select id="stageM">
+                    <option value="">Select M Stage</option>
+                    <option value="MX">MX</option>
+                    <option value="M0">M0</option>
+                    <option value="M1">M1</option>
+                    <option value="M1a">M1a</option>
+                    <option value="M1b">M1b</option>
+                    <option value="M1c">M1c</option>
                 </select>
             </div>
             <div class="input-group">
@@ -100,16 +248,115 @@
                 <select id="riskLevel">
                     <option value="low">Low</option>
                     <option value="intermediate">Intermediate</option>
+                    <option value="intermediate-favorable">Intermediate-Favorable</option>
+                    <option value="intermediate-unfavorable">Intermediate-Unfavorable</option>
                     <option value="high">High</option>
+                    <option value="very high">Very High</option>
                 </select>
             </div>
             <div class="input-group">
-                <label>Gleason Score Primary:</label>
-                <input type="number" id="gleasonPrimary" min="3" max="5">
+                <label>Group Stage:</label>
+                <select id="groupStage">
+                    <option value="I">I</option>
+                    <option value="IIA">IIA</option>
+                    <option value="IIB">IIB</option>
+                    <option value="IIC">IIC</option>
+                    <option value="IIIA">IIIA</option>
+                    <option value="IIIB">IIIB</option>
+                    <option value="IIIC">IIIC</option>
+                    <option value="IVA">IVA</option>
+                    <option value="IVB">IVB</option>
+                </select>
             </div>
             <div class="input-group">
-                <label>Gleason Score Secondary:</label>
-                <input type="number" id="gleasonSecondary" min="3" max="5">
+                <label>Histology:</label>
+                <input type="text" id="histology" value="adenocarcinoma">
+            </div>
+        </section>
+
+        <!-- Treatment Section -->
+        <section id="treatmentSection">
+            <h2>Treatment Information</h2>
+            <div class="input-group">
+                <label>Prostatectomy:</label>
+                <select id="prostatectomy">
+                    <option value="">Select Option</option>
+                    <option value="Yes">Yes</option>
+                    <option value="No">No</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label>Colonoscopy:</label>
+                <select id="colonoscopy">
+                    <option value="">Select Option</option>
+                    <option value="true">Yes</option>
+                    <option value="false">No</option>
+                </select>
+            </div>
+            <h3>Prior Treatment</h3>
+            <div class="input-group">
+                <label>Prior RT:</label>
+                <select id="priorRt">
+                    <option value="">Select Option</option>
+                    <option value="true">Yes</option>
+                    <option value="false">No</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label>Prior RT Date:</label>
+                <input type="date" id="priorRtDate">
+            </div>
+            <div class="input-group">
+                <label>Chemotherapy Prescribed:</label>
+                <select id="chemoPrescribed">
+                    <option value="">Select Option</option>
+                    <option value="true">Yes</option>
+                    <option value="false">No</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label>Hormone Therapy Prescribed:</label>
+                <select id="hormonePrescribed">
+                    <option value="">Select Option</option>
+                    <option value="true">Yes</option>
+                    <option value="false">No</option>
+                </select>
+            </div>
+        </section>
+
+        <!-- Social History Section -->
+        <section id="socialHistorySection">
+            <h2>Social History</h2>
+            <div class="input-group">
+                <label>Alcohol History:</label>
+                <select id="alcoholHistory">
+                    <option value="">Select Option</option>
+                    <option value="never">Never</option>
+                    <option value="former">Former</option>
+                    <option value="current">Current</option>
+                </select>
+            </div>
+            <h3>Smoking History</h3>
+            <div class="input-group">
+                <label>Smoking Status:</label>
+                <select id="smokingStatus">
+                    <option value="">Select Option</option>
+                    <option value="never">Never</option>
+                    <option value="former">Former</option>
+                    <option value="current">Current</option>
+                </select>
+            </div>
+            <div class="input-group">
+                <label>Years Smoked:</label>
+                <input type="number" id="yearsSmoked" min="0">
+            </div>
+            <div class="input-group">
+                <label>Packs Per Year:</label>
+                <input type="number" id="packsPerYear" min="0">
+            </div>
+            <div class="input-group">
+                <label>Years Ago Stopped:</label>
+                <input type="number" id="yearsAgoStopped" min="0">
             </div>
         </section>
 
@@ -118,25 +365,32 @@
             <h2>Include Sections</h2>
             <div class="checkbox-group">
                 <label>
-                    <input type="checkbox" id="includeHPI" checked> History of Present Illness
+                    <input type="checkbox" id="includeHPI" checked> 
+                    History of Present Illness
                 </label>
                 <label>
-                    <input type="checkbox" id="includeVitals" checked> Vitals
+                    <input type="checkbox" id="includeVitals" checked> 
+                    Vitals
                 </label>
                 <label>
-                    <input type="checkbox" id="includeSocial" checked> Social History
+                    <input type="checkbox" id="includeSocial" checked> 
+                    Social History
                 </label>
                 <label>
-                    <input type="checkbox" id="includeMedical" checked> Medical List
+                    <input type="checkbox" id="includeMedical" checked> 
+                    Medical List
                 </label>
                 <label>
-                    <input type="checkbox" id="includeExam" checked> Physical Exam
+                    <input type="checkbox" id="includeExam" checked> 
+                    Physical Exam
                 </label>
                 <label>
-                    <input type="checkbox" id="includeImaging" checked> Imaging Results
+                    <input type="checkbox" id="includeImaging" checked> 
+                    Imaging Results
                 </label>
                 <label>
-                    <input type="checkbox" id="includePlan" checked> Treatment Plan
+                    <input type="checkbox" id="includePlan" checked> 
+                    Treatment Plan
                 </label>
             </div>
         </section>
@@ -155,76 +409,9 @@
             <button id="generateNote">Generate Note</button>
             <div id="noteOutput"></div>
         </section>
+        
+    </div>
 
-
-    <script>
-        document.getElementById('generateNote').addEventListener('click', function() {
-            // Collect all form data
-            const formData = {
-                noteType: {
-                    generation: document.getElementById('noteGenerationType').value,
-                    clinical: document.getElementById('clinicalNoteType').value
-                },
-                demographics: {
-                    age: document.getElementById('patientAge').value,
-                    sex: document.getElementById('patientSex').value,
-                    race: document.getElementById('patientRace').value,
-                    firstName: document.getElementById('firstName').value,
-                    lastName: document.getElementById('lastName').value
-                },
-                medicalValues: {
-                    aua: document.getElementById('aua').value,
-                    ipss: document.getElementById('ipss').value,
-                    shim: document.getElementById('shim').value,
-                    ecog: document.getElementById('ecog').value,
-                    psaScore: document.getElementById('psaScore').value,
-                    diseaseSite: document.getElementById('diseaseSite').value,
-                    riskLevel: document.getElementById('riskLevel').value,
-                    gleasonPrimary: document.getElementById('gleasonPrimary').value,
-                    gleasonSecondary: document.getElementById('gleasonSecondary').value
-                },
-                includeSections: {
-                    hpi: document.getElementById('includeHPI').checked,
-                    vitals: document.getElementById('includeVitals').checked,
-                    social: document.getElementById('includeSocial').checked,
-                    medical: document.getElementById('includeMedical').checked,
-                    exam: document.getElementById('includeExam').checked,
-                    imaging: document.getElementById('includeImaging').checked,
-                    plan: document.getElementById('includePlan').checked,
-                },
-                regenSections: {
-                    regenerate_hpi: document.getElementById('regenerateHPI').checked,
-                    regenerate_assmplan: document.getElementById('regenerateAssessmentPlan').checked
-                }
-            };
-
-            // Send data to backend
-            fetch('/generate_note', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                },
-                body: JSON.stringify(formData)
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.error) {
-                    document.getElementById('noteOutput').innerHTML = `
-                        <h2>Error:</h2>
-                        <pre>${data.error}</pre>
-                        <h2>Stack Trace:</h2>
-                        <pre>${data.trace}</pre>
-                    `;
-                } else {
-                    document.getElementById('noteOutput').innerHTML = `
-                        <h2>Generated Note:</h2>
-                        <pre>${data.text}</pre>
-                        <h2>Note Data:</h2>
-                        <pre>${JSON.stringify(data.data, null, 2)}</pre>
-                    `;
-                }
-            });
-        });
-    </script>
+    <script src="{{ url_for('static', filename='js/form.js') }}"></script>
 </body>
 </html>
