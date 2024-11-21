@@ -6,9 +6,8 @@
 **Preetam Ghosh:**
 
 ## 1) Accomplishments this week ##
-   - Continued Web Tool development. Incorporating Back and Final Frontend.
+   - Updated drop down sections and CSS of Web Tool
 ## 2) Milestones to be completed next week ##
-   - Finish Incorporating backend with final frontend
+   - Finish up a final version of the web tool to show the week after Thanksgiving break (export button & functionality for every field)
 ## 3) Issues, problems or concerns ##
    - No issues to report!
-
