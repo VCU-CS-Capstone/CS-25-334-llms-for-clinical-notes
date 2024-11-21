@@ -39,7 +39,7 @@ class BaseClass:
         self._value = None
 
     def __str__(self):
-        return self._text
+        return self._text if self._text is not None else ''
 
     @property
     def text(self):
@@ -88,18 +88,25 @@ class Patient:
 
 
 class PSA:
-    def __init__(self, base_date, days_offset=None, previous_score=None, score=None):
+    def __init__(self, base_date=None, days_offset=None, previous_score=None, score=None, psa_date=None):
         if score is not None:
-            self.psa_score = score
+            self.psa_score = float(score)
         elif previous_score is not None:
-            self.psa_score = round(previous_score * random.uniform(0.6, 1.1), 2)
+            self.psa_score = round(float(previous_score) * random.uniform(0.6, 1.1), 2)
         else:
             self.psa_score = round(random.uniform(2, 20), 2)
 
-        if days_offset is None:
-            days_offset = random.randint(90, 365)
-        self.psa_date = NoteDate(reference_date=base_date, offset_days=days_offset, direction=DateOffset.BEFORE)
-        self.value = {'date': format_date(self.psa_date.value, date_format=2), 'score': self.psa_score}
+        if psa_date is not None:
+            self.psa_date = psa_date
+        else:
+            if days_offset is None:
+                days_offset = random.randint(90, 365)
+            self.psa_date = NoteDate(reference_date=base_date, offset_days=days_offset, direction=DateOffset.BEFORE)
+            
+        self.value = {
+            'date': format_date(self.psa_date.value, date_format=2), 
+            'score': self.psa_score
+        }
 
 
 class Author(BaseClass):
@@ -140,7 +147,7 @@ class Cores(BaseClass):
 class AUA(BaseClass):
     def __init__(self, value=None):
         super().__init__()
-        self.value = value if value is not None else random.randint(0, 35)
+        self.value = int(value) if value is not None else random.randint(0, 35)
         
         index = random.randint(0, 2)
         if index == 0:
@@ -154,7 +161,7 @@ class AUA(BaseClass):
 class SHIM(BaseClass):
     def __init__(self, value=None):
         super().__init__()
-        self.value = value if value is not None else random.randint(1, 25)
+        self.value = int(value) if value is not None else random.randint(1, 25)
         
         index = random.randint(0, 3)
         if index == 0:
@@ -170,7 +177,7 @@ class SHIM(BaseClass):
 class IPSS(BaseClass):
     def __init__(self, value=None):
         super().__init__()
-        self.value = value if value is not None else random.randint(0, 35)
+        self.value = int(value) if value is not None else random.randint(0, 35)
         
         index = random.randint(0, 3)
         if index == 0:
@@ -186,7 +193,7 @@ class IPSS(BaseClass):
 class ECOG(BaseClass):
     def __init__(self, value=None):
         super().__init__()
-        self.value = value if value is not None else random.randint(0, 4)
+        self.value = int(value) if value is not None else random.randint(0, 4)
         
         index = random.randint(0, 2)
         if index == 0:
@@ -198,72 +205,108 @@ class ECOG(BaseClass):
 
 
 class PerformanceScore(BaseClass):
-    def __init__(self):
+    def __init__(self, value=None):
         super().__init__()
         options = [70, 80, 90, 100]
         title = ['KPS', 'Karnofsky']
-        self.value = int(random.choice(options))
-        self.text = f'{random.choice(title)}: {self.value}'
+        
+        if value is not None:
+            self._value = int(value)
+        else:
+            self._value = random.choice(options)
+            
+        self._text = f'{random.choice(title)}: {self._value}'
+
+    def __str__(self):
+        return self._text
 
 
 class Prostatectomy(BaseClass):
-    def __init__(self, patient_last_name=None):
+    def __init__(self, patient_last_name=None, value=None):
         super().__init__()
         prostatectomy_date = NoteDate(reference_date=datetime.date(2020, 1, 1),
                                       offset_days=random.randint(90, 365), direction=DateOffset.BEFORE)
-        self.value = prostatectomy_date.value
+        
+        # If value is explicitly provided
+        if value is not None:
+            if value == 'Yes':
+                self._text = f' A prostatectomy was performed on {prostatectomy_date.text}. '
+                self._value = 'Yes'
+            elif value == 'No':
+                self._text = f' A prostatectomy was offered but was declined and Mr. ' \
+                            f'{patient_last_name} elected for radiotherapy instead. '
+                self._value = 'No'
+            else:
+                self._text = ''
+                self._value = None
+            return
+
+        # Original random generation logic
         if patient_last_name is None:
             index = random.randint(1, 4)
         else:
             index = random.randint(0, 4)
+            
         prostatectomy_type = random.choice(['', 'radical ', 'robotic '])
+        
         if index == 0:
-            self.text = f' A {prostatectomy_type} prostatectomy was offered but was declined and Mr. ' \
+            self._text = f' A {prostatectomy_type}prostatectomy was offered but was declined and Mr. ' \
                         f'{patient_last_name} elected for radiotherapy instead. '
-            self.value = 'No'
+            self._value = 'No'
         elif index == 1:
-            self.text = f' A {prostatectomy_type}prostatectomy was performed on {prostatectomy_date.text}. '
-            self.value = 'Yes'
+            self._text = f' A {prostatectomy_type}prostatectomy was performed on {prostatectomy_date.text}. '
+            self._value = 'Yes'
         elif index == 2:
-            self.text = f' Patient underwent {prostatectomy_type} prostatectomy on {prostatectomy_date.text}. '
-            self.value = 'Yes'
+            self._text = f' Patient underwent {prostatectomy_type}prostatectomy on {prostatectomy_date.text}. '
+            self._value = 'Yes'
         elif index == 3:
-            self.text = f' {prostatectomy_date.text} he underwent a {prostatectomy_type} prostatectomy. '
-            self.value = 'Yes'
+            self._text = f' {prostatectomy_date.text} he underwent a {prostatectomy_type}prostatectomy. '
+            self._value = 'Yes'
         else:
-            self.text = ''
-            self.value = None
+            self._text = ''
+            self._value = None
 
 
 class Colonoscopy(BaseClass):
-    def __init__(self):
+    def __init__(self, value=None):
         super().__init__()
         index = random.randint(0, 6)
         colonoscopy_date = NoteDate(reference_date=datetime.date(2020, 1, 1), offset_days=random.randint(90, 365),
                                     direction=DateOffset.BEFORE).value
 
+        # If value is explicitly provided, use it
+        if value is not None:
+            if value:
+                self._text = f'Had colonoscopy on {colonoscopy_date}.'
+                self._value = True
+            else:
+                self._text = f'He has never had a colonoscopy.'
+                self._value = False
+            return
+
+        # Otherwise use random generation logic
         if index == 0:
-            self.text = f'He has never had a colonoscopy.'
-            self.value = False
+            self._text = f'He has never had a colonoscopy.'
+            self._value = False
         elif index == 1:
-            self.text = f'Last colonoscopy was {colonoscopy_date} and was unremarkable except for ' \
-                        f'internal hemorrhoids.'
-            self.value = True
+            self._text = f'Last colonoscopy was {colonoscopy_date} and was unremarkable except for ' \
+                       f'internal hemorrhoids.'
+            self._value = True
         elif index == 2:
-            self.text = f'He last had colonoscopy on {colonoscopy_date}.'
-            self.value = True
+            self._text = f'He last had colonoscopy on {colonoscopy_date}.'
+            self._value = True
         elif index == 3:
-            self.text = f'Had colonoscopy on {colonoscopy_date.month}/{colonoscopy_date.year} with polyps showing ' \
-                        f'tubular adenoma.'
-            self.value = True
+            self._text = f'Had colonoscopy on {colonoscopy_date.month}/{colonoscopy_date.year} with polyps showing ' \
+                       f'tubular adenoma.'
+            self._value = True
         elif index == 4:
-            self.text = f'Had colonoscopy in {colonoscopy_date.year - random.randint(1, 5)} (benign polyps). Repeat ' \
-                        f'colonoscopy in {colonoscopy_date.year} also revealed {random.randint(1, 3)} benign polyps.'
-            self.value = True
+            self._text = f'Had colonoscopy in {colonoscopy_date.year - random.randint(1, 5)} (benign polyps). Repeat ' \
+                       f'colonoscopy in {colonoscopy_date.year} also revealed {random.randint(1, 3)} benign polyps.'
+            self._value = True
         elif index == 5:
-            self.text = f'He had colonoscopy {random.randint(1, 12)} months ago, no polyps but has internal ' \
-                        f'hemorrhoid, denies rectal pain/bleeding.'
-            self.value = True
+            self._text = f'He had colonoscopy {random.randint(1, 12)} months ago, no polyps but has internal ' \
+                       f'hemorrhoid, denies rectal pain/bleeding.'
+            self._value = True
         else:
             print(f'Warning: Colonoscopy index {index} is out of range')
 
@@ -295,7 +338,7 @@ class Gleason:
     def __init__(self, primary=None, secondary=None):
         self.primary = primary if primary is not None else random.randint(3, 5)
         self.secondary = secondary if secondary is not None else random.randint(3, 5)
-        self.total = self.primary + self.secondary
+        self.total = int(self.primary) + int(self.secondary)
         self.text = ''
 
         if random.randint(0, 1) == 0:
@@ -316,27 +359,40 @@ class Gleason:
 
 
 class TNM(BaseClass):
-    def __init__(self, t=None, n=None, m=None):
+    def __init__(self, value=None):
         super().__init__()
-        self.t = t if t else random.choice(['TX', 'T1', 'T1a', 'T1b', 'T1c', 'T2', 'T2a', 'T2b', 'T2c', 'T3', 'T3a', 'T3b', 'T4'])
-        self.n = n if n else random.choice(['NX', 'N0', 'N1'])
-        self.m = m if m else random.choice(['MX', 'M0', 'M1', 'M1a', 'M1b', 'M1c'])
-        self.value = f'{self.t}{self.n}{self.m}'
-        if random.choice(['True', 'False']):
-            self.text = self.value
+        if value:
+            # If a full TNM string is provided
+            self._value = value
+            self.t = value[:2] if value.startswith('T') else value[0]
+            self.n = value[len(self.t):len(self.t)+2] if value[len(self.t):].startswith('N') else value[len(self.t)]
+            self.m = value[-2:] if value.endswith('a') or value.endswith('b') or value.endswith('c') else value[-1]
         else:
-            self.text = f'{self.t} {self.n} {self.m}'
+            # Original random generation logic
+            self.t = random.choice(['TX', 'T1', 'T1a', 'T1b', 'T1c', 'T2', 'T2a', 'T2b', 'T2c', 'T3', 'T3a', 'T3b', 'T4'])
+            self.n = random.choice(['NX', 'N0', 'N1'])
+            self.m = random.choice(['MX', 'M0', 'M1', 'M1a', 'M1b', 'M1c'])
+            self._value = f'{self.t}{self.n}{self.m}'
+            
+        if random.choice(['True', 'False']):
+            self._text = self._value
+        else:
+            self._text = f'{self.t} {self.n} {self.m}'
 
 
 class Staging:
-    def __init__(self, risk_level=None):
-        self.tnm = TNM()
-        self.group_stage = random.choice(['I', 'IIA', 'IIB', 'IIC', 'IIIA', 'IIIB', 'IIIC', 'IVA', 'IVB'])
+    def __init__(self, risk_level=None, tnm=None, group_stage=None, histology=None):
+        if tnm is not None:
+            self.tnm = TNM(value=tnm)
+        else:
+            self.tnm = TNM()
+            
+        self.group_stage = group_stage if group_stage else random.choice(['I', 'IIA', 'IIB', 'IIC', 'IIIA', 'IIIB', 'IIIC', 'IVA', 'IVB'])
         self.risk = risk_level if risk_level else random.choice([
             'low', 'intermediate', 'intermediate-favorable', 
             'intermediate-unfavorable', 'high', 'very high'
         ])
-        self.histology = 'adenocarcinoma'
+        self.histology = histology if histology else 'adenocarcinoma'
         self.value = {
             'tnm': self.tnm.value,
             'group_stage': self.group_stage,
@@ -346,10 +402,10 @@ class Staging:
 
 
 class Weight(BaseClass):
-    def __init__(self, include_title=None):
+    def __init__(self, value=None, include_title=None):
         super().__init__()
         options = ['Weight', 'Wt']
-        self.value = random.randint(100, 300)
+        self.value = int(value) if value is not None else random.randint(100, 300)
         if include_title:
             self.text = f'{random.choice(options)}: {self.value} lbs'
         else:
@@ -357,10 +413,10 @@ class Weight(BaseClass):
 
 
 class Temperature(BaseClass):
-    def __init__(self, include_title=None):
+    def __init__(self, value=None, include_title=None):
         super().__init__()
         options = ['Temperature', 'Temp']
-        self.value = round(random.uniform(96, 101), 2)
+        self.value = float(value) if value is not None else round(random.uniform(96, 101), 2)
         if include_title:
             self.text = f'{random.choice(options)}: {self.value} F'
         else:
@@ -368,12 +424,14 @@ class Temperature(BaseClass):
 
 
 class BloodPressure(BaseClass):
-    def __init__(self, include_title=None):
+    def __init__(self, systolic=None, diastolic=None, include_title=None):
         super().__init__()
         options = ['BP', 'B/P', 'Blood Pressure']
-        diastolic = random.randint(60, 121)
-        systolic = round(diastolic * random.uniform(1.5, 1.6))
-        self.value = {'systolic': systolic, 'diastolic': diastolic}
+        if diastolic is None:
+            diastolic = random.randint(60, 121)
+        if systolic is None:
+            systolic = round(float(diastolic) * random.uniform(1.5, 1.6))
+        self.value = {'systolic': int(systolic), 'diastolic': int(diastolic)}
         if include_title:
             self.text = f'{random.choice(options)}: {systolic}/{diastolic}'
         else:
@@ -381,10 +439,10 @@ class BloodPressure(BaseClass):
 
 
 class Pulse(BaseClass):
-    def __init__(self, include_title=None):
+    def __init__(self, value=None, include_title=None):
         super().__init__()
         options = ['Pulse', 'HR', 'Heart Rate']
-        self.value = random.randint(60, 120)
+        self.value = int(value) if value is not None else random.randint(60, 120)
         if include_title:
             self.text = f'{random.choice(options)}: {self.value}'
         else:
@@ -392,21 +450,21 @@ class Pulse(BaseClass):
 
 
 class Respiration(BaseClass):
-    def __init__(self, include_title=None):
+    def __init__(self, value=None, include_title=None):
         super().__init__()
         title = ['Respiration', 'Resp']
-        self.value = random.randint(12, 25)
+        self.value = int(value) if value is not None else random.randint(12, 25)
         if include_title:
-            self.text = f'{title}: {self.value}'
+            self.text = f'{random.choice(title)}: {self.value}'
         else:
             self.text = f'{self.value}'
 
 
 class Pain(BaseClass):
-    def __init__(self, include_title=None):
+    def __init__(self, value=None, include_title=None):
         super().__init__()
         options = ['Pain', 'Pain Scale', 'Pain Score']
-        self.value = random.randint(0, 6)
+        self.value = int(value) if value is not None else random.randint(0, 6)
         if include_title:
             self.text = f'{random.choice(options)}: {self.value}'
         else:
@@ -414,13 +472,14 @@ class Pain(BaseClass):
 
 
 class Vitals:
-    def __init__(self):
-        self.weight = Weight()
-        self.temperature = Temperature()
-        self.blood_pressure = BloodPressure()
-        self.pulse = Pulse()
-        self.respiration = Respiration()
-        self.pain = Pain()
+    def __init__(self, temperature=None, systolic=None, diastolic=None, pulse=None, respiration=None, weight=None, pain=None):
+        # Initialize with provided values or create new instances
+        self.weight = Weight(value=weight)
+        self.temperature = Temperature(value=temperature)
+        self.blood_pressure = BloodPressure(systolic=systolic, diastolic=diastolic)
+        self.pulse = Pulse(value=pulse)
+        self.respiration = Respiration(value=respiration)
+        self.pain = Pain(value=pain)
 
         text = ''
         format_index = random.randint(0, 2)
@@ -459,12 +518,43 @@ class Vitals:
 
 
 class ProblemList:
-    def __init__(self):
+    def __init__(self, active_problems=None, surgical_history=None):
         self.feature_probabilities = get_feature_probabilities()
         text = ''
         self.active_problems = []
         self.surgical_history = []
-        if random.random() <= self.feature_probabilities['problem_list']:
+
+        if active_problems is not None or surgical_history is not None:
+            # Use provided values
+            if active_problems:
+                self.active_problems = list(active_problems)
+            if surgical_history:
+                self.surgical_history = list(surgical_history)
+            else:
+                self.surgical_history = ["None"]
+
+            totals = self.active_problems + self.surgical_history
+            
+            titles = ['PAST MEDICAL AND SURGICAL HISTORY\n',
+                     'PAST MEDICAL\nComputerized Problem List is the source of the following:\n',
+                     'Past Medical/Surgical History:\n']
+            text = '\n' + random.choice(titles)
+            style = random.randint(0, len(titles))
+
+            for index, problem in enumerate(totals):
+                if style == 0:
+                    text += problem
+                    if index < len(totals) - 1:
+                        text += ', '
+                    else:
+                        text += '\n'
+                elif style == 1:
+                    text += problem + '\n'
+                else:
+                    text += str(index + 1) + ': ' + problem + '\n'
+                    
+        elif random.random() <= self.feature_probabilities['problem_list']:
+            # Original random generation logic
             num_problems = int(random.normal(8, 2))
             num_surgeries = int(random.normal(2, 1))
             if num_problems <= 0:
@@ -481,8 +571,6 @@ class ProblemList:
                 surgeries = random.choice(surgery_list, len(surgery_list), replace=False).tolist()
             else:
                 surgeries = random.choice(surgery_list, num_surgeries, replace=False).tolist()
-            totals = np.concatenate((problems, surgeries), axis=0)
-            random.shuffle(totals)
 
             if len(problems) > 0:
                 self.active_problems = list(problems)
@@ -491,17 +579,19 @@ class ProblemList:
             if len(surgeries) == 0:
                 self.surgical_history = ["None"]
 
+            totals = problems + surgeries
+            random.shuffle(totals)
+            
             titles = ['PAST MEDICAL AND SURGICAL HISTORY\n',
-                      'PAST MEDICAL\nComputerized Problem List is the source of the following:\n',
-                      'Past Medical/Surgical History:\n']
+                     'PAST MEDICAL\nComputerized Problem List is the source of the following:\n',
+                     'Past Medical/Surgical History:\n']
             text = '\n' + random.choice(titles)
             style = random.randint(0, len(titles))
 
             for index, problem in enumerate(totals):
-                problem = str(problem)
                 if style == 0:
                     text += problem
-                    if index < len(problem) - 1:
+                    if index < len(totals) - 1:
                         text += ', '
                     else:
                         text += '\n'
@@ -509,6 +599,7 @@ class ProblemList:
                     text += problem + '\n'
                 else:
                     text += str(index + 1) + ': ' + problem + '\n'
+
         self.text = text
         self.value = {'surgical_history': self.surgical_history, 'active_problems': self.active_problems}
 
@@ -532,12 +623,37 @@ class Imaging(BaseClass):
 
 
 class Medications(BaseClass):
-    def __init__(self):
+    def __init__(self, medications=None):
         super().__init__()
         feature_probabilities = get_feature_probabilities()
-        self.value = None
+        self.value = []
         self.text = ''
-        if random.random() <= feature_probabilities['medication_list']:
+        
+        if medications:  # If medications are provided
+            self.value = medications
+            text = '\n'
+            mode = random.randint(0, 2)
+            if mode == 0:
+                text += '\t\tActive Outpatient Medications\t\t\t\tStatus\n'
+                text += '==================================================================\n'
+            elif mode == 1:
+                text += 'Active Outpatient Medications\n'
+            else:
+                text += 'Meds:\n'
+
+            is_numbered = random.choice([True, False])
+            for index, medication in enumerate(medications):
+                if is_numbered:
+                    text += str(index + 1) + ')\t'
+                text += medication
+                if mode == 0:
+                    text += '\t\t\t\tACTIVE\n'
+                else:
+                    text += '\n'
+            self.text = text
+            
+        elif random.random() <= feature_probabilities['medication_list']:
+            # Original random generation logic
             text = '\n'
             mode = random.randint(0, 2)
             if mode == 0:
@@ -569,46 +685,59 @@ class Medications(BaseClass):
 
 
 class Allergies(BaseClass):
-    def __init__(self):
+    def __init__(self, allergies=None):
         super().__init__()
         feature_probabilities = get_feature_probabilities()
         self.value = None
-        self.text = ''
-        text = '\nAllergies: '
-        if random.random() <= feature_probabilities['allergies_list']:
+        self.text = '\nAllergies: '
+        
+        if allergies:  # If allergies are provided
+            if len(allergies) > 0:
+                self.text += ', '.join(allergies)
+                self.value = allergies
+            else:
+                self.text += 'NKA'
+                self.value = []
+        
+        elif random.random() <= feature_probabilities['allergies_list']:
+            # Original random generation logic
             count = int(random.normal(2.0, 2.0))
             if count < 1:
                 count = 1
-            allergies = random.choice(allergy_list, count, replace=False)
+            allergies_list = random.choice(allergy_list, count, replace=False)
             if count > 1:
-                for index, allergy in enumerate(allergies):
-                    text += allergy
-                    if index < count - 1:
-                        text += ', '
+                self.text += ', '.join(allergies_list)
             else:
-                text += allergies[0]
-            self.value = list(allergies)
+                self.text += allergies_list[0]
+            self.value = list(allergies_list)
         else:
             index = random.randint(0, 2)
             if index == 0:
-                text += 'NKA'
+                self.text += 'NKA'
             elif index == 1:
-                text += 'None'
+                self.text += 'None'
             else:
-                text += ''
-        text += '\n'
-        self.text = text
+                self.text += ''
+            self.value = []
+        
+        self.text += '\n'
 
 
 class Biopsy:
-    def __init__(self, base_date, gleason_primary=None, gleason_secondary=None):
+    def __init__(self, base_date=None, gleason_primary=None, gleason_secondary=None, biopsy_date=None):
         self.biopsy_type = BiopsyType()
-        self.biopsy_date = NoteDate(reference_date=base_date, offset_days=random.randint(0, 180),
-                                    direction=DateOffset.BEFORE)
+        
+        if biopsy_date is not None:
+            self.biopsy_date = biopsy_date
+        else:
+            self.biopsy_date = NoteDate(reference_date=base_date, offset_days=random.randint(0, 180),
+                                        direction=DateOffset.BEFORE)
+                                        
         self.gleason = Gleason(primary=gleason_primary, secondary=gleason_secondary)
         self.left_cores = Cores(side=CoresSide.LEFT)
         self.right_cores = Cores(side=CoresSide.RIGHT)
         self.total_cores = Cores(side=CoresSide.TOTAL, left_side=self.left_cores, right_side=self.right_cores)
+        
         self.value = {
             'biopsy_type': self.biopsy_type.value,
             'biopsy_date': format_date(self.biopsy_date.value, 2),
@@ -655,20 +784,23 @@ def alcohol_former_current(current_drinker):
 
 
 class AlcoholHistory:
-    def __init__(self):
+    def __init__(self, alcohol_status=None):
         feature_probabilities = get_feature_probabilities()
-        self.value = random.choice([None, 'never', 'former', 'current'], p=feature_probabilities['alcohol_status'])
+        self.value = alcohol_status if alcohol_status else random.choice(
+            [None, 'never', 'former', 'current'], 
+            p=feature_probabilities['alcohol_status']
+        )
+        
         alcohol_list_never_options = ['denies alcohol use', 'No h/o alcohol use', 'No']
         text = ''
+        
         if self.value == 'never':
-            text = alcohol_list_never_options[random.randint(0, 1)] + '. '
-            self.value = 'never'
+            text = random.choice(alcohol_list_never_options) + '. '
         elif self.value == 'former':
             text = alcohol_former_current(current_drinker=False) + '. '
-            self.value = 'former'
         elif self.value == 'current':
             text = alcohol_former_current(current_drinker=True) + '. '
-            self.value = 'current'
+            
         self.text = text
 
     def __str__(self):
@@ -676,7 +808,7 @@ class AlcoholHistory:
 
 
 class SmokingHistory:
-    def __init__(self, reference_date):
+    def __init__(self, reference_date, smoking_status=None, years_smoked=None, packs_per_year=None, years_ago_stopped=None):
         feature_probabilities = get_feature_probabilities()
         self.reference_date = reference_date
         self.smoking_status = None
@@ -684,19 +816,37 @@ class SmokingHistory:
         self.packs_per_year = None
         self.years_ago_stopped = None
         text = ''
-        use_status = [None, 'never', 'former', 'current']
-        smoking_status = random.choice(use_status, p=feature_probabilities['smoking_status'])
-        tobacco_list_never_options = ['denies tobacco use', 'No h/o tobacco use', 'No']
 
-        if smoking_status == 'never':
-            text = tobacco_list_never_options[random.randint(0, 1)] + '. '
-            self.smoking_status = 'never'
-        elif smoking_status == 'former':
-            text = self.tobacco_former_current(current_smoker=False) + '. '
-            self.smoking_status = 'former'
-        elif smoking_status == 'current':
-            text = self.tobacco_former_current(current_smoker=True) + '. '
-            self.smoking_status = 'current'
+        if smoking_status is not None:
+            # Use provided values
+            self.smoking_status = smoking_status
+            self.years_smoked = years_smoked
+            self.packs_per_year = packs_per_year
+            self.years_ago_stopped = years_ago_stopped
+
+            if smoking_status == 'never':
+                text = 'Denies tobacco use. '
+            elif smoking_status == 'former':
+                text = f'Former smoker, {packs_per_year} packs per year for {years_smoked} years, ' \
+                       f'quit {years_ago_stopped} years ago. '
+            elif smoking_status == 'current':
+                text = f'Current smoker, {packs_per_year} packs per year for {years_smoked} years. '
+        else:
+            # Original random generation logic
+            use_status = [None, 'never', 'former', 'current']
+            smoking_status = random.choice(use_status, p=feature_probabilities['smoking_status'])
+            tobacco_list_never_options = ['denies tobacco use', 'No h/o tobacco use', 'No']
+
+            if smoking_status == 'never':
+                text = tobacco_list_never_options[random.randint(0, 1)] + '. '
+                self.smoking_status = 'never'
+            elif smoking_status == 'former':
+                text = self.tobacco_former_current(current_smoker=False) + '. '
+                self.smoking_status = 'former'
+            elif smoking_status == 'current':
+                text = self.tobacco_former_current(current_smoker=True) + '. '
+                self.smoking_status = 'current'
+
         self.text = text
         self.value = {
             'smoking_status': self.smoking_status,
@@ -752,9 +902,16 @@ class SmokingHistory:
 
 
 class SocialHistory:
-    def __init__(self, reference_date):
-        self.smoking_history = SmokingHistory(reference_date=reference_date)
-        self.alcohol_history = AlcoholHistory()
+    def __init__(self, reference_date, alcohol_history=None, smoking_history=None):
+        self.smoking_history = SmokingHistory(
+            reference_date=reference_date,
+            smoking_status=smoking_history.get('smoking_status') if smoking_history else None,
+            years_smoked=smoking_history.get('years_smoked') if smoking_history else None,
+            packs_per_year=smoking_history.get('packs_per_year') if smoking_history else None,
+            years_ago_stopped=smoking_history.get('years_ago_stopped') if smoking_history else None
+        )
+        self.alcohol_history = AlcoholHistory(alcohol_status=alcohol_history)
+
         titles = ['SOCIAL HX:', 'Social History:', 'SOCIAL HISTORY:']
         text = '\n' + random.choice(titles) + '\n'
         sh_list = random.choice([True, False])
@@ -778,6 +935,7 @@ class SocialHistory:
             text += str(self.smoking_history)
             text += str(self.alcohol_history)
             text += '\n'
+            
         self.text = text
         self.value = {
             'smoking_history': self.smoking_history.value,
@@ -789,9 +947,9 @@ class SocialHistory:
 
 
 class FamilyHistory(BaseClass):
-    def __init__(self):
+    def __init__(self, history_provided=None):
         super().__init__()
-        self.value = None
+        self._value = None
         male_members = ['father', 'uncle', 'brother', 'grandfather']
         female_members = ['mother', 'aunt', 'sister', 'grandmother']
         cancers = ['esophageal', 'rectum', 'brain', 'head and neck', 'lung']
@@ -800,83 +958,111 @@ class FamilyHistory(BaseClass):
         label = random.choice(['ca', 'cancer'])
         titles = ['FAMILY HISTORY', 'Family History', 'Family Hx']
         text = '\n' + random.choice(titles) + ':\n'
-        num_family_members = random.randint(0, 3)
-        if num_family_members == 0:
-            text += 'No family history of cancer'
-            self.value = False
+        
+        if history_provided is not None:
+            if not history_provided:
+                text += 'No family history of cancer'
+                self._value = False
+            else:
+                family_entries = []
+                for entry in history_provided:
+                    family_entries.append(f"{entry['member']} had {entry['cancer']} {label}")
+                text += ', '.join(family_entries)
+                self._value = True
         else:
-            for index in range(0, num_family_members):
-                is_male = random.choice([True, False])
-                if is_male:
-                    current_member = random.choice(male_members)
-                    current_cancer = random.choice(cancers + male_cancers)
-                else:
-                    current_member = random.choice(female_members)
-                    current_cancer = random.choice(cancers + female_cancers)
+            # Original random generation logic
+            num_family_members = random.randint(0, 3)
+            if num_family_members == 0:
+                text += 'No family history of cancer'
+                self._value = False
+            else:
+                for index in range(0, num_family_members):
+                    is_male = random.choice([True, False])
+                    if is_male:
+                        current_member = random.choice(male_members)
+                        current_cancer = random.choice(male_cancers)
+                    else:
+                        current_member = random.choice(female_members)
+                        current_cancer = random.choice(female_cancers)
 
-                text += current_member + ' had ' + current_cancer + ' ' + label
-                if index < num_family_members - 1:
-                    text += ', '
-            self.value = True
-        self.text = text
+                    text += current_member + ' had ' + current_cancer + ' ' + label
+                    if index < num_family_members - 1:
+                        text += ', '
+                self._value = True
+                
+        self._text = text
 
 
 class PriorTreatment:
-    def __init__(self, reference_date):
-        self.prior_rt = None
-        self.prior_rt_date = NoteDate(reference_date=reference_date, offset_days=random.randint(365, 3650),
-                                      direction=DateOffset.BEFORE)
-        self.chemotherapy_prescribed = None
-        self.chemotherapy_drugs_prescribed = None
-        self.chemotherapy_date = NoteDate(reference_date=reference_date, offset_days=random.randint(365, 3650),
-                                          direction=DateOffset.BEFORE)
-        self.hormone_therapy_prescribed = None
-        self.hormone_therapy_date = NoteDate(reference_date=reference_date, offset_days=random.randint(365, 3650),
-                                             direction=DateOffset.BEFORE)
+    def __init__(self, reference_date, **kwargs):
+        # Use kwargs to accept any parameters
+        self.prior_rt = kwargs.get('prior_rt')
+        self.prior_rt_date = kwargs.get('prior_rt_date') or NoteDate(
+            reference_date=reference_date, 
+            offset_days=random.randint(365, 3650),
+            direction=DateOffset.BEFORE
+        )
+        
+        self.chemotherapy_prescribed = kwargs.get('chemotherapy_prescribed')
+        self.chemotherapy_drugs_prescribed = kwargs.get('chemotherapy_drugs')
+        self.chemotherapy_date = NoteDate(
+            reference_date=reference_date, 
+            offset_days=random.randint(365, 3650),
+            direction=DateOffset.BEFORE
+        )
+        
+        self.hormone_therapy_prescribed = kwargs.get('hormone_therapy_prescribed')
+        self.hormone_therapy_date = kwargs.get('hormone_therapy_date') or NoteDate(
+            reference_date=reference_date, 
+            offset_days=random.randint(365, 3650),
+            direction=DateOffset.BEFORE
+        )
+        
         hormone_drugs = ['', 'Eligard', 'Lupron']
         chemo_drugs = ['', 'Docetaxel', 'Cabazitaxel', 'Mitoxantrone', 'Estramustine']
+        
+        # Generate text
         text = '\n\n' + random.choice(['CANCER TREATMENT HISTORY:', 'Cancer Treatments:'])
         text += '\n'
-        rad_choice = random.choice(['', 'Yes', 'No'])
+        
+        # Radiation therapy section
         text += 'Radiation: '
-        if rad_choice == 'Yes':
+        if self.prior_rt is True:
             text += f'Yes, {self.prior_rt_date}' + '\n'
-            self.prior_rt = True
-        elif rad_choice == 'No':
+        elif self.prior_rt is False:
             text += 'No\n'
-            self.prior_rt = False
         else:
             text += '\n'
+            
+        # Chemotherapy section
         text += 'Chemotherapy: '
-        chemo_choice = random.choice(['', 'Yes', 'No'])
-        if chemo_choice == 'Yes':
-            chemo_drug = random.choice(chemo_drugs)
+        if self.chemotherapy_prescribed is True:
+            chemo_drug = self.chemotherapy_drugs_prescribed or random.choice(chemo_drugs)
             text += f'Yes, {self.chemotherapy_date}' + f' {chemo_drug}\n'
-            self.chemotherapy_prescribed = True
             self.chemotherapy_drugs_prescribed = chemo_drug
-        elif chemo_choice == 'No':
+        elif self.chemotherapy_prescribed is False:
             text += 'No\n'
-            self.chemotherapy_prescribed = False
         else:
             text += '\n'
+            
+        # Hormone therapy section
         text += 'Hormone Therapy: '
-        hormone_choice = random.choice(['', 'Yes', 'No'])
-        if hormone_choice == 'Yes':
+        if self.hormone_therapy_prescribed is True:
             hormone_drug = random.choice(hormone_drugs)
             text += random.choice(['', f'Yes, {self.hormone_therapy_date}']) + f' {hormone_drug}\n'
-            self.hormone_therapy_prescribed = True
-        elif hormone_choice == 'No':
+        elif self.hormone_therapy_prescribed is False:
             text += 'No\n'
-            self.hormone_therapy_prescribed = False
         else:
             text += '\n'
+            
         self.text = text
         self.value = {
             'prior_rt': self.prior_rt,
             'prior_rt_date': format_date(self.prior_rt_date.value, date_format=2),
             'chemotherapy_prescribed': self.chemotherapy_prescribed,
             'chemotherapy_drugs_prescribed': self.chemotherapy_drugs_prescribed,
-            'hormone_therapy_prescribed': self.hormone_therapy_prescribed
+            'hormone_therapy_prescribed': self.hormone_therapy_prescribed,
+            'hormone_therapy_date': format_date(self.hormone_therapy_date.value, date_format=2) if self.hormone_therapy_date else None
         }
 
     def __str__(self):

@@ -19,7 +19,6 @@ class BaseNote:
         self.note_author = Author()
         self.note_cosigner = Author(create=self.is_cosigner)
         self.dose_data = None
-        
 
     def get_data_fields(self):
         self.dose_data = {
@@ -50,9 +49,15 @@ class ConsultNote(BaseNote):
             'imaging': kwargs.get('include_imaging', True),
             'plan': kwargs.get('include_plan', True)
         }
+
+        # Initialize regeneration options
+        self.regen_sections = {
+            'hpi_regen': kwargs.get('regen_hpi', False),
+            'assessment_regen': kwargs.get('regen_assmplan', False)
+        }
         
         # Initialize base date and patient
-        self.base_date = NoteDate(offset_days=random.randint(0, 1000), direction=DateOffset.AFTER)
+        self.base_date = kwargs.get('base_date') or NoteDate(offset_days=random.randint(0, 1000), direction=DateOffset.AFTER)
         self.patient = Patient(
             age=kwargs.get('patient_age'),
             sex=kwargs.get('patient_sex'),
@@ -79,33 +84,65 @@ class ConsultNote(BaseNote):
         self.shim = SHIM(value=kwargs.get('shim'))
         self.ecog = ECOG(value=kwargs.get('ecog'))
         
+        # Initialize lists with provided values or random ones
+        self.medications = Medications(medications=kwargs.get('medications'))
+        self.allergies = Allergies(allergies=kwargs.get('allergies'))
+        self.problem_list = ProblemList(
+            active_problems=kwargs.get('problem_list'),
+            surgical_history=kwargs.get('surgical_history')
+        )
+        
         # Initialize remaining components
-        self.colonoscopy = Colonoscopy()
-        self.prostatectomy = Prostatectomy(patient_last_name=self.patient.last_name)
-        self.vitals = Vitals()
-        self.problem_list = ProblemList()
-        self.staging = Staging(risk_level=kwargs.get('risk_level'))
+        self.colonoscopy = Colonoscopy(value=kwargs.get('colonoscopy'))
+        self.prostatectomy = Prostatectomy(
+            value=kwargs.get('prostatectomy'),
+            patient_last_name=self.patient.last_name
+        )
         
-        # Initialize imaging and dates
-        self.psa_date = NoteDate(reference_date=self.base_date.value, direction=DateOffset.BEFORE, offset_days=200)
-        self.pelvic_ct = Imaging(image_type='pelvic_ct', base_date=self.base_date.value)
-        self.pelvic_mri = Imaging(image_type='pelvic_mri', base_date=self.base_date.value)
-        self.bone_scan = Imaging(image_type='bone_scan', base_date=self.base_date.value)
+        # Initialize vitals with provided values
+        self.vitals = Vitals(
+            temperature=kwargs.get('temperature'),
+            systolic=kwargs.get('blood_pressure_systolic'),
+            diastolic=kwargs.get('blood_pressure_diastolic'),
+            pulse=kwargs.get('pulse'),
+            respiration=kwargs.get('respiration'),
+            weight=kwargs.get('weight'),
+            pain=kwargs.get('pain')
+        )
         
-        # Initialize histories
-        self.social_history = SocialHistory(reference_date=self.base_date.value)
+        self.staging = Staging(
+            risk_level=kwargs.get('risk_level'),
+            tnm=kwargs.get('tnm'),
+            group_stage=kwargs.get('group_stage'),
+            histology=kwargs.get('histology')
+        )
+        
+        # Initialize dates
+        self.mri_date = kwargs.get('mri_date') or NoteDate(reference_date=self.base_date.value, direction=DateOffset.BEFORE, offset_days=200)
+        self.pelvic_ct = kwargs.get('pelvic_ct_date') or Imaging(image_type='pelvic_ct', base_date=self.base_date.value)
+        self.pelvic_mri = kwargs.get('pelvic_mri_date') or Imaging(image_type='pelvic_mri', base_date=self.base_date.value)
+        self.bone_scan = kwargs.get('bone_scan_date') or Imaging(image_type='bone_scan', base_date=self.base_date.value)
+        
+        # Initialize histories with provided values
+        self.social_history = SocialHistory(
+            reference_date=self.base_date.value,
+            alcohol_history=kwargs.get('alcohol_history'),
+            smoking_history=kwargs.get('smoking_history')
+        )
         self.family_history = FamilyHistory()
-        self.prior_treatment = PriorTreatment(reference_date=self.base_date.value)
-        self.allergies = Allergies()
-        self.medications = Medications()
-        self.performance_score = PerformanceScore()
+        self.prior_treatment = PriorTreatment(
+            reference_date=self.base_date.value,
+            **{k: kwargs.get(k) for k in [
+                'prior_rt',
+                'prior_rt_date',
+                'chemotherapy_prescribed',
+                'chemotherapy_drugs',
+                'hormone_therapy_prescribed',
+                'hormone_therapy_date'
+            ] if kwargs.get(k) is not None}
+        )
         
-        self.mri_date = NoteDate(reference_date=self.base_date.value, direction=DateOffset.BEFORE, offset_days=200)
-
-        self.regen_sections = {
-            'hpi_regen': kwargs.get('regen_hpi', False),
-            'assessment_regen': kwargs.get('regen_assmplan', False)
-}
+        self.performance_score = PerformanceScore(value=kwargs.get('performance_score'))
 
     def get_text(self):
         if self.note_text == '':
