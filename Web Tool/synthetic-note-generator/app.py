@@ -22,7 +22,6 @@ class CustomJSONEncoder(json.JSONEncoder):
             return obj.to_dict()
         return super(CustomJSONEncoder, self).default(obj)
 
-# Configure Flask to use custom JSON encoder
 app.json_encoder = CustomJSONEncoder
 
 def convert_numpy_types(obj):
@@ -71,7 +70,9 @@ def parse_date(date_str):
     if not date_str:
         return None
     try:
-        return datetime.strptime(date_str, '%Y-%m-%d')
+        # Convert to datetime.date instead of datetime.datetime
+        dt = datetime.strptime(date_str, '%Y-%m-%d')
+        return dt.date()  # Return just the date portion
     except ValueError:
         return None
 
@@ -94,7 +95,7 @@ def generate_note():
     try:
         data = request.get_json()
         
-        # Extract and validate medical values
+        # Extract all nested data
         patient = data.get('patient', {})
         note_type = data.get('noteType', {})
         include_sections = data.get('includeSections', {})
@@ -108,13 +109,18 @@ def generate_note():
             # Note type settings
             'note_generation_type': note_type.get('generation'),
             'clinical_note_type': note_type.get('clinical'),
-            
+                
             # Patient demographics
             'patient_age': safe_int(patient.get('age'), None, 18, 100),
             'patient_sex': patient.get('sex'),
             'patient_race': patient.get('race'),
+            'patient_ethnicity': patient.get('ethnicity'),
             'patient_first_name': patient.get('first_name'),
             'patient_last_name': patient.get('last_name'),
+                
+            # Authors - Fixed field names to match form
+            'note_author': data.get('note_author'),
+            'note_cosigner': data.get('note_cosigner'),
             
             # Medical values
             'aua': safe_int(data.get('aua')),
@@ -162,6 +168,10 @@ def generate_note():
             'chemotherapy_prescribed': prior_treatment.get('chemotherapy_prescribed'),
             'hormone_therapy_prescribed': prior_treatment.get('hormone_therapy_prescribed'),
             
+            # Social history
+            'alcohol_history': social_history.get('alcohol_history'),
+            'smoking_history': social_history.get('smoking_history'),
+            
             # Section toggles
             'include_hpi': include_sections.get('hpi', True),
             'include_vitals': include_sections.get('vitals', True),
@@ -194,9 +204,6 @@ def generate_note():
             'error': str(e),
             'trace': traceback.format_exc()
         }), 500
-
-# Make sure the JSON encoder is properly configured
-app.json.encoder = CustomJSONEncoder
 
 if __name__ == '__main__':
     app.run(debug=True)

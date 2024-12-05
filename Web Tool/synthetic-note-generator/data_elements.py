@@ -7,7 +7,7 @@ from constants import (
     surgery_list, 
     allergy_list, 
     states, 
-    ethnicity,
+    ethnicity as ethnicity_list,
     problem_list  
 )
 from numpy import random
@@ -59,10 +59,11 @@ class BaseClass:
 
 
 class Patient:
-    def __init__(self, age=None, sex=None, race=None, first_name=None, last_name=None, reference_date=datetime.datetime.now()):
+    def __init__(self, age=None, sex=None, race=None, ethnicity=None, first_name=None, last_name=None, reference_date=datetime.datetime.now()):
         self.sex = Sex[sex.upper()] if sex else Sex.MALE
         self.race = race if race else random.choice(RACES)
-        self.ethnicity = random.choice(ethnicity)
+        # Fix the ethnicity choice by referring to the imported list correctly
+        self.ethnicity = ethnicity if ethnicity else random.choice(ethnicity_list)  # Changed from ethnicity to ethnicity_list
         self.first_name = first_name if first_name else names.get_first_name(gender=self.sex.value)
         self.last_name = last_name if last_name else names.get_last_name()
         
