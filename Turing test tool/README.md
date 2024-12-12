@@ -5,7 +5,7 @@ Ensure you have the following installed:
 - Python 3.8 or higher
 - Pip (Python package manager)
 
-After cloning, update the directory path for the clinical notes in the code to point to the correct location on your local machine where the notes are stored.
+After cloning, update the directory path in section.py for the clinical notes in the code to point to the correct location on your local machine where the notes are stored.
 
 ## Installation
 
