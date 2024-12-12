@@ -41,6 +41,7 @@ def generate_section():
         if not notes:
             return jsonify({'section': 'Error: No notes found in the directory.'}), 500
 
+        # Edits soon to be made such that the section is generated randomly
         section = "Medical History" 
         generated_section = split_clinical_notes(notes, section)
         
