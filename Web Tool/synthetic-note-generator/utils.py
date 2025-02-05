@@ -2,14 +2,16 @@ import datetime
 import random
 from groq import Groq
 import os
+import calendar
+import re
 from dotenv import load_dotenv
 
 load_dotenv()
 key = os.environ.get("GROQ_API_KEY")
 
 def regenerate(note):
-    request = f"Regenerate this note in a formal matter. Do not change any variables and" \
-              f"do not add any helping phrases like 'Here you go' or using first-person phrases."
+    request = f'Regenerate this note in a formal, clinical manner. Do not change or remove any variables, keep numbers in their curly braces.'\
+              f'Do not use helper phrases such as "Here is the rewritten note".'
     request += note
 
     client = Groq(
@@ -34,6 +36,27 @@ def regenerate(note):
     for chunk in completion:
         result += chunk.choices[0].delta.content or ""
     return result
+
+def replace_placeholders(text, mappings):
+    def replacement(match):
+        index = int(match.group(1))
+        return str(mappings.get(index, match.group(0)))
+    return re.sub(r'\{(\d+)\}', replacement, text)
+
+def regen_validation(regenerated_text, text):
+    while (1):
+        t1 = set(re.findall(r'\{(\d+)\}', text))
+        t2 = set(re.findall(r'\{(\d+)\}', regenerated_text))
+        if t2.issubset(t1):
+            print("The regenerated text consists of a subset of the original template text.")
+            break
+        else:
+            print("Mismatch detected:")
+            print(f"Original placeholders: {t1}")
+            print(f"Regenerated placeholders: {t2}")
+            print("Regenerating text...")
+            regenerated_text = regenerate(text)
+    return regenerated_text
 
 def get_feature_probabilities():
     probabilities = {

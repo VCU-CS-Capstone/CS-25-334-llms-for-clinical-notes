@@ -1,12 +1,11 @@
 import datetime
 import random
-import calendar
+import re
 from constants import states, header_titles
-from utils import get_feature_probabilities, random_time_period, format_date, regenerate
+from utils import get_feature_probabilities, random_time_period, format_date, regenerate, replace_placeholders, regen_validation
 from data_elements import Patient, Author, PSA, Biopsy, Colonoscopy, Prostatectomy, AUA, SHIM, IPSS, ECOG, Vitals, \
     NoteDate, ProblemList, Imaging, SocialHistory, FamilyHistory, PriorTreatment, Allergies, Medications, \
     PerformanceScore, Staging, Dose, DateOffset
-
 
 class BaseNote:
     def __init__(self):
@@ -319,80 +318,105 @@ class ConsultNote(BaseNote):
     
     def hpi(self, regen=False):
         hpi_index = random.randint(0, 13)
+        prior_psa_text = ('\tDate\tPSA\n')
+        biopsy = ''
+        mappings = {
+            1: self.patient.age,
+            2: self.patient.sex.value,
+            3: self.current_psa.psa_score,
+            4: biopsy,
+            5: self.current_biopsy.gleason,
+            6: self.current_biopsy.left_cores,
+            7: self.current_biopsy.right_cores,
+            8: self.prostatectomy,
+            9: self.base_date.year - random.randint(1, 5),
+            10: self.colonoscopy,
+            11: self.patient.last_name,
+            12: self.patient.first_name,
+            13: self.patient.race,
+            14: self.current_psa.psa_date,
+            15: self.current_biopsy.biopsy_type,
+            16: self.current_biopsy.biopsy_date,
+            17: self.staging.tnm,
+            18: self.staging.risk,
+            19: self.psa_history[-1].psa_date,
+            20: self.staging.histology,
+            21: self.ecog,
+            22: self.aua,
+            23: random.randint(1, 5),
+            24: self.shim,
+            26: self.current_biopsy.total_cores,
+            27: prior_psa_text,
+            28: self.psa_history[-1].psa_score
+        }
 
         if hpi_index == 0:
             if self.current_biopsy.biopsy_type is None:
                 biopsy = 'Biopsy'
             else:
-                biopsy = f'A {self.current_biopsy.biopsy_type} '
-            text = f'pt is a {self.patient.age} {self.patient.sex.value} newly diagnosed with prostate ca after screening a PSA of {self.current_psa.psa_score}. ' \
-                   f'{biopsy} showed {self.current_biopsy.gleason} in {self.current_biopsy.left_cores} and less than 5% of submitted issue ' \
-                   f'and {self.current_biopsy.right_cores} and 10% of the tissue. {self.prostatectomy} Pt had ' \
-                   f'problems with nocturia and bladder control following a prolonged hospitalization in ' \
-                   f'{self.base_date.year - random.randint(1, 5)} but this has responded to medication and he says he only ' \
-                   f'rare nocturia and good bladder control. {self.colonoscopy}'
+                biopsy = f'A {self.current_biopsy.biopsy_type}'
+                text = ('pt is a {1} {2} newly diagnosed with prostate ca after screening a PSA of {3}. '
+                '{4} showed {5} in {6} and less than 5% of submitted issue '
+                'and {7} and 10% of the tissue. {8} Pt had '
+                'problems with nocturia and bladder control following a prolonged hospitalization in '
+                '{9} but this has responded to medication and he says he only '
+                'rare nocturia and good bladder control. {10}')
+
         elif hpi_index == 1:
-            text =  f'Mr. {self.patient.last_name} is a {self.patient.age} y/o {self.patient.race} {self.patient.sex.value} who ' \
-                   f'presented to Urology with elevated PSA of {self.current_psa.psa_score} drawn on {self.current_psa.psa_date}. He underwent a ' \
-                   f'{self.current_biopsy.biopsy_type} with pathology on {self.current_biopsy.biopsy_date} showing ' \
-                   f'{self.current_biopsy.gleason}. {self.colonoscopy} Diagnosis: {self.staging.tnm}, {self.staging.risk} ' \
-                   f'prostate cancer. The patient is now referred for evaluation for definitive radiation therapy.'
+            text =  ('Mr. {11} is a {1} y/o {13} {2} who '
+                   'presented to Urology with elevated PSA of {3} drawn on {14}. He underwent a '
+                   '{15} with pathology on {16} showing '
+                   '{5}. {10} Diagnosis: {17}, {18} '
+                   'prostate cancer. The patient is now referred for evaluation for definitive radiation therapy.')
         elif hpi_index == 2:
-            text = f'Mr. {self.patient.last_name} is a {self.patient.age} year old {self.patient.sex.value} with a hx of gradually rising PSA since ' \
-                   f'{self.psa_history[-1].psa_date} and had a {self.current_biopsy.biopsy_type} on {self.current_biopsy.biopsy_date} and ' \
-                   f'pathology reported {self.current_biopsy.gleason} {self.staging.histology} involving {self.current_biopsy.right_cores} and ' \
-                   f'{self.current_biopsy.left_cores}. Most recent PSA was {self.current_psa.psa_score} recorded on {self.current_psa.psa_date}. ' \
-                   f'The patient has ECOG score of {self.ecog} and reports {self.aua} with nocturia about {random.randint(1, 5)} ' \
-                   f'times. Sexual function assessment shows {self.shim}. ' \
-                   f'{self.colonoscopy} Staging workup including CT abdomen/pelvis and bone scan were reported negative for ' \
-                   f'metastatic disease. The patient is not interested in surgical options and has been referred for radiotherapy evaluation.'
+            text = ('Mr. {11} is a {1} year old {2} with a hx of gradually rising PSA since {19} and had a {15} on {16} and '
+                    'pathology reported {5} {20} involving {7} and {6}. Most recent PSA was {3} recorded on {14}. '
+                    'The patient has ECOG score of {21} and reports {22} with nocturia about {23} times. '
+                    'Sexual function assessment shows {24}. {10} Staging workup including CT abdomen/pelvis and bone scan '
+                    'were reported negative for metastatic disease. The patient is not interested in surgical options and has been referred for radiotherapy evaluation.')
+
         elif hpi_index == 3:
-            text = f'Mr. {self.patient.last_name} is a {self.patient.age} year old {self.patient.sex.value}, who was found to have elevated ' \
-                   f'PSA of {self.current_psa.psa_score} on {self.current_psa.psa_date}. The patient ' \
-                   f'underwent a {self.current_biopsy.biopsy_type} on {self.current_biopsy.biopsy_date}, which showed ' \
-                   f'{self.current_biopsy.total_cores} for prostate {self.staging.histology}, {self.current_biopsy.gleason}, {self.staging.tnm}.' \
-                   f'{self.prostatectomy} {self.colonoscopy}'
+            text = ('Mr. {11} is a {1} year old {2}, who was found to have elevated PSA of {3} on {14}. The patient '
+                    'underwent a {15} on {16}, which showed {26} for prostate {20}, {5}, {17}. '
+                    '{8} {10}')
+
         elif hpi_index == 4:
-            text = f'{self.patient.last_name}, {self.patient.first_name} is a {self.patient.age} year old {self.patient.sex.value} with a history of ' \
-                   f'recently diagnosed {self.staging.risk} prostate cancer, who is referred to our clinic to discuss ' \
-                   f'radiotherapy options. Information pertinent to the oncologic evaluation is as follows:\n' \
-                   f'Mr. {self.patient.last_name} has a history of elevated PSAs with the most recent score of ' \
-                   f'{self.current_psa.psa_score} on {self.current_psa.psa_date}. Pathology showed {self.current_biopsy.gleason} prostate {self.staging.histology} ' \
-                   f'with {self.current_biopsy.total_cores}. {self.colonoscopy}'
+            text = ('{11}, {12} is a {1} year old {2} with a history of recently diagnosed {18} prostate cancer, who is referred to our clinic to discuss '
+                    'radiotherapy options. Information pertinent to the oncologic evaluation is as follows:\n'
+                    'Mr. {11} has a history of elevated PSAs with the most recent score of {3} on {14}. Pathology showed {5} prostate {20} '
+                    'with {26}. {10}')
+
         elif hpi_index == 5:
-            prior_psa_text = f'\tDate\tPSA\n'
             for i in range(len(self.psa_history)):
-                prior_psa_text += f'\t{self.psa_history[i].psa_date}\t{self.psa_history[i].psa_score}\n'
-            text = f'History of Present Illness: Mr. {self.patient.last_name} is a {self.patient.age} year old {self.patient.sex.value} previously seen in ' \
-                   f'our department in {self.base_date.year - random.randint(0, 5)}. The patient presented with rising PSA levels which ' \
-                   f'prompted a biopsy (PSA history below): ' \
-                   f'\n' \
-                   f'{prior_psa_text}\n' \
-                   f'On {self.biopsy_history[-1].biopsy_date} a {self.biopsy_history[-1].biopsy_type} demonstrated {self.biopsy_history[-1].gleason} ' \
-                   f'disease. Current staging shows {self.staging.tnm} disease. ' \
-                   f'Relevant scores include: AUA {self.aua}, SHIM {self.shim}.\n' \
-                   f'Impression: Patient with clinical {self.staging.tnm}, Gleason ' \
-                   f'{self.current_biopsy.gleason}, PSA {self.current_psa.psa_score}, {self.staging.histology} of the prostate.'
+                prior_psa_text += ('\t{self.psa_history[i].psa_date}\t{self.psa_history[i].psa_score}\n')
+            
+            text = ('History of Present Illness: Mr. {11} is a {1} year old {2} previously seen in '
+                    'our department in {9}. The patient presented with rising PSA levels which '
+                    'prompted a biopsy (PSA history below): \n'
+                    '{27}\n'
+                    'On {16} a {15} demonstrated {5} disease. Current staging shows {17} disease. '
+                    'Relevant scores include: AUA {22}, SHIM {24}.\n'
+                    'Impression: Patient with clinical {17}, Gleason {5}, PSA {3}, {20} of the prostate.')
+
         elif hpi_index == 6:
-            text = f'CHIEF COMPLAINT: Newly diagnosed {self.staging.risk} prostate cancer.\n' \
-                   f'HISTORY OF PRESENT ILLNESS:\n' \
-                   f'Patient with clinical {self.staging.tnm}, Gleason {self.current_biopsy.gleason.total}, ' \
-                   f'PSA {self.current_psa.psa_score}, {self.staging.histology} of the prostate.\n' \
-                   f'Mr. {self.patient.last_name} is a {self.patient.age} year old {self.patient.race} {self.patient.sex.value} who was seen in consultation ' \
-                   f'for evaluation and treatment recommendations regarding newly diagnosed prostate cancer. Initial PSA on ' \
-                   f'{self.psa_history[-1].psa_date} was {self.psa_history[-1].psa_score}. Most recent PSA from ' \
-                   f'{self.current_psa.psa_date} shows {self.current_psa.psa_score}. ' \
-                   f'Biopsy performed on {self.current_biopsy.biopsy_date} shows {self.current_biopsy.gleason} prostate ' \
-                   f'cancer. {self.colonoscopy}'
+            text = ('CHIEF COMPLAINT: Newly diagnosed {18} prostate cancer.\n'
+                        'HISTORY OF PRESENT ILLNESS:\n'
+                        'Patient with clinical {17}, Gleason {5}, PSA {3}, {20} of the prostate.\n'
+                        'Mr. {11} is a {1} year old {13} {2} who was seen in consultation '
+                        'for evaluation and treatment recommendations regarding newly diagnosed prostate cancer. Initial PSA on '
+                        '{19} was {28}. Most recent PSA from {14} shows {3}. '
+                        'Biopsy performed on {16} shows {5} prostate cancer. {10}')
         else:
-            text = f'Mr. {self.patient.last_name} is a {self.patient.age} year old {self.patient.race} {self.patient.sex.value} with {self.staging.risk} risk ' \
-                   f'prostate cancer, stage {self.staging.tnm}. Initial PSA was {self.psa_history[-1].psa_score} on ' \
-                   f'{self.psa_history[-1].psa_date}, most recently {self.current_psa.psa_score} on {self.current_psa.psa_date}. ' \
-                   f'Biopsy on {self.current_biopsy.biopsy_date} showed Gleason {self.current_biopsy.gleason}. ' \
-                   f'{self.colonoscopy}'
+            text = ('Mr. {11} is a {1} year old {13} {2} with {18} risk '
+                        'prostate cancer, stage {17}. Initial PSA was {28} on '
+                        '{19}, most recently {3} on {14}. '
+                        'Biopsy on {16} showed Gleason {5}. {10}')
 
         if regen:
-            text = regenerate(text)
+            regenerated_text = regenerate(text)
+            text = regen_validation(regenerated_text, text)
+
+        text = replace_placeholders(text, mappings)
         return text
 
     def assessment_plan(self, regen=False):
