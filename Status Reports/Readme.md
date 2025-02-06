@@ -34,7 +34,7 @@ Status Report Fall Week XX.md is a template for to copy-paste into new Status re
 |---|---|---|---|
 | Week 1 Status Report | Brainstorm Ideas for new tasks. | First meeting with advisory and sponsors this week for the semester. | No Problems to report! |
 | Week 2 Status Report | Start research and pllanning for assigned tasks. | Prepared 8 week schedule for the semester. | No Problems to Report! |
-| Week 3 Status Report | | | |
+| Week 3 Status Report | Continue work on individual tasks. | Started work on individual tasks. | No Problems to Report! |
 | Week 4 Status Report | | | |
 | Week 5 Status Report | | | |
 | Week 6 Status Report | | | |
