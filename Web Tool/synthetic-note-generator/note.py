@@ -1,6 +1,5 @@
 import datetime
 import random
-import re
 from constants import states, header_titles
 from utils import get_feature_probabilities, random_time_period, format_date, regenerate, replace_placeholders, regen_validation
 from data_elements import Patient, Author, PSA, Biopsy, Colonoscopy, Prostatectomy, AUA, SHIM, IPSS, ECOG, Vitals, \
