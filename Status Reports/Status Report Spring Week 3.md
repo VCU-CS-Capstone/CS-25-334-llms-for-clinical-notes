@@ -6,7 +6,7 @@
 **Preetam Ghosh:**
 
 ## 1) Accomplishments this week ##
-   - Work on individual tasks.
+   - Started work on individual tasks.
 ## 2) Milestones to be completed next week ##
    - Continue work on individual tasks.
 ## 3) Issues, problems or concerns ##
