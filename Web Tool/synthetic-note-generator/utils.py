@@ -10,15 +10,15 @@ load_dotenv()
 key = os.environ.get("GROQ_API_KEY")
 
 def regenerate(note):
-    request = f'Regenerate this note in a formal, clinical manner. Do not change or remove any variables, keep numbers in their curly braces.'\
-              f'Do not use helper phrases such as "Here is the rewritten note".'
+    request = f'Regenerate this note in a formal, clinical manner. Keep existing placeholder numbers in their curly braces.'\
+              f'Do not add any numbers or uneccessary information. Do not use helper phrases such as "Here is the rewritten note".'
     request += note
 
     client = Groq(
     api_key=key
     )
     completion = client.chat.completions.create(
-        model="llama3-8b-8192",
+        model="llama3-70b-8192",
         messages=[
             {
                 "role": "user",
@@ -35,6 +35,7 @@ def regenerate(note):
     result = ""
     for chunk in completion:
         result += chunk.choices[0].delta.content or ""
+    print(result)
     return result
 
 def replace_placeholders(text, mappings):
@@ -44,16 +45,19 @@ def replace_placeholders(text, mappings):
     return re.sub(r'\{(\d+)\}', replacement, text)
 
 def regen_validation(regenerated_text, text):
-    while (1):
+    pattern = r'\b\d+\b(?!%)(?![^{}]*})'
+    loop = True
+    while (loop):
         t1 = set(re.findall(r'\{(\d+)\}', text))
         t2 = set(re.findall(r'\{(\d+)\}', regenerated_text))
-        if t2.issubset(t1):
-            print("The regenerated text consists of a subset of the original template text.")
-            break
+
+        outside_values = re.findall(pattern, regenerated_text)
+
+        if not outside_values and t2.issubset(t1):
+                print("\nThe regenerated text consists of a subset of the original template text and introduces no outside values.")
+                loop = False
         else:
-            print("Mismatch detected:")
-            print(f"Original placeholders: {t1}")
-            print(f"Regenerated placeholders: {t2}")
+            print("\n*****Anomaly detected******")
             print("Regenerating text...")
             regenerated_text = regenerate(text)
     return regenerated_text
