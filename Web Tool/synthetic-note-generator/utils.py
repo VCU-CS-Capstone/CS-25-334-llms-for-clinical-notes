@@ -47,7 +47,7 @@ def replace_placeholders(text, mappings):
 def regen_validation(regenerated_text, text):
     pattern = r'\b\d+\b(?!%)(?![^{}]*})'
     loop = True
-    while (loop):
+    while ():
         t1 = set(re.findall(r'\{(\d+)\}', text))
         t2 = set(re.findall(r'\{(\d+)\}', regenerated_text))
 
@@ -55,7 +55,7 @@ def regen_validation(regenerated_text, text):
 
         if not outside_values and t2.issubset(t1):
                 print("\nThe regenerated text consists of a subset of the original template text and introduces no outside values.")
-                loop = False
+                break
         else:
             print("\n*****Anomaly detected******")
             print("Regenerating text...")
