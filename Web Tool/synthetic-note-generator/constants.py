@@ -81,3 +81,113 @@ medication_list = [
 
 allergy_list = ['peanuts', 'tree nuts', 'wheat', 'soy', 'fish', 'shellfish', 'latex', 'amoxicillin',
                 'ampicillin', 'penicillin', 'tetracycline', 'ibuprofen', 'aspirin', 'aleve']
+
+
+# Preset ranges for bulk generation
+PRESET_RANGES = {
+    "age": [
+        {"label": "Young Adult", "range": [18, 30]},
+        {"label": "Adult", "range": [31, 45]},
+        {"label": "Middle Age", "range": [46, 60]},
+        {"label": "Senior", "range": [61, 75]},
+        {"label": "Elderly", "range": [76, 90]},
+        {"label": "Advanced Age", "range": [91, 100]}
+    ],
+    "aua": [
+        {"label": "Mild symptoms", "range": [0, 7]},
+        {"label": "Moderate symptoms", "range": [8, 19]},
+        {"label": "Severe symptoms", "range": [20, 35]}
+    ],
+    "ipss": [
+        {"label": "Mild symptoms", "range": [0, 7]},
+        {"label": "Moderate symptoms", "range": [8, 19]},
+        {"label": "Severe symptoms", "range": [20, 35]}
+    ],
+    "shim": [
+        {"label": "Severe ED", "range": [1, 7]},
+        {"label": "Moderate ED", "range": [8, 11]},
+        {"label": "Mild to Moderate ED", "range": [12, 16]},
+        {"label": "Mild ED", "range": [17, 21]},
+        {"label": "No ED", "range": [22, 25]}
+    ],
+    "ecog": [
+        {"label": "Fully active to restricted", "range": [0, 1]},
+        {"label": "Limited self-care", "range": [2, 3]},
+        {"label": "Disabled to completely disabled", "range": [3, 4]}
+    ],
+    "psa": [
+        {"label": "Normal range", "range": [0, 4]},
+        {"label": "Slightly elevated", "range": [4.1, 10]},
+        {"label": "Moderately elevated", "range": [10.1, 20]},
+        {"label": "Significantly elevated", "range": [20.1, 50]}
+    ],
+    "performance_score": [
+        {"label": "Limited self-care", "range": [50, 70]},
+        {"label": "Unable to work", "range": [71, 80]},
+        {"label": "Normal activity with effort", "range": [81, 90]},
+        {"label": "Normal, no complaints", "range": [91, 100]}
+    ],
+    "temperature": [
+        {"label": "Below normal", "range": [96.0, 97.5]},
+        {"label": "Normal range", "range": [97.6, 99.0]},
+        {"label": "Elevated", "range": [99.1, 101.0]}
+    ],
+    "systolic": [
+        {"label": "Normal", "range": [90, 120]},
+        {"label": "Elevated", "range": [121, 140]},
+        {"label": "High Stage 1", "range": [141, 160]},
+        {"label": "High Stage 2", "range": [161, 180]}
+    ],
+    "diastolic": [
+        {"label": "Normal", "range": [60, 80]},
+        {"label": "Elevated", "range": [81, 90]},
+        {"label": "High Stage 1", "range": [91, 100]},
+        {"label": "High Stage 2", "range": [101, 120]}
+    ],
+    "pulse": [
+        {"label": "Lower normal", "range": [60, 75]},
+        {"label": "Normal", "range": [76, 90]},
+        {"label": "Elevated", "range": [91, 120]}
+    ],
+    "respiration": [
+        {"label": "Normal", "range": [12, 16]},
+        {"label": "Mild elevation", "range": [17, 20]},
+        {"label": "Moderate elevation", "range": [21, 25]}
+    ],
+    "weight": [
+        {"label": "Lower weight range", "range": [100, 150]},
+        {"label": "Middle weight range", "range": [151, 200]},
+        {"label": "Higher weight range", "range": [201, 250]},
+        {"label": "Highest weight range", "range": [251, 300]}
+    ],
+    "pain": [
+        {"label": "Mild pain", "range": [0, 3]},
+        {"label": "Moderate pain", "range": [4, 6]},
+        {"label": "Severe pain", "range": [7, 10]}
+    ]
+}
+
+# Add ranges for list quantities
+LIST_QUANTITY_RANGES = {
+    "medications": [
+        {"label": "Few medications", "range": [0, 3]},
+        {"label": "Moderate number", "range": [4, 7]},
+        {"label": "Many medications", "range": [8, 12]},
+        {"label": "Extensive medications", "range": [13, 15]}
+    ],
+    "allergies": [
+        {"label": "Few allergies", "range": [0, 2]},
+        {"label": "Moderate number", "range": [3, 5]},
+        {"label": "Many allergies", "range": [6, 8]}
+    ],
+    "problems": [
+        {"label": "Few problems", "range": [0, 3]},
+        {"label": "Moderate number", "range": [4, 7]},
+        {"label": "Many problems", "range": [8, 12]}
+    ],
+    "surgeries": [
+        {"label": "Minimal surgical history", "range": [0, 1]},
+        {"label": "Moderate surgical history", "range": [2, 3]},
+        {"label": "Extensive surgical history", "range": [4, 5]}
+    ]
+}

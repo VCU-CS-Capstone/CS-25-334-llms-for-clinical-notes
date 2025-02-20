@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bulk Note Generation</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <nav class="navigation">
+            <a href="{{ url_for('index') }}" class="nav-link">← Back to Selection</a>
+        </nav>
+        
+        <h1>Bulk Note Generation</h1>
+        
+        <!-- Bulk Generation Controls -->
+        <section id="bulkControls">
+            <h2>Generation Settings</h2>
+            <div class="input-group">
+                <label for="numberOfNotes">Number of Notes to Generate:</label>
+                <input type="number" id="numberOfNotes" min="1" max="1000" value="5">
+            </div>
+        </section>
+
+        <!-- Example of a field with preset and custom ranges -->
+        <section id="demographicsSection">
+            <h2>Patient Demographics</h2>
+            
+            <div class="range-group">
+                <label>Age Range:</label>
+                <div class="range-selection">
+                    <select id="agePreset" class="range-preset">
+                        <option value="custom">Custom Range</option>
+                        <option value="18-30">Young Adult (18-30)</option>
+                        <option value="31-45">Adult (31-45)</option>
+                        <option value="46-60">Middle Age (46-60)</option>
+                        <option value="61-75">Senior (61-75)</option>
+                        <option value="76-90">Elderly (76-90)</option>
+                    </select>
+                    <div class="custom-range" id="ageCustomRange">
+                        <input type="number" id="ageMin" min="18" max="100" placeholder="Min">
+                        <span>to</span>
+                        <input type="number" id="ageMax" min="18" max="100" placeholder="Max">
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Add other demographic fields similarly -->
+        </section>
+
+        <!-- Note Display Section -->
+        <section id="noteDisplaySection">
+            <h2>Generated Notes</h2>
+            <div class="note-selection">
+                <label for="noteSelector">Select Note:</label>
+                <select id="noteSelector" disabled>
+                    <option value="">No notes generated</option>
+                </select>
+            </div>
+            <div class="note-split-view">
+                <div class="note-panel">
+                    <div class="panel-header">Note Content</div>
+                    <div class="note-content" id="noteContent"></div>
+                </div>
+                <div class="note-panel">
+                    <div class="panel-header">Note Data</div>
+                    <div class="note-data" id="noteData"></div>
+                </div>
+            </div>
+        </section>
+
+        <button id="generateBulkNotes" class="primary-button">Generate Notes</button>
+    </div>
+
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="{{ url_for('static', filename='js/bulk.js') }}"></script>
+</body>
+</html>

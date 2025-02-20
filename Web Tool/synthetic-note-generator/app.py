@@ -5,6 +5,8 @@ from datetime import datetime
 import numpy as np
 import json
 from constants import medication_list, allergy_list, problem_list, surgery_list
+from constants import PRESET_RANGES, LIST_QUANTITY_RANGES
+import random
 
 app = Flask(__name__)
 
@@ -78,7 +80,18 @@ def parse_date(date_str):
 
 @app.route('/')
 def index():
-    return render_template('index.html')
+    """Landing page to choose between single or bulk generation"""
+    return render_template('landing.html')
+
+@app.route('/single')
+def single_note():
+    """Original single note generation page"""
+    return render_template('index.html')  
+
+@app.route('/bulk')
+def bulk_notes():
+    """New bulk note generation page"""
+    return render_template('bulk.html') 
 
 @app.route('/get_options')
 def get_options():
@@ -199,6 +212,92 @@ def generate_note():
         })
     except Exception as e:
         print(f"Error generating note: {str(e)}")
+        print(traceback.format_exc())
+        return jsonify({
+            'error': str(e),
+            'trace': traceback.format_exc()
+        }), 500
+
+@app.route('/get_ranges')
+def get_ranges():
+    """Return all preset ranges for the frontend"""
+    return jsonify({
+        **PRESET_RANGES,
+        **LIST_QUANTITY_RANGES
+    })
+
+def get_random_value_in_range(range_values):
+    """Get a random value within the specified range"""
+    min_val, max_val = range_values
+    if isinstance(min_val, float) or isinstance(max_val, float):
+        return round(random.uniform(min_val, max_val), 2)
+    return random.randint(min_val, max_val)
+
+@app.route('/generate_bulk_notes', methods=['POST'])
+def generate_bulk_notes():
+    try:
+        data = request.get_json()
+        num_notes = int(data.get('num_notes', 1))
+        ranges = data.get('ranges', {})
+
+        if num_notes < 1 or num_notes > 1000:
+            return jsonify({
+                'error': 'Number of notes must be between 1 and 1000'
+            }), 400
+
+        generated_notes = []
+        for _ in range(num_notes):
+            # Create note parameters based on ranges
+            note_params = {}
+            
+            # Handle basic numeric ranges
+            for field, range_values in ranges.items():
+                if field == 'age':
+                    note_params['patient_age'] = get_random_value_in_range(range_values)
+                elif field in ['aua', 'ipss', 'shim', 'ecog', 'performance_score']:
+                    note_params[field] = get_random_value_in_range(range_values)
+                elif field == 'psa':
+                    note_params['psa_score'] = get_random_value_in_range(range_values)
+                elif field == 'temperature':
+                    note_params['temperature'] = get_random_value_in_range(range_values)
+                elif field == 'systolic':
+                    note_params['blood_pressure_systolic'] = get_random_value_in_range(range_values)
+                elif field == 'diastolic':
+                    note_params['blood_pressure_diastolic'] = get_random_value_in_range(range_values)
+                elif field in ['pulse', 'respiration', 'weight', 'pain']:
+                    note_params[field] = get_random_value_in_range(range_values)
+
+            # Handle list quantities
+            if 'medications' in ranges:
+                quantity = get_random_value_in_range(ranges['medications'])
+                note_params['medications'] = random.sample(medication_list, min(quantity, len(medication_list)))
+            
+            if 'allergies' in ranges:
+                quantity = get_random_value_in_range(ranges['allergies'])
+                note_params['allergies'] = random.sample(allergy_list, min(quantity, len(allergy_list)))
+            
+            if 'problems' in ranges:
+                quantity = get_random_value_in_range(ranges['problems'])
+                note_params['problem_list'] = random.sample(problem_list, min(quantity, len(problem_list)))
+            
+            if 'surgeries' in ranges:
+                quantity = get_random_value_in_range(ranges['surgeries'])
+                note_params['surgical_history'] = random.sample(surgery_list, min(quantity, len(surgery_list)))
+
+            # Generate the note using the ConsultNote class
+            note = ConsultNote(**note_params)
+            generated_notes.append({
+                'text': note.get_text(),
+                'data': convert_numpy_types(note.get_data_fields())
+            })
+
+        return jsonify({
+            'notes': generated_notes,
+            'count': len(generated_notes)
+        })
+
+    except Exception as e:
+        print(f"Error generating bulk notes: {str(e)}")
         print(traceback.format_exc())
         return jsonify({
             'error': str(e),
