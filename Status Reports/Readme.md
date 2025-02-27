@@ -37,7 +37,7 @@ Status Report Fall Week XX.md is a template for to copy-paste into new Status re
 | Week 3 Status Report | Continue work on individual tasks. | Started work on individual tasks. | No Problems to Report! |
 | Week 4 Status Report | Continue work on individual tasks. | Worked on individual tasks. | No Problems to Report! |
 | Week 5 Status Report | Continue work on individual tasks. | Worked on individual tasks. Implemented basic version of Bulk Generation | No Problems to Report! |
-| Week 6 Status Report | | | |
+| Week 6 Status Report | Continue work on individual tasks. | Worked on individual tasks. Bulk Generation mostly done. | No Problems to Report! |
 | Week 7 Status Report | | | |
 | Week 8 Status Report | | | |
 | Week 9 Status Report | | | |
