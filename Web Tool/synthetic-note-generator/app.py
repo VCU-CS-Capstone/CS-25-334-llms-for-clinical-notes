@@ -251,38 +251,108 @@ def generate_bulk_notes():
             note_params = {}
             
             # Handle basic numeric ranges
-            for field, range_values in ranges.items():
-                if field == 'age':
-                    note_params['patient_age'] = get_random_value_in_range(range_values)
-                elif field in ['aua', 'ipss', 'shim', 'ecog', 'performance_score']:
-                    note_params[field] = get_random_value_in_range(range_values)
-                elif field == 'psa':
-                    note_params['psa_score'] = get_random_value_in_range(range_values)
-                elif field == 'temperature':
-                    note_params['temperature'] = get_random_value_in_range(range_values)
-                elif field == 'systolic':
-                    note_params['blood_pressure_systolic'] = get_random_value_in_range(range_values)
-                elif field == 'diastolic':
-                    note_params['blood_pressure_diastolic'] = get_random_value_in_range(range_values)
-                elif field in ['pulse', 'respiration', 'weight', 'pain']:
-                    note_params[field] = get_random_value_in_range(range_values)
+            if 'age' in ranges:
+                note_params['patient_age'] = get_random_value_in_range(ranges['age'])
+            
+            if 'aua' in ranges:
+                note_params['aua'] = get_random_value_in_range(ranges['aua'])
+                
+            if 'ipss' in ranges:
+                note_params['ipss'] = get_random_value_in_range(ranges['ipss'])
+                
+            if 'shim' in ranges:
+                note_params['shim'] = get_random_value_in_range(ranges['shim'])
+                
+            if 'ecog' in ranges:
+                note_params['ecog'] = get_random_value_in_range(ranges['ecog'])
+                
+            if 'psa' in ranges:
+                note_params['psa_score'] = get_random_value_in_range(ranges['psa'])
+                
+            if 'performance_score' in ranges:
+                note_params['performance_score'] = get_random_value_in_range(ranges['performance_score'])
+                
+            if 'temperature' in ranges:
+                note_params['temperature'] = get_random_value_in_range(ranges['temperature'])
+                
+            if 'systolic' in ranges:
+                note_params['blood_pressure_systolic'] = get_random_value_in_range(ranges['systolic'])
+                
+            if 'diastolic' in ranges:
+                note_params['blood_pressure_diastolic'] = get_random_value_in_range(ranges['diastolic'])
+                
+            if 'pulse' in ranges:
+                note_params['pulse'] = get_random_value_in_range(ranges['pulse'])
+                
+            if 'respiration' in ranges:
+                note_params['respiration'] = get_random_value_in_range(ranges['respiration'])
+                
+            if 'weight' in ranges:
+                note_params['weight'] = get_random_value_in_range(ranges['weight'])
+                
+            if 'pain' in ranges:
+                note_params['pain'] = get_random_value_in_range(ranges['pain'])
+
+            # Handle categorical fields
+            if 'sexSelect' in ranges:
+                note_params['patient_sex'] = ranges['sexSelect']
+                
+            if 'raceSelect' in ranges:
+                note_params['patient_race'] = ranges['raceSelect']
+                
+            if 'ethnicitySelect' in ranges:
+                note_params['patient_ethnicity'] = ranges['ethnicitySelect']
+                
+            if 'tnmSelect' in ranges:
+                note_params['tnm'] = ranges['tnmSelect']
+                
+            if 'riskLevelSelect' in ranges:
+                note_params['risk_level'] = ranges['riskLevelSelect']
+                
+            if 'groupStageSelect' in ranges:
+                note_params['group_stage'] = ranges['groupStageSelect']
+                
+            if 'alcoholHistorySelect' in ranges:
+                note_params['alcohol_history'] = ranges['alcoholHistorySelect']
+                
+            if 'smokingStatusSelect' in ranges:
+                note_params['smoking_history'] = {'smoking_status': ranges['smokingStatusSelect']}
+                
+            if 'prostatectomySelect' in ranges:
+                note_params['prostatectomy'] = ranges['prostatectomySelect']
+                
+            if 'colonoscopySelect' in ranges:
+                note_params['colonoscopy'] = ranges['colonoscopySelect'] == 'true'
+                
+            if 'priorRtSelect' in ranges:
+                note_params['prior_rt'] = ranges['priorRtSelect'] == 'true'
+                
+            if 'chemotherapySelect' in ranges:
+                note_params['chemotherapy_prescribed'] = ranges['chemotherapySelect'] == 'true'
+                
+            if 'hormoneTherapySelect' in ranges:
+                note_params['hormone_therapy_prescribed'] = ranges['hormoneTherapySelect'] == 'true'
 
             # Handle list quantities
             if 'medications' in ranges:
-                quantity = get_random_value_in_range(ranges['medications'])
-                note_params['medications'] = random.sample(medication_list, min(quantity, len(medication_list)))
+                quantity = int(get_random_value_in_range(ranges['medications']))
+                if quantity > 0:
+                    note_params['medications'] = random.sample(medication_list, min(quantity, len(medication_list)))
             
             if 'allergies' in ranges:
-                quantity = get_random_value_in_range(ranges['allergies'])
-                note_params['allergies'] = random.sample(allergy_list, min(quantity, len(allergy_list)))
+                quantity = int(get_random_value_in_range(ranges['allergies']))
+                if quantity > 0:
+                    note_params['allergies'] = random.sample(allergy_list, min(quantity, len(allergy_list)))
             
             if 'problems' in ranges:
-                quantity = get_random_value_in_range(ranges['problems'])
-                note_params['problem_list'] = random.sample(problem_list, min(quantity, len(problem_list)))
+                quantity = int(get_random_value_in_range(ranges['problems']))
+                if quantity > 0:
+                    note_params['problem_list'] = random.sample(problem_list, min(quantity, len(problem_list)))
             
             if 'surgeries' in ranges:
-                quantity = get_random_value_in_range(ranges['surgeries'])
-                note_params['surgical_history'] = random.sample(surgery_list, min(quantity, len(surgery_list)))
+                quantity = int(get_random_value_in_range(ranges['surgeries']))
+                if quantity > 0:
+                    note_params['surgical_history'] = random.sample(surgery_list, min(quantity, len(surgery_list)))
 
             # Generate the note using the ConsultNote class
             note = ConsultNote(**note_params)
