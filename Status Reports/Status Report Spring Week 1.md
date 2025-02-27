@@ -1,0 +1,13 @@
+# CS 25-334 LLMs for clinical Notes
+**Shashank Sinha, Connor Holden, Sawiya Aidarus, August Moses:**
+
+**Rishabh Kapoor:**
+
+**Preetam Ghosh:**
+
+## 1) Accomplishments this week ##
+   - First meeting with advisory and sponsors this week for the semester.
+## 2) Milestones to be completed next week ##
+   - Brainstorm Ideas for new tasks.
+## 3) Issues, problems or concerns ##
+   - No issues to report!

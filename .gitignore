@@ -1,2 +1,5 @@
 # Ignore Groq api key. Do not publish key
 .env
+
+# Ignore personal virtual environment for web tool
+Web Tool/env

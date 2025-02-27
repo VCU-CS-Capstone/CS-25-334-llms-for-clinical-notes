@@ -1,0 +1,527 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bulk Note Generation</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container">
+        <nav class="navigation">
+            <a href="{{ url_for('index') }}" class="nav-link">← Back to Selection</a>
+        </nav>
+        
+        <h1>Bulk Note Generation</h1>
+        
+        <!-- Bulk Generation Controls -->
+        <section id="bulkControls">
+            <h2>Generation Settings</h2>
+            <div class="input-group">
+                <label for="numberOfNotes">Number of Notes to Generate:</label>
+                <input type="number" id="numberOfNotes" min="1" max="1000" value="5">
+            </div>
+        </section>
+
+        <!-- Patient Demographics -->
+        <section id="demographicsSection">
+            <h2>Patient Demographics</h2>
+            
+            <!-- Age field with custom range input -->
+            <div class="range-group">
+                <label>Age:</label>
+                <div class="range-selection">
+                    <select id="agePreset" class="range-preset">
+                        <!-- Options will be populated dynamically -->
+                    </select>
+                    <div class="custom-range" id="ageCustomRange">
+                        <input type="number" id="ageMin" min="18" max="100" placeholder="Min">
+                        <span>to</span>
+                        <input type="number" id="ageMax" min="18" max="100" placeholder="Max">
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Sex field -->
+            <div class="range-group">
+                <label>Sex:</label>
+                <div class="range-selection">
+                    <select id="sexSelect" class="range-preset">
+                        <option value="random">Random</option>
+                        <option value="male">Male</option>
+                        <option value="female">Female</option>
+                    </select>
+                </div>
+            </div>
+            
+            <!-- Race field -->
+            <div class="range-group">
+                <label>Race:</label>
+                <div class="range-selection">
+                    <select id="raceSelect" class="range-preset">
+                        <option value="random">Random</option>
+                        <option value="white">White</option>
+                        <option value="black">Black</option>
+                        <option value="asian">Asian</option>
+                        <option value="Native American">Native American</option>
+                    </select>
+                </div>
+            </div>
+            
+            <!-- Ethnicity field -->
+            <div class="range-group">
+                <label>Ethnicity:</label>
+                <div class="range-selection">
+                    <select id="ethnicitySelect" class="range-preset">
+                        <option value="random">Random</option>
+                        <option value="HISPANIC OR LATINO">Hispanic or Latino</option>
+                        <option value="NOT HISPANIC OR LATINO">Not Hispanic or Latino</option>
+                    </select>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Medical Values -->
+        <section id="medicalValuesSection">
+            <h2>Medical Values</h2>
+            
+            <!-- AUA Score with custom range input -->
+            <div class="range-group">
+                <label>AUA Score:</label>
+                <div class="range-selection">
+                    <select id="auaPreset" class="range-preset">
+                        <!-- Options will be populated dynamically -->
+                    </select>
+                    <div class="custom-range" id="auaCustomRange">
+                        <input type="number" id="auaMin" min="0" max="35" placeholder="Min">
+                        <span>to</span>
+                        <input type="number" id="auaMax" min="0" max="35" placeholder="Max">
+                    </div>
+                </div>
+            </div>
+            
+            <!-- IPSS Score with custom range input -->
+            <div class="range-group">
+                <label>IPSS Score:</label>
+                <div class="range-selection">
+                    <select id="ipssPreset" class="range-preset">
+                        <!-- Options will be populated dynamically -->
+                    </select>
+                    <div class="custom-range" id="ipssCustomRange">
+                        <input type="number" id="ipssMin" min="0" max="35" placeholder="Min">
+                        <span>to</span>
+                        <input type="number" id="ipssMax" min="0" max="35" placeholder="Max">
+                    </div>
+                </div>
+            </div>
+            
+            <!-- SHIM Score with custom range input -->
+            <div class="range-group">
+                <label>SHIM Score:</label>
+                <div class="range-selection">
+                    <select id="shimPreset" class="range-preset">
+                        <!-- Options will be populated dynamically -->
+                    </select>
+                    <div class="custom-range" id="shimCustomRange">
+                        <input type="number" id="shimMin" min="1" max="25" placeholder="Min">
+                        <span>to</span>
+                        <input type="number" id="shimMax" min="1" max="25" placeholder="Max">
+                    </div>
+                </div>
+            </div>
+            
+            <!-- ECOG Score with custom range input -->
+            <div class="range-group">
+                <label>ECOG Score:</label>
+                <div class="range-selection">
+                    <select id="ecogPreset" class="range-preset">
+                        <!-- Options will be populated dynamically -->
+                    </select>
+                    <div class="custom-range" id="ecogCustomRange">
+                        <input type="number" id="ecogMin" min="0" max="4" placeholder="Min">
+                        <span>to</span>
+                        <input type="number" id="ecogMax" min="0" max="4" placeholder="Max">
+                    </div>
+                </div>
+            </div>
+            
+            <!-- PSA Score with custom range input -->
+            <div class="range-group">
+                <label>PSA Score (ng/mL):</label>
+                <div class="range-selection">
+                    <select id="psaPreset" class="range-preset">
+                        <!-- Options will be populated dynamically -->
+                    </select>
+                    <div class="custom-range" id="psaCustomRange">
+                        <input type="number" id="psaMin" min="0" max="100" step="0.1" placeholder="Min">
+                        <span>to</span>
+                        <input type="number" id="psaMax" min="0" max="100" step="0.1" placeholder="Max">
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Performance Score with custom range input -->
+            <div class="range-group">
+                <label>Performance Score:</label>
+                <div class="range-selection">
+                    <select id="performance_scorePreset" class="range-preset">
+                        <!-- Options will be populated dynamically -->
+                    </select>
+                    <div class="custom-range" id="performance_scoreCustomRange">
+                        <input type="number" id="performance_scoreMin" min="0" max="100" placeholder="Min">
+                        <span>to</span>
+                        <input type="number" id="performance_scoreMax" min="0" max="100" placeholder="Max">
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Vitals Section -->
+        <section id="vitalsSection">
+            <h2>Vitals</h2>
+            
+            <!-- Temperature with custom range input -->
+            <div class="range-group">
+                <label>Temperature (°F):</label>
+                <div class="range-selection">
+                    <select id="temperaturePreset" class="range-preset">
+                        <!-- Options will be populated dynamically -->
+                    </select>
+                    <div class="custom-range" id="temperatureCustomRange">
+                        <input type="number" id="temperatureMin" min="95" max="105" step="0.1" placeholder="Min">
+                        <span>to</span>
+                        <input type="number" id="temperatureMax" min="95" max="105" step="0.1" placeholder="Max">
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Systolic BP with custom range input -->
+            <div class="range-group">
+                <label>Systolic BP (mmHg):</label>
+                <div class="range-selection">
+                    <select id="systolicPreset" class="range-preset">
+                        <!-- Options will be populated dynamically -->
+                    </select>
+                    <div class="custom-range" id="systolicCustomRange">
+                        <input type="number" id="systolicMin" min="70" max="200" placeholder="Min">
+                        <span>to</span>
+                        <input type="number" id="systolicMax" min="70" max="200" placeholder="Max">
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Diastolic BP with custom range input -->
+            <div class="range-group">
+                <label>Diastolic BP (mmHg):</label>
+                <div class="range-selection">
+                    <select id="diastolicPreset" class="range-preset">
+                        <!-- Options will be populated dynamically -->
+                    </select>
+                    <div class="custom-range" id="diastolicCustomRange">
+                        <input type="number" id="diastolicMin" min="40" max="130" placeholder="Min">
+                        <span>to</span>
+                        <input type="number" id="diastolicMax" min="40" max="130" placeholder="Max">
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Pulse with custom range input -->
+            <div class="range-group">
+                <label>Pulse (bpm):</label>
+                <div class="range-selection">
+                    <select id="pulsePreset" class="range-preset">
+                        <!-- Options will be populated dynamically -->
+                    </select>
+                    <div class="custom-range" id="pulseCustomRange">
+                        <input type="number" id="pulseMin" min="40" max="200" placeholder="Min">
+                        <span>to</span>
+                        <input type="number" id="pulseMax" min="40" max="200" placeholder="Max">
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Respiration with custom range input -->
+            <div class="range-group">
+                <label>Respiration (breaths/min):</label>
+                <div class="range-selection">
+                    <select id="respirationPreset" class="range-preset">
+                        <!-- Options will be populated dynamically -->
+                    </select>
+                    <div class="custom-range" id="respirationCustomRange">
+                        <input type="number" id="respirationMin" min="8" max="40" placeholder="Min">
+                        <span>to</span>
+                        <input type="number" id="respirationMax" min="8" max="40" placeholder="Max">
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Weight with custom range input -->
+            <div class="range-group">
+                <label>Weight (lbs):</label>
+                <div class="range-selection">
+                    <select id="weightPreset" class="range-preset">
+                        <!-- Options will be populated dynamically -->
+                    </select>
+                    <div class="custom-range" id="weightCustomRange">
+                        <input type="number" id="weightMin" min="50" max="500" placeholder="Min">
+                        <span>to</span>
+                        <input type="number" id="weightMax" min="50" max="500" placeholder="Max">
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Pain with custom range input -->
+            <div class="range-group">
+                <label>Pain Score:</label>
+                <div class="range-selection">
+                    <select id="painPreset" class="range-preset">
+                        <!-- Options will be populated dynamically -->
+                    </select>
+                    <div class="custom-range" id="painCustomRange">
+                        <input type="number" id="painMin" min="0" max="10" placeholder="Min">
+                        <span>to</span>
+                        <input type="number" id="painMax" min="0" max="10" placeholder="Max">
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Risk Assessment -->
+        <section id="riskSection">
+            <h2>Risk Assessment</h2>
+            <!-- TNM Staging -->
+            <div class="range-group">
+                <label>TNM Stage:</label>
+                <div class="range-selection">
+                    <select id="tnmSelect" class="range-preset">
+                        <option value="random">Random</option>
+                        <option value="T1N0M0">T1N0M0</option>
+                        <option value="T2N0M0">T2N0M0</option>
+                        <option value="T2aN0M0">T2aN0M0</option>
+                        <option value="T2bN0M0">T2bN0M0</option>
+                        <option value="T2cN0M0">T2cN0M0</option>
+                        <option value="T3N0M0">T3N0M0</option>
+                        <option value="T3aN0M0">T3aN0M0</option>
+                        <option value="T3bN0M0">T3bN0M0</option>
+                        <option value="T4N0M0">T4N0M0</option>
+                    </select>
+                </div>
+            </div>
+            <!-- Risk Level -->
+            <div class="range-group">
+                <label>Risk Level:</label>
+                <div class="range-selection">
+                    <select id="riskLevelSelect" class="range-preset">
+                        <option value="random">Random</option>
+                        <option value="low">Low</option>
+                        <option value="intermediate">Intermediate</option>
+                        <option value="intermediate-favorable">Intermediate-Favorable</option>
+                        <option value="intermediate-unfavorable">Intermediate-Unfavorable</option>
+                        <option value="high">High</option>
+                        <option value="very high">Very High</option>
+                    </select>
+                </div>
+            </div>
+            <!-- Group Stage -->
+            <div class="range-group">
+                <label>Group Stage:</label>
+                <div class="range-selection">
+                    <select id="groupStageSelect" class="range-preset">
+                        <option value="random">Random</option>
+                        <option value="I">I</option>
+                        <option value="IIA">IIA</option>
+                        <option value="IIB">IIB</option>
+                        <option value="IIC">IIC</option>
+                        <option value="IIIA">IIIA</option>
+                        <option value="IIIB">IIIB</option>
+                        <option value="IIIC">IIIC</option>
+                        <option value="IVA">IVA</option>
+                        <option value="IVB">IVB</option>
+                    </select>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Dynamic Lists -->
+        <section id="listsSection">
+            <h2>Dynamic Lists</h2>
+            
+            <!-- Medications with custom range input -->
+            <div class="range-group">
+                <label>Number of Medications:</label>
+                <div class="range-selection">
+                    <select id="medicationsPreset" class="range-preset">
+                        <!-- Options will be populated dynamically -->
+                    </select>
+                    <div class="custom-range" id="medicationsCustomRange">
+                        <input type="number" id="medicationsMin" min="0" max="15" placeholder="Min">
+                        <span>to</span>
+                        <input type="number" id="medicationsMax" min="0" max="15" placeholder="Max">
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Allergies with custom range input -->
+            <div class="range-group">
+                <label>Number of Allergies:</label>
+                <div class="range-selection">
+                    <select id="allergiesPreset" class="range-preset">
+                        <!-- Options will be populated dynamically -->
+                    </select>
+                    <div class="custom-range" id="allergiesCustomRange">
+                        <input type="number" id="allergiesMin" min="0" max="8" placeholder="Min">
+                        <span>to</span>
+                        <input type="number" id="allergiesMax" min="0" max="8" placeholder="Max">
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Problems with custom range input -->
+            <div class="range-group">
+                <label>Number of Problems:</label>
+                <div class="range-selection">
+                    <select id="problemsPreset" class="range-preset">
+                        <!-- Options will be populated dynamically -->
+                    </select>
+                    <div class="custom-range" id="problemsCustomRange">
+                        <input type="number" id="problemsMin" min="0" max="12" placeholder="Min">
+                        <span>to</span>
+                        <input type="number" id="problemsMax" min="0" max="12" placeholder="Max">
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Surgeries with custom range input -->
+            <div class="range-group">
+                <label>Number of Surgeries:</label>
+                <div class="range-selection">
+                    <select id="surgeriesPreset" class="range-preset">
+                        <!-- Options will be populated dynamically -->
+                    </select>
+                    <div class="custom-range" id="surgeriesCustomRange">
+                        <input type="number" id="surgeriesMin" min="0" max="5" placeholder="Min">
+                        <span>to</span>
+                        <input type="number" id="surgeriesMax" min="0" max="5" placeholder="Max">
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Social History -->
+        <section id="socialHistorySection">
+            <h2>Social History</h2>
+            <!-- Alcohol and Smoking Status -->
+            <div class="range-group">
+                <label>Alcohol History:</label>
+                <div class="range-selection">
+                    <select id="alcoholHistorySelect" class="range-preset">
+                        <option value="random">Random</option>
+                        <option value="never">Never</option>
+                        <option value="former">Former</option>
+                        <option value="current">Current</option>
+                    </select>
+                </div>
+            </div>
+            <div class="range-group">
+                <label>Smoking Status:</label>
+                <div class="range-selection">
+                    <select id="smokingStatusSelect" class="range-preset">
+                        <option value="random">Random</option>
+                        <option value="never">Never</option>
+                        <option value="former">Former</option>
+                        <option value="current">Current</option>
+                    </select>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Treatment Section -->
+        <section id="treatmentSection">
+            <h2>Treatment Information</h2>
+            <!-- Prostatectomy -->
+            <div class="range-group">
+                <label>Prostatectomy:</label>
+                <div class="range-selection">
+                    <select id="prostatectomySelect" class="range-preset">
+                        <option value="random">Random</option>
+                        <option value="Yes">Yes</option>
+                        <option value="No">No</option>
+                    </select>
+                </div>
+            </div>
+            <!-- Colonoscopy -->
+            <div class="range-group">
+                <label>Colonoscopy:</label>
+                <div class="range-selection">
+                    <select id="colonoscopySelect" class="range-preset">
+                        <option value="random">Random</option>
+                        <option value="true">Yes</option>
+                        <option value="false">No</option>
+                    </select>
+                </div>
+            </div>
+            <!-- Prior RT -->
+            <div class="range-group">
+                <label>Prior RT:</label>
+                <div class="range-selection">
+                    <select id="priorRtSelect" class="range-preset">
+                        <option value="random">Random</option>
+                        <option value="true">Yes</option>
+                        <option value="false">No</option>
+                    </select>
+                </div>
+            </div>
+            <!-- Chemotherapy -->
+            <div class="range-group">
+                <label>Chemotherapy:</label>
+                <div class="range-selection">
+                    <select id="chemotherapySelect" class="range-preset">
+                        <option value="random">Random</option>
+                        <option value="true">Yes</option>
+                        <option value="false">No</option>
+                    </select>
+                </div>
+            </div>
+            <!-- Hormone Therapy -->
+            <div class="range-group">
+                <label>Hormone Therapy:</label>
+                <div class="range-selection">
+                    <select id="hormoneTherapySelect" class="range-preset">
+                        <option value="random">Random</option>
+                        <option value="true">Yes</option>
+                        <option value="false">No</option>
+                    </select>
+                </div>
+            </div>
+        </section>
+
+        <!-- Note Selection and Display -->
+        <section id="noteDisplaySection">
+            <h2>Generated Notes</h2>
+            <div class="note-selection">
+                <label for="noteSelector">Select Note:</label>
+                <select id="noteSelector" disabled>
+                    <option value="">No notes generated</option>
+                </select>
+            </div>
+            <div class="note-split-view">
+                <div class="note-panel">
+                    <div class="panel-header">Note Content</div>
+                    <div class="note-content" id="noteContent"></div>
+                </div>
+                <div class="note-panel">
+                    <div class="panel-header">Note Data</div>
+                    <div class="note-data" id="noteData"></div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Generate Button -->
+        <button id="generateBulkNotes" class="primary-button">Generate Notes</button>
+    </div>
+
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+    <script src="{{ url_for('static', filename='js/bulk.js') }}"></script>
+</body>
+</html>

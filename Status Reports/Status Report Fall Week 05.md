@@ -14,4 +14,8 @@
    - Get some progress on proposal
 
 ## 3) Issues, problems or concerns ##
+<<<<<<< HEAD
    - No issues to report!
+=======
+   - No issues to report!
+>>>>>>> d539e3019eb70a43113f2fba5638ede43948b32d

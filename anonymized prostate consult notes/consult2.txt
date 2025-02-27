@@ -1,0 +1,207 @@
+RAD/ONC CONSULTATION NOTE
+Site: Richmond, VA   
+Date: 05/27/2016 10:16   Author: Dr. Joe Doe
+
+DIAGNOSIS: Prostate cancer
+STAGE: IIB cT1cNxMx
+PROGNOSTIC FACTORS: GS 4+4 1/10 cores 60%, GS 3+4 1 core, GS 3+3 3 cores; iPSA 
+5.65
+GLAND SIZE: 45cc
+DATES OF PRIOR TRUS BIOPSIES: 4/28/16
+PRIOR TREATMENT: n/a
+
+HPI:
+Mr. ABC is a 69 y/o gentleman with HTN, DM who presents to discuss his newly 
+diagnosed prostate cancer. Patient had PSA screening with elevated PSA and was 
+referred to urology, who performed biopsy 4/28/16. Pathology showed GS 4+4 1/10 
+cores 60%, GS 3+4 1 core, GS 3+3 3 cores. Left base was site of 4+4 disease. 
+Patient presents to discuss treatment options. He has Tc99 scan today and CT A/P 
+scheduled for 6/7/16.
+
+On interview, patient is doing well. No urinary symptoms. DVI 4+ hours. Nocturia 
+x 1. No urgency, hesitancy, or hematuria. Good stream. No bowel issues. Last 
+colonoscopy 5/2014. Sexually active and occasionally uses viagra. He does not 
+his wife to know that he uses viagra at times. No IBD, lupus/scleroderma, or 
+pacemaker.
+
+IPSS: 0-0-0-1-0-0-1: 2
+UBS: 1 no tremor
+IIEF: 21
+
+PAST MEDICAL HISTORY:
+ACTIVE PROBLEM
+Rhinitis, Allergic
+Paresthesia or sensory changes: ant
+Left Ventricular Hypertrophy
+HTN, Unspecified
+Hemecult (CA Screen)
+Pain in limb (ICD-9-CM 729.5)
+Obstruc Sleep Apnea
+Chronic post-traumatic stress disor
+DJD Knee (ICD-9-CM 715.98)
+Umbilical hernia * (ICD-9-CM 553.1)
+Osteoarthritis of knee (SNOMED CT 2
+Health Maintenance
+Asthma (SNOMED CT 195967001)
+Diabetes mellitus type 2 (SNOMED CT
+Myopia
+Cataract, Nuclear
+Peripheral sensory neuropathy * (IC
+Colonic Polyps
+Carpal Tunnel Syndrome
+Presbyopia
+Migraine, unspecified, without ment
+Meningioma * (ICD-9-CM 225.2/225.4)
+Gout (SNOMED CT 90560007)
+Acute anterior uveitis (SNOMED CT 4
+Rheumatoid arthritis (SNOMED CT 698
+Steroid-Induced Osteopenia
+Angioedema of lips
+Elevated PSA
+
+PAST SURGICAL HISTORY:
+Surgery - Principal Procedures: 
+1.  LT KNEE ARTHROSCOPY W/ DEBRIDEMENT on SEP 20,1995@13:45
+2.  UMBILICAL HERNIA REPAIR on APR 24,2006@14:50
+3.  MEDIASTINOSCOPY on JUN 16,2014@13:45
+
+Active Outpatient Medications:
+   TRAZODONE HCL 100MG TAB
+   CITALOPRAM HYDROBROMIDE 40MG TAB
+   ALBUTEROL SO4 0.083% INHL 3ML UD
+   BUDESONIDE 160/FORMOTER 4.5MCG 120D INH
+   METFORMIN HCL 500MG TAB
+   MONTELUKAST NA 10MG TAB
+   RANITIDINE HCL 150MG TAB
+   CHOLECALCIFEROL (VIT D3) 1,000UNIT TAB
+   ALLOPURINOL 100MG TAB
+   AMLODIPINE BESYLATE 10MG TAB
+   CALCIUM 500MG (CA CARB-1.25GM) TAB
+   DIPHENHYDRAMINE HCL 25MG CAP
+   PRAZOSIN HCL 1MG CAP
+   SILDENAFIL CITRATE 100MG TAB
+   HYDROXYCHLOROQUINE SULFATE 200MG TAB
+NonVA Medications:
+   GABAPENTIN 600MG TAB
+
+Medication list reconciled with patient via printed list. Patient confirms all 
+is accurate, and no new changes were made.
+
+ALLERGIES/ADR:HYDROCHLOROTHIAZIDE, LISINOPRIL
+
+SOCIAL HISTORY:
+Served in Army.  Now volunteers with DAV service. 
+Married. No tobacco use. Drinks alcohol on occasion. No illicit drugs
+
+FAMILY HISTORY:
+Non-contributory
+
+
+REVIEW OF SYSTEMS:
+Negative except as noted in the HPI above
+
+Vital signs
+BP 144/78 (05/27/2016 08:51)
+P 78 (05/27/2016 08:51)
+R 16 (05/27/2016 08:51)
+T 98.2 F [36.8 C] (05/27/2016 08:51)
+SpO2 Measurement DT    POx
+                  (L/MIN)(%)
+05/27/2016 08:51  96
+
+KPS 90
+Pain 0 (05/27/2016 08:51)
+Weight 195.3 lb [88.8 kg] (05/27/2016 08:51)
+
+GEN: Looks well nourished, healthy, NAD
+SKIN: No unusual lesions
+HEENT: Anicteric, conjuctiva pink
+LUNGS: CTAB, no DTP
+CV: RRR, no m/r/g
+ABDOMEN: Soft nt/nd, no masses
+NEURO: AAOx3, normal affect, CN/motor/sensory all wnl. 
+DRE: ~45cc gland, boggy prostate w/o nodules
+
+LABS:
+CBC Coll date       WBC     RBC     HGB     HCT     MCV     MCH     MCHC 
+6/11/15 14:24       5.3     5.2     15.2    45.2    87.4    29.4    33.6 
+
+CBC Coll date       RDW     PLT     MPV     LYMPH % MONO %  LYMPH   MONO 
+6/11/15 14:24       14.0    210     12.2                    2.4     0.4 
+
+PROSTATIC SPECIFIC ANTIGEN 
+12/16/15 12:42    5.65 H
+12/10/15 10:33    5.38 H
+
+IMAGING:
+- Pending as above
+
+PATHOLOGY:
+4/28/16 prostate bx:
+      A.  Prostate, right base #1, biopsy: Adenocarcinoma Gleason grade 6
+      (3+3) involving 10% of one core. 
+ 
+      B.  Prostate, right base #2, biopsy: Benign prostate tissue. 
+ 
+      C.  Prostate, right mid #1, biopsy: Benign prostate tissue. 
+ 
+      D.  Prostate, right mid #2, biopsy: Benign prostate tissue. 
+ 
+      E.  Prostate, right apex, biopsy: Benign prostate tissue. 
+ 
+      F.  Prostate, left base #1, biopsy: Adenocarcinoma Gleason grade 8
+      (4+4) involving 60% of one core. 
+ 
+      G.  Prostate, left base #2, biopsy: Adenocarcinoma Gleason grade 7
+      (3+4) involving 50% of one core. 
+ 
+      H.  Prostate, left mid #1, biopsy: Adenocarcinoma Gleason grade 6
+      (3+3) involving <2% of one core. 
+ 
+      I.  Prostate, left mid #2, biopsy: Adenocarcinoma Gleason grade 6
+      (3+3) involving 15% of one core. 
+ 
+      J.  Prostate, left apex, biopsy: Benign prostate tissue. 
+
+IMPRESSION:
+69 y/o with high risk prostate cancer. Assuming CT and Tc99 do not show evidence 
+of disease spread, discussed options for treatment including surgery, ADT + 
+EBRT, and trimodality therapy with ADT + EBRT + brachy boost. At this time 
+patient is leaning towards trimodality therapy, as it provides the ability for 
+shorter ADT duration. We will therefore start casodex today and meet with him 
+after his scans to finalize a treatment plan.
+
+RECOMMENDATION:
+- Tc99 scan today and CT A/P 6/9/16
+- MRI prostate ordered for late June to assess for ECE/SVI
+- RTC after CT scan to finalize treatment plan, and if he wishes to pursue 
+radiation, will start ADT at that time
+- Patient is candidate for RTOG 0924 looking at treating pelvic LNs versus not, 
+and will discuss study with him at next visit
+- Patient will contact us with questions or concerns
+
+05/27/2016 ADDENDUM                      STATUS: COMPLETED
+I saw the patient with the resident and agree with his note.
+The patient is a 69 year old male with stage group IIB, T1c N0 Mx adenoca of the 
+prostate, Gleason's 4+4 in 1 core with a total of 5 of 10 cores positive for 
+disease , PSA 5.65 ng/ml
+
+he is referred to us to discuss options for treatment.
+
+AUA score- 1
+IEFF- uses viagra
+exam- KPS 90
+pain-0
+
+no contrindications to therapy
+
+impression- high risk prostate cancer
+
+plan
+1) complete staging with bone scan and obtain mpMRI in 4 weeks which will 9 
+weeks post biopsy. Look for ECE or seminal vesical invasion. start casodex now. 
+Lupron in 2-3 weeks. recommend IMRT x 5 weeks, hormones and seed boost. given 
+AUA score, age and grade, combined modality RT is recommended. patient wants to 
+avoid risk of incontinence.
+
+will rtc in 4-6 weeks to go over results of scans and confirm treatment.
