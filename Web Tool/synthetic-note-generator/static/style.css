@@ -506,3 +506,289 @@ select.form-select:focus {
     color: #333;
     margin-bottom: 0.5rem;
 }
+
+/* Improved layout for the note display section */
+#noteDisplaySection {
+    margin-top: 2rem;
+    width: 100%;
+}
+
+/* Make sure the note selector has ample space */
+.note-selection {
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+#noteSelector {
+    min-width: 250px;
+    padding: 0.75rem;
+    border: 1px solid #ddd;
+    border-radius: 4px;
+    font-size: 16px;
+}
+
+/* Improved split view with more space */
+.note-split-view {
+    display: flex;
+    gap: 2.5rem;
+    margin-top: 1.5rem;
+    width: 100%;
+}
+
+/* Individual note panels with better proportions */
+.note-panel {
+    flex: 1;
+    min-width: 0; /* Allows proper text wrapping */
+    display: flex;
+    flex-direction: column;
+}
+
+/* Panel headers with sticky positioning */
+.panel-header {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #333;
+    margin-bottom: 1rem;
+    padding: 0.5rem 0;
+    background: white;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+}
+
+/* Content containers with improved readability */
+.note-content, 
+.note-data {
+    background: white;
+    border: 1px solid #ddd;
+    border-radius: 8px;
+    padding: 2rem;
+    flex-grow: 1;
+    overflow-x: auto;
+    white-space: pre-wrap;
+    word-wrap: break-word;
+    font-family: monospace;
+    font-size: 15px;
+    line-height: 1.6;
+    height: 500px; /* Fixed height for consistency */
+    overflow-y: auto;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+/* Export buttons section */
+.export-buttons {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1.5rem;
+    justify-content: flex-end;
+}
+
+.export-button {
+    padding: 0.75rem 1.5rem;
+    border: none;
+    border-radius: 4px;
+    font-size: 16px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.export-note {
+    background-color: #3b82f6;
+    color: white;
+}
+
+.export-note:hover {
+    background-color: #2563eb;
+}
+
+.export-json {
+    background-color: #22c55e;
+    color: white;
+}
+
+.export-json:hover {
+    background-color: #16a34a;
+}
+
+/* Add a regen checkbox container */
+.regen-options {
+    margin: 1.5rem 0;
+    display: flex;
+    gap: 2rem;
+}
+
+.regen-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.regen-checkbox input {
+    width: 18px;
+    height: 18px;
+}
+
+.regen-checkbox label {
+    font-size: 1rem;
+    margin-bottom: 0;
+}
+
+/* Make the note display section wider to use more page width */
+#noteDisplaySection {
+    max-width: 90vw; /* Use 90% of viewport width */
+    width: 1400px; /* Set a wide fixed width */
+    margin-left: auto;
+    margin-right: auto;
+}
+
+/* Ensure split view expands to full width */
+.note-split-view {
+    display: flex;
+    gap: 2rem;
+    width: 100%;
+}
+
+/* Give note panels equal width */
+.note-panel {
+    flex: 1;
+    min-width: 0; /* Allows text wrapping */
+}
+
+/* Add more space to content areas and increase font size for readability */
+.note-content, 
+.note-data {
+    padding: 1.5rem;
+    font-size: 15px;
+    line-height: 1.6;
+    height: 500px;
+    overflow-y: auto;
+}
+
+/* Only add these specific rules to your CSS file */
+
+/* Make the note display section wider and centered */
+#noteDisplaySection {
+    width: 90%; /* Use 90% of the available width */
+    max-width: 1400px; /* But no wider than 1400px */
+    margin-left: auto; /* Center using auto margins */
+    margin-right: auto;
+}
+
+/* Make the split view use the full width */
+.note-split-view {
+    display: flex;
+    gap: 2rem;
+    width: 100%;
+}
+
+/* Keep each panel at equal width */
+.note-panel {
+    flex: 1;
+}
+
+/* Make the content areas a bit more readable */
+.note-content, 
+.note-data {
+    height: 500px;
+    overflow-y: auto;
+}
+
+#noteDisplaySection {
+    max-width: 90vw; /* Use 90% of viewport width */
+    width: 1400px; /* Wide fixed width */
+    margin-left: 50%;
+    transform: translateX(-50%); /* Center the wider container */
+}
+
+/* Ensure the contents expand properly */
+.note-split-view {
+    display: flex;
+    gap: 2rem;
+    width: 100%;
+}
+
+.note-panel {
+    flex: 1;
+    min-width: 0; /* Allows for proper text wrapping */
+}
+
+/* Make text containers scrollable */
+.note-content, 
+.note-data {
+    height: 500px;
+    overflow-y: auto;
+}
+
+/* Export buttons container */
+.export-buttons {
+    margin-top: 2rem;
+    padding: 1.5rem;
+    background: white;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.export-buttons h3 {
+    margin-top: 0;
+    margin-bottom: 1rem;
+    color: #333;
+}
+
+.export-buttons h4 {
+    margin-top: 0;
+    margin-bottom: 0.75rem;
+    color: #555;
+    font-size: 1rem;
+}
+
+.export-buttons-grid {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 2rem;
+}
+
+.export-group {
+    min-width: 200px;
+}
+
+/* Button styles */
+.export-button {
+    display: block;
+    width: 100%;
+    padding: 0.75rem 1rem;
+    margin-bottom: 0.75rem;
+    border: none;
+    border-radius: 4px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    color: white;
+}
+
+.export-note {
+    background-color: #3b82f6;
+}
+
+.export-note:hover {
+    background-color: #2563eb;
+}
+
+.export-json {
+    background-color: #22c55e;
+}
+
+.export-json:hover {
+    background-color: #16a34a;
+}
+
+.export-all {
+    background-color: #8b5cf6;
+}
+
+.export-all:hover {
+    background-color: #7c3aed;
+}

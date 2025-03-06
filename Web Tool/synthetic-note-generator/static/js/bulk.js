@@ -34,7 +34,10 @@ class RangeManager {
             });
         }
 
-        // Handle preset selection changes - We'll set this up after populating the dropdowns
+        // Export buttons
+        document.getElementById('exportCurrentNote')?.addEventListener('click', () => this.exportCurrentNote());
+        document.getElementById('exportCurrentJson')?.addEventListener('click', () => this.exportCurrentJson());
+        document.getElementById('exportAllNotes')?.addEventListener('click', () => this.exportAllNotes());
     }
 
     // New method to populate range options from server data
@@ -123,6 +126,10 @@ class RangeManager {
 
     getSelectedRanges() {
         const ranges = {};
+        
+        // Add regeneration options to the ranges
+        ranges.regenerateHPI = document.getElementById('regenerateHPI')?.checked || false;
+        ranges.regenerateAssmPlan = document.getElementById('regenerateAssmPlan')?.checked || false;
         
         // Get numeric ranges from preset fields
         document.querySelectorAll('.range-preset').forEach(preset => {
@@ -245,6 +252,110 @@ class RangeManager {
         
         // Display note data
         noteData.textContent = JSON.stringify(note.data, null, 2);
+        
+        // Update export buttons visibility
+        this.updateExportButtons();
+    }
+    
+    // Export the currently displayed note as a text file
+    exportCurrentNote() {
+        const noteContent = document.getElementById('noteContent');
+        if (!noteContent || !noteContent.textContent) {
+            alert('No note content available to export');
+            return;
+        }
+        
+        const noteIndex = document.getElementById('noteSelector').value;
+        const blob = new Blob([noteContent.textContent], { type: 'text/plain' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = `synthetic_note_${parseInt(noteIndex) + 1}_${new Date().toISOString().split('T')[0]}.txt`;
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
+    }
+    
+    // Export the currently displayed note data as JSON
+    exportCurrentJson() {
+        const noteData = document.getElementById('noteData');
+        if (!noteData || !noteData.textContent) {
+            alert('No note data available to export');
+            return;
+        }
+        
+        try {
+            const noteIndex = document.getElementById('noteSelector').value;
+            const jsonData = JSON.parse(noteData.textContent);
+            const formattedJson = JSON.stringify(jsonData, null, 2);
+            const blob = new Blob([formattedJson], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `note_data_${parseInt(noteIndex) + 1}_${new Date().toISOString().split('T')[0]}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        } catch (error) {
+            alert('Error processing JSON data: ' + error.message);
+        }
+    }
+    
+    // Export all generated notes as a ZIP file
+    exportAllNotes() {
+        if (!this.generatedNotes || this.generatedNotes.length === 0) {
+            alert('No notes available to export');
+            return;
+        }
+        
+        // Create a new JSZip instance
+        const zip = new JSZip();
+        
+        // Create folders for text and JSON files
+        const textFolder = zip.folder("text_notes");
+        const jsonFolder = zip.folder("json_data");
+        
+        // Add each note to the ZIP
+        this.generatedNotes.forEach((note, index) => {
+            const noteNumber = index + 1;
+            
+            // Add text note
+            if (note.text) {
+                textFolder.file(`synthetic_note_${noteNumber}.txt`, note.text);
+            }
+            
+            // Add JSON data
+            if (note.data) {
+                jsonFolder.file(`note_data_${noteNumber}.json`, JSON.stringify(note.data, null, 2));
+            }
+        });
+        
+        // Generate the ZIP file
+        zip.generateAsync({ type: "blob" })
+            .then(function(content) {
+                // Create download link
+                const url = URL.createObjectURL(content);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `synthetic_notes_${new Date().toISOString().split('T')[0]}.zip`;
+                document.body.appendChild(a);
+                a.click();
+                document.body.removeChild(a);
+                URL.revokeObjectURL(url);
+            })
+            .catch(function(error) {
+                alert('Error creating ZIP file: ' + error.message);
+            });
+    }
+    
+    // Update the export buttons visibility and status
+    updateExportButtons() {
+        const exportButtons = document.querySelector('.export-buttons');
+        if (exportButtons) {
+            exportButtons.style.display = this.generatedNotes.length > 0 ? 'block' : 'none';
+        }
     }
 }
 

@@ -514,6 +514,20 @@
                     <div class="note-data" id="noteData"></div>
                 </div>
             </div>
+            <div class="export-buttons" style="display: none;">
+                <h3>Export Options</h3>
+                <div class="export-buttons-grid">
+                    <div class="export-group">
+                        <h4>Current Note</h4>
+                        <button type="button" id="exportCurrentNote" class="export-button export-note">Export Note</button>
+                        <button type="button" id="exportCurrentJson" class="export-button export-json">Export JSON</button>
+                    </div>
+                    <div class="export-group">
+                        <h4>All Notes</h4>
+                        <button type="button" id="exportAllNotes" class="export-button export-all">Export All Notes (ZIP)</button>
+                    </div>
+                </div>
+            </div>
         </section>
 
         <!-- Generate Button -->
@@ -523,5 +537,6 @@
     <script src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
     <script src="{{ url_for('static', filename='js/bulk.js') }}"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
 </body>
 </html>
