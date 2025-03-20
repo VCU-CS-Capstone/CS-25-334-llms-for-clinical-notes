@@ -197,7 +197,6 @@ def generate_note():
             
             # Regeneration options
             'regen_hpi':regenerate.get('regenerate_hpi', False),
-            # NOTE: regenerate_assmplan is not properly received from js, not sure why (sent as True and received as False)
             'regen_assmplan': regenerate.get('regenerate_assmplan', True),
         }
 
@@ -359,15 +358,9 @@ def generate_bulk_notes():
                 quantity = int(get_random_value_in_range(ranges['surgeries']))
                 if quantity > 0:
                     note_params['surgical_history'] = random.sample(surgery_list, min(quantity, len(surgery_list)))
-
-            regen_sections = data.get('regenSections', {}) or data.get('ranges', {})
-
+                    
             note_params['regen_hpi'] = regen_sections.get('regenerate_hpi') or regen_sections.get('regenerateHPI', False)
             note_params['regen_assmplan'] = regen_sections.get('regenerate_assmplan') or regen_sections.get('regenerateAssmPlan', False)
-
-            # Debugging
-            print(f"DEBUG: regen_hpi = {note_params['regen_hpi']}, Type: {type(note_params['regen_hpi'])}")
-            print(f"DEBUG: regen_assmplan = {note_params['regen_assmplan']}, Type: {type(note_params['regen_assmplan'])}")
 
             # Generate the note using the ConsultNote class
             note = ConsultNote(**note_params)
