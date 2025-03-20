@@ -199,10 +199,6 @@ def generate_note():
             'regen_hpi':regenerate.get('regenerate_hpi', False),
             'regen_assmplan': regenerate.get('regenerate_assmplan', True),
         }
-
-        print(f"regen_hpi: {processed_data['regen_hpi']}")
-        print(f"regen_assmplan: {processed_data['regen_assmplan']}")
-
         # Generate the note with the processed data
         note = ConsultNote(**processed_data)
         
