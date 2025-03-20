@@ -8,7 +8,11 @@ Please enter venv whenever changes are to be made.
 2. To enter venv use command (powershell): 
     - ".\env\Scripts\activate"
 2. To install requirements use command: "python -m pip install -r requirements.txt"
-3. When done using venv exit using: "deactivate"
+3. Since httpx needs to be reinstalled due to a dependancy issue with OpenAi, use:
+  ```
+  pip install --upgrade --force-reinstall httpx==0.27.2
+  ```
+4. When done using venv exit using: "deactivate"
 ***
 ## Running
 
