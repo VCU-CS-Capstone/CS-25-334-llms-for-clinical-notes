@@ -3,4 +3,4 @@
 
 # Ignore personal virtual environment for web tool
 Web Tool/env
-Web Tool\synthetic-note-generator\__pycache__
+Web Tool/synthetic-note-generator/__pycache__
