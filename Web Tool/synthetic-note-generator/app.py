@@ -108,7 +108,7 @@ def generate_note():
     try:
         data = request.get_json()
         
-        # Extract all nested data
+        # Extract all nested data (from note.py)
         patient = data.get('patient', {})
         note_type = data.get('noteType', {})
         include_sections = data.get('includeSections', {})
@@ -116,7 +116,8 @@ def generate_note():
         staging = data.get('staging', {})
         social_history = data.get('social_history', {})
         prior_treatment = data.get('prior_treatment', {})
-        
+        regenerate = data.get('regenSections', {})
+
         # Process the data with validation
         processed_data = {
             # Note type settings
@@ -195,9 +196,13 @@ def generate_note():
             'include_plan': include_sections.get('plan', True),
             
             # Regeneration options
-            'regen_hpi': data.get('regenSections', {}).get('regenerate_hpi', False),
-            'regen_assmplan': data.get('regenSections', {}).get('regenerate_assmplan', False),
+            'regen_hpi':regenerate.get('regenerate_hpi', False),
+            # NOTE: regenerate_assmplan is not properly received from js, not sure why (sent as True and received as False)
+            'regen_assmplan': regenerate.get('regenerate_assmplan', True),
         }
+
+        print(f"regen_hpi: {processed_data['regen_hpi']}")
+        print(f"regen_assmplan: {processed_data['regen_assmplan']}")
 
         # Generate the note with the processed data
         note = ConsultNote(**processed_data)
@@ -239,12 +244,13 @@ def generate_bulk_notes():
         data = request.get_json()
         num_notes = int(data.get('num_notes', 1))
         ranges = data.get('ranges', {})
+        regen_sections = data.get('regenSections', {}) or data.get('ranges', {})
 
         if num_notes < 1 or num_notes > 1000:
             return jsonify({
                 'error': 'Number of notes must be between 1 and 1000'
             }), 400
-
+        
         generated_notes = []
         for _ in range(num_notes):
             # Create note parameters based on ranges
@@ -353,6 +359,15 @@ def generate_bulk_notes():
                 quantity = int(get_random_value_in_range(ranges['surgeries']))
                 if quantity > 0:
                     note_params['surgical_history'] = random.sample(surgery_list, min(quantity, len(surgery_list)))
+
+            regen_sections = data.get('regenSections', {}) or data.get('ranges', {})
+
+            note_params['regen_hpi'] = regen_sections.get('regenerate_hpi') or regen_sections.get('regenerateHPI', False)
+            note_params['regen_assmplan'] = regen_sections.get('regenerate_assmplan') or regen_sections.get('regenerateAssmPlan', False)
+
+            # Debugging
+            print(f"DEBUG: regen_hpi = {note_params['regen_hpi']}, Type: {type(note_params['regen_hpi'])}")
+            print(f"DEBUG: regen_assmplan = {note_params['regen_assmplan']}, Type: {type(note_params['regen_assmplan'])}")
 
             # Generate the note using the ConsultNote class
             note = ConsultNote(**note_params)
