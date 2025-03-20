@@ -10,8 +10,6 @@ from dotenv import load_dotenv
 load_dotenv()
 key = os.environ.get("GROQ_API_KEY")
 
-
-
 def regenerate(note):
     request = random.choice(command_phrases)
     request += note
@@ -37,8 +35,6 @@ def regenerate(note):
     result = ""
     for chunk in completion:
         result += chunk.choices[0].delta.content or ""
-    print(result)
-    print(request)
     return result
 
 def replace_placeholders(text, mappings):
@@ -56,7 +52,7 @@ def regen_validation(regenerated_text, text):
         outside_values = re.findall(pattern, regenerated_text)
 
         if not outside_values and t2.issubset(t1):
-                print("\nThe regenerated text consists of a subset of the original template text and introduces no outside values.")
+                print("\nProper regeneration without alterations")
                 break
         else:
             print("\n*****Anomaly detected******")
