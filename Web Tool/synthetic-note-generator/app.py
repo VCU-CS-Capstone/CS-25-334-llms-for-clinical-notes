@@ -199,12 +199,15 @@ def generate_note():
             'regen_hpi':regenerate.get('regenerate_hpi', False),
             'regen_assmplan': regenerate.get('regenerate_assmplan', True),
         }
-        # Generate the note with the processed data
+        
+        # Create the note object
         note = ConsultNote(**processed_data)
         
-        # Convert any numpy types to Python native types
-        note_data = convert_numpy_types(note.get_data_fields())
-        note_text = note.get_text()
+        # First generate just the data fields
+        note_data = convert_numpy_types(note.generate_data())
+        
+        # Then generate the note text using the data
+        note_text = note.generate_note_from_data()
 
         return jsonify({
             'text': note_text,
@@ -225,13 +228,6 @@ def get_ranges():
         **PRESET_RANGES,
         **LIST_QUANTITY_RANGES
     })
-
-def get_random_value_in_range(range_values):
-    """Get a random value within the specified range"""
-    min_val, max_val = range_values
-    if isinstance(min_val, float) or isinstance(max_val, float):
-        return round(random.uniform(min_val, max_val), 2)
-    return random.randint(min_val, max_val)
 
 @app.route('/generate_bulk_notes', methods=['POST'])
 def generate_bulk_notes():
@@ -358,11 +354,18 @@ def generate_bulk_notes():
             note_params['regen_hpi'] = regen_sections.get('regenerate_hpi') or regen_sections.get('regenerateHPI', False)
             note_params['regen_assmplan'] = regen_sections.get('regenerate_assmplan') or regen_sections.get('regenerateAssmPlan', False)
 
-            # Generate the note using the ConsultNote class
+            # Generate the note using the ConsultNote class with the new separation of concerns
             note = ConsultNote(**note_params)
+            
+            # First generate just the data
+            note_data = convert_numpy_types(note.generate_data())
+            
+            # Then use the data to generate the note text
+            note_text = note.generate_note_from_data()
+            
             generated_notes.append({
-                'text': note.get_text(),
-                'data': convert_numpy_types(note.get_data_fields())
+                'text': note_text,
+                'data': note_data
             })
 
         return jsonify({
@@ -377,6 +380,13 @@ def generate_bulk_notes():
             'error': str(e),
             'trace': traceback.format_exc()
         }), 500
+
+def get_random_value_in_range(range_values):
+    """Get a random value within the specified range"""
+    min_val, max_val = range_values
+    if isinstance(min_val, float) or isinstance(max_val, float):
+        return round(random.uniform(min_val, max_val), 2)
+    return random.randint(min_val, max_val)
 
 if __name__ == '__main__':
     app.run(debug=True)
