@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Synthetic Note Generator - Choose Generation Type</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <div class="container landing-container">
+        <h1>Synthetic Note Generator</h1>
+        <div class="generation-choice">
+            <h2>Choose Generation Type</h2>
+            <div class="choice-buttons">
+                <a href="{{ url_for('single_note') }}" class="choice-button">
+                    <h3>Single Note Generation</h3>
+                    <p>Generate a single synthetic note with specific values</p>
+                </a>
+                <a href="{{ url_for('bulk_notes') }}" class="choice-button">
+                    <h3>Bulk Note Generation</h3>
+                    <p>Generate multiple notes with customizable value ranges</p>
+                </a>
+            </div>
+        </div>
+    </div>
+</body>
+</html>
