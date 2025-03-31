@@ -10,7 +10,7 @@ from dotenv import load_dotenv
 load_dotenv()
 key = os.environ.get("GROQ_API_KEY")
 
-def regenerate(note):
+def regenerate(note, temp=1.05):
     request = random.choice(command_phrases)
     request += note
 
@@ -25,7 +25,7 @@ def regenerate(note):
                 "content": request
             }
         ],
-        temperature=1.05,
+        temperature=temp,
         max_tokens=2048,
         top_p=1,
         stream=True,
@@ -45,6 +45,7 @@ def replace_placeholders(text, mappings):
 
 def regen_validation(regenerated_text, text):
     pattern = r'\b\d+\b(?!%)(?![^{}]*})'
+    newTemp = 1.0
     while (1):
         t1 = set(re.findall(r'\{(\d+)\}', text))
         t2 = set(re.findall(r'\{(\d+)\}', regenerated_text))
@@ -53,11 +54,15 @@ def regen_validation(regenerated_text, text):
 
         if not outside_values and t2.issubset(t1):
                 print("\nProper regeneration without alterations")
+                print("Original Text:", text, "\n")
+                print("Regen Text:", regenerated_text)
                 break
         else:
             print("\n*****Anomaly detected******")
             print("Regenerating text...")
-            regenerated_text = regenerate(text)
+            # Decrease temperature to prevent infinite loop regeneration
+            newTemp -= 0.01
+            regenerated_text = regenerate(text, newTemp)
     return regenerated_text
 
 def get_feature_probabilities():
