@@ -481,9 +481,9 @@ class ConsultNote(BaseNote):
                     '5. Dose: {8} cGy / {9} fractions\n')
 
 
-        if regen:
-            regenerated_text = regenerate(text)
-            text = regen_validation(regenerated_text, text)
+        # if regen:
+        #     regenerated_text = regenerate(text)
+        #     text = regen_validation(regenerated_text, text)
 
         text = replace_placeholders(text, mappings)
         # Checks for additional periods
