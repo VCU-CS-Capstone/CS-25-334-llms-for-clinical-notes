@@ -3,99 +3,19 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Clinical Note Section Generator</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            margin: 0;
-            padding: 0;
-            background-color: #f4f4f9;
-        }
-        .container {
-            max-width: 800px;
-            margin: 50px auto;
-            padding: 20px;
-            background: white;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-            border-radius: 8px;
-        }
-        h1 {
-            text-align: center;
-            color: #333;
-        }
-        .section {
-            padding: 20px;
-            background: #e9ecef;
-            margin: 20px 0;
-            border-radius: 8px;
-        }
-        .controls {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-        }
-        .controls label {
-            font-weight: bold;
-        }
-        .button {
-            padding: 10px 20px;
-            background: #007bff;
-            color: white;
-            border: none;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 16px;
-        }
-        #submit-button {
-            background: #28a745;
-        }
-        #submit-button:hover {
-            background: #218838;
-        }
-        .button:hover {
-            background: #0056b3;
-        }
-        .textarea {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-        }
-        .radio-group {
-            display: flex;
-            gap: 20px;
-            align-items: center;
-        }
-        .loading {
-            display: none;
-            text-align: center;
-            margin: 20px 0;
-            font-size: 18px;
-            color: #007bff;
-        }
-        .spinner {
-            display: inline-block;
-            border: 3px solid #f3f3f3;
-            border-top: 3px solid #007bff;
-            border-radius: 50%;
-            width: 24px;
-            height: 24px;
-            animation: spin 1s linear infinite;
-        }
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-    </style>
+    <title>Clinical Note Section Quiz</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
     <div class="container">
-        <h1>Clinical Note Section Generator Test</h1>
-        <div id="generated-section" class="section">Click "Generate Section" to start.</div>
+        <h1>Clinical Note Section Quiz</h1>
+        <div id="generated-section" class="section">
+            <div id="section-label"></div>
+            Click "Generate Section" to start.
+        </div>
         <div id="loading" class="loading">
             <div class="spinner"></div> Generating section, please wait...
         </div>
-
         <div class="controls">
             <button class="button" id="generate-button">Generate Section</button>
 
@@ -108,59 +28,12 @@
             <label>Why do you think so?</label>
             <textarea id="reason-input" class="textarea" rows="5" placeholder="Explain your reasoning..."></textarea>
 
-            <button class="button" id="submit-button">Submit</button>
+            <button class="button" id="next-button">Next</button>
         </div>
+
+        <div id="results" class="section" style="display: none;"></div>
     </div>
 
-    <script>
-        document.getElementById('generate-button').addEventListener('click', async () => {
-            document.getElementById('loading').style.display = 'block';
-
-            try {
-                const response = await fetch('/generate-section');
-                if (!response.ok) {
-                    throw new Error('Failed to fetch the section');
-                }
-
-                const data = await response.json();
-                document.getElementById('generated-section').innerText = data.section;
-            } catch (error) {
-                document.getElementById('generated-section').innerText = 'Error: ' + error.message;
-            } finally {
-                document.getElementById('loading').style.display = 'none';
-            }
-        });
-
-        document.getElementById('submit-button').addEventListener('click', async () => {
-            const noteType = document.querySelector('input[name="note-type"]:checked')?.value;
-            const reasoning = document.getElementById('reason-input').value;
-
-            if (!noteType || !reasoning.trim()) {
-                alert('Please select a note type and provide your reasoning.');
-                return;
-            }
-
-            try {
-                const response = await fetch('/submit-response', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json',
-                    },
-                    body: JSON.stringify({
-                        noteType,
-                        reasoning,
-                    }),
-                });
-
-                if (!response.ok) {
-                    throw new Error('Failed to submit the response');
-                }
-
-                alert('Response submitted successfully!');
-            } catch (error) {
-                alert('Error: ' + error.message);
-            }
-        });
-    </script>
+    <script src="{{ url_for('static', filename='js/script.js') }}"></script>
 </body>
 </html>
