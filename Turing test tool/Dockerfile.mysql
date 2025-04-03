@@ -5,7 +5,7 @@ FROM mysql:8.0
 WORKDIR /docker-entrypoint-initdb.d/
 
 # Copy the init.sql script to the initialization directory in the container
-COPY init.sql .
+COPY scripts/init.sql .
 
 # Expose the default MySQL port
 EXPOSE 3306
