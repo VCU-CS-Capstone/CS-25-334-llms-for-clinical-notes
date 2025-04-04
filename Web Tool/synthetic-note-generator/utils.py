@@ -4,14 +4,14 @@ from groq import Groq
 import os
 import calendar
 import re
-from constants import command_phrases
 from dotenv import load_dotenv
 
 load_dotenv()
 key = os.environ.get("GROQ_API_KEY")
 
-def regenerate(note, temp=1.05):
-    request = random.choice(command_phrases)
+def regenerate(note):
+    request = f'Regenerate this note in a formal, clinical manner. Keep existing placeholder numbers in their curly braces.'\
+              f'Do not add any numbers or uneccessary information. Do not use helper phrases such as "Here is the rewritten note".'
     request += note
 
     client = Groq(
@@ -25,7 +25,7 @@ def regenerate(note, temp=1.05):
                 "content": request
             }
         ],
-        temperature=temp,
+        temperature=1,
         max_tokens=2048,
         top_p=1,
         stream=True,
@@ -35,6 +35,7 @@ def regenerate(note, temp=1.05):
     result = ""
     for chunk in completion:
         result += chunk.choices[0].delta.content or ""
+    print(result)
     return result
 
 def replace_placeholders(text, mappings):
@@ -43,26 +44,21 @@ def replace_placeholders(text, mappings):
         return str(mappings.get(index, match.group(0)))
     return re.sub(r'\{(\d+)\}', replacement, text)
 
+
 def regen_validation(regenerated_text, text):
     pattern = r'\b\d+\b(?!%)(?![^{}]*})'
-    newTemp = 1.0
-    while (1):
+    while True:
         t1 = set(re.findall(r'\{(\d+)\}', text))
         t2 = set(re.findall(r'\{(\d+)\}', regenerated_text))
-
         outside_values = re.findall(pattern, regenerated_text)
 
         if not outside_values and t2.issubset(t1):
-                print("\nProper regeneration without alterations")
-                print("Original Text:", text, "\n")
-                print("Regen Text:", regenerated_text)
-                break
+            print("\nValidation passed.")
+            break
         else:
-            print("\n*****Anomaly detected******")
-            print("Regenerating text...")
-            # Decrease temperature to prevent infinite loop regeneration
-            newTemp -= 0.01
-            regenerated_text = regenerate(text, newTemp)
+            print("\n***** Anomaly detected. Regenerating... *****")
+            regenerated_text = regenerate(text)
+
     return regenerated_text
 
 def get_feature_probabilities():

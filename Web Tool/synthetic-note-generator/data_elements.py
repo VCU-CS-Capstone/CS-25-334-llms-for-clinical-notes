@@ -297,7 +297,7 @@ class Colonoscopy(BaseClass):
             self._text = f'He last had colonoscopy on {colonoscopy_date}.'
             self._value = True
         elif index == 3:
-            self._text = f'Had a colonoscopy on {colonoscopy_date.month}/{colonoscopy_date.year} with polyps showing ' \
+            self._text = f'Had colonoscopy on {colonoscopy_date.month}/{colonoscopy_date.year} with polyps showing ' \
                        f'tubular adenoma.'
             self._value = True
         elif index == 4:
@@ -305,7 +305,7 @@ class Colonoscopy(BaseClass):
                        f'colonoscopy in {colonoscopy_date.year} also revealed {random.randint(1, 3)} benign polyps.'
             self._value = True
         elif index == 5:
-            self._text = f'He had a colonoscopy {random.randint(1, 12)} months ago, no polyps but has internal ' \
+            self._text = f'He had colonoscopy {random.randint(1, 12)} months ago, no polyps but has internal ' \
                        f'hemorrhoid, denies rectal pain/bleeding.'
             self._value = True
         else:
