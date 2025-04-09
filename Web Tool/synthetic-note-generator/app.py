@@ -215,7 +215,25 @@ def generate_bulk_notes():
         for _ in range(num_notes):
             note_params = {}
 
+            # Handle note type selection
+            note_type = ranges.get('noteType', 'random')
+            if note_type == 'random':
+                # Randomly select one of the four note types
+                clinical_note_type = random.choice(['initial', 'followup', 'treatment', 'summary'])
+            else:
+                clinical_note_type = note_type
+            
+            note_params['clinical_note_type'] = clinical_note_type
+
+            # Process regeneration options
+            note_params['regen_hpi'] = ranges.get('regenerateHPI', False)
+            note_params['regen_assmplan'] = ranges.get('regenerateAssmPlan', False)
+
             for field, range_values in ranges.items():
+                if field in ['noteType', 'regenerateHPI', 'regenerateAssmPlan']:
+                    # Skip these as they're handled separately
+                    continue
+                
                 if field == 'age':
                     note_params['patient_age'] = get_random_value_in_range(range_values)
                 elif field in ['aua', 'ipss', 'shim', 'ecog', 'performance_score']:
@@ -246,6 +264,27 @@ def generate_bulk_notes():
             if 'surgeries' in ranges:
                 quantity = get_random_value_in_range(ranges['surgeries'])
                 note_params['surgical_history'] = random.sample(surgery_list, min(max(0, quantity), len(surgery_list)))
+
+            # Handle categorical selections if present in ranges
+            categorical_fields = {
+                'sex': 'patient_sex',
+                'race': 'patient_race',
+                'ethnicity': 'patient_ethnicity',
+                'tnm': 'tnm',
+                'riskLevel': 'risk_level',
+                'groupStage': 'group_stage',
+                'alcoholHistory': 'alcohol_history',
+                'smokingStatus': 'smoking_status',
+                'prostatectomy': 'prostatectomy',
+                'colonoscopy': 'colonoscopy',
+                'priorRt': 'prior_rt',
+                'chemotherapy': 'chemotherapy_prescribed',
+                'hormoneTherapy': 'hormone_therapy_prescribed'
+            }
+            
+            for js_field, py_field in categorical_fields.items():
+                if js_field in ranges and ranges[js_field] != 'random':
+                    note_params[py_field] = ranges[js_field]
 
             note = ConsultNote(**note_params)
             generated_notes.append({
