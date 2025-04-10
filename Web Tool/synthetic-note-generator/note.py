@@ -423,6 +423,8 @@ class ConsultNote(BaseNote):
         hpi_index = random.randint(0, 13)
         prior_psa_text = ('\tDate\tPSA\n')
         biopsy = ''
+        # Create mappings in order to ensure that LLM rephrasing doesn't insert random values. The mappings are eventually replaced after either rephrasing
+        # or text regeneration. 
         mappings = {
             1: self.patient.age,
             2: self.patient.sex.value,
@@ -519,48 +521,66 @@ class ConsultNote(BaseNote):
             text = regen_validation(text)
 
         text = replace_placeholders(text, mappings)
+        # Replaces double period problem with mapping {10}
+        text = re.sub(r'\.\.', '.', text)
         return text
 
     def assessment_plan(self, regen=False):
-        self.dose_data = Dose()
         plan_index = random.randint(1, 5)
+
+        # Create mappings in order to ensure that LLM rephrasing doesn't insert random values. The mappings are eventually replaced after either rephrasing
+        # or text regeneration. 
+        mappings = {
+            1: self.patient.last_name,
+            2: self.patient.age,
+            3: self.patient.sex.value,
+            4: self.staging.risk,
+            5: self.staging.histology,
+            6: self.staging.group_stage,
+            7: self.current_biopsy.gleason,
+            8: self.dose_data.total_dose,
+            9: self.dose_data.num_fractions,
+            10: self.dose_data.weeks_of_rt,
+            11: self.staging.tnm,
+            12: self.ecog,
+            13: self.current_psa.psa_score
+        }
         
         if plan_index == 1:
-            text = f'Assessment: Mr. {self.patient.last_name} is a {self.patient.age} year old {self.patient.sex.value} diagnosed with ' \
-                   f'{self.staging.risk} prostate {self.staging.histology}. Stage ' \
-                   f'{self.staging.group_stage} {self.staging.risk} risk disease with Gleason {self.current_biopsy.gleason} and most ' \
-                   f'recent PSA {self.current_psa.psa_score}. Treatment plan includes combined hormone ' \
-                   f'therapy and external beam radiation to a dose of {self.dose_data.total_dose} cGy in ' \
-                   f'{self.dose_data.num_fractions} fractions over {self.dose_data.weeks_of_rt} weeks using Image ' \
-                   f'Guided IMRT.\n\nTreatment plan follows NCCN guidelines.'
+            text = ('Assessment: Mr. {1} is a {2} year old {3} diagnosed with '
+                    '{4} prostate {5}. Stage '
+                    '{6} {4} risk disease with Gleason {7} and most '
+                    'recent PSA {13}. Treatment plan includes combined hormone '
+                    'therapy and external beam radiation to a dose of {8} cGy in '
+                    '{9} fractions over {10} weeks using Image '
+                    'Guided IMRT.\n\nTreatment plan follows NCCN guidelines.')
         elif plan_index == 2:
-            text = f'ASSESSMENT AND PLAN:\n' \
-                   f'1. {self.staging.risk} risk prostate cancer, {self.staging.tnm}, Gleason {self.current_biopsy.gleason}\n' \
-                   f'2. Will proceed with external beam radiation therapy\n' \
-                   f'3. Treatment dose: {self.dose_data.total_dose} cGy in {self.dose_data.num_fractions} fractions\n' \
-                   f'4. Will arrange for fiducial marker placement\n' \
-                   f'5. Follow-up scheduled in {random_time_period(2, 4, "week")}\n'
+            text = ('ASSESSMENT AND PLAN:\n'
+                    '1. {4} risk prostate cancer, {11}, Gleason {7}\n'
+                    '2. Will proceed with external beam radiation therapy\n'
+                    '3. Treatment dose: {8} cGy in {9} fractions\n'
+                    '4. Will arrange for fiducial marker placement\n'
+                    '5. Follow-up scheduled in {14}\n')
         elif plan_index == 3:
-            text = f'PLAN:\n' \
-                   f'We discussed treatment options in detail today. Given the patient\'s {self.staging.risk} risk disease, ' \
-                   f'we recommend definitive radiation therapy with total dose {self.dose_data.total_dose} cGy. ' \
-                   f'Treatment will be delivered over {self.dose_data.weeks_of_rt} weeks using IMRT/IGRT technique. ' \
-                   f'Side effects and expectations were discussed in detail.'
+            text = ('PLAN:\n'
+                    'We discussed treatment options in detail today. Given the patient\'s {4} risk disease, '
+                    'we recommend definitive radiation therapy with total dose {8} cGy. '
+                    'Treatment will be delivered over {10} weeks using IMRT/IGRT technique. '
+                    'Side effects and expectations were discussed in detail.')
         elif plan_index == 4:
-            text = f'Treatment Recommendation:\n' \
-                   f'For {self.patient.age} year old {self.patient.sex.value} with {self.staging.risk} risk prostate cancer, ' \
-                   f'recommend definitive radiation therapy. Will treat to {self.dose_data.total_dose} cGy in ' \
-                   f'{self.dose_data.num_fractions} fractions using IMRT/IGRT. ' \
-                   f'Current performance status ECOG {self.ecog}. Will proceed with treatment planning.'
+            text = ('Treatment Recommendation:\n'
+                    'For {2} year old {3} with {4} risk prostate cancer, '
+                    'recommend definitive radiation therapy. Will treat to {8} cGy in '
+                    '{9} fractions using IMRT/IGRT. '
+                    'Current performance status ECOG {12}. Will proceed with treatment planning.')
         else:
-            text = f'ASSESSMENT AND PLAN:\n' \
-                   f'1. Stage {self.staging.tnm} prostate cancer\n' \
-                   f'2. Gleason score {self.current_biopsy.gleason}\n' \
-                   f'3. PSA {self.current_psa.psa_score}\n' \
-                   f'4. Will proceed with radiation therapy planning\n' \
-                   f'5. Dose: {self.dose_data.total_dose} cGy / {self.dose_data.num_fractions} fractions\n'
+            text = ('ASSESSMENT AND PLAN:\n'
+                    '1. Stage {11} prostate cancer\n'
+                    '2. Gleason score {7}\n'
+                    '3. PSA {13}\n'
+                    '4. Will proceed with radiation therapy planning\n'
+                    '5. Dose: {8} cGy / {9} fractions\n')
 
-<<<<<<< HEAD
 
         if regen:
                 text = regen_validation(text, hpi=False)
@@ -568,9 +588,4 @@ class ConsultNote(BaseNote):
         text = replace_placeholders(text, mappings)
         # Checks for additional periods
         text = re.sub(r'\.\.', '.', text)
-=======
-        if regen:
-            regenerated_text = regenerate(text)
-            text = regen_validation(regenerated_text, text)
->>>>>>> f07e32f2a8a89f1234843f178d485359ad139c9f
         return text
