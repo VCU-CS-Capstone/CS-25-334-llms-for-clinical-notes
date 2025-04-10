@@ -207,3 +207,4 @@ asmplan_command_phrases = [
     'Transform this note into a clinical, concise version. Retain placeholder numbers in curly braces without adding new numbers or unnecessary details. Omit preambles like "Here is the rewritten note".\n',
     'Rephrase this note with a clinical and formal tone, ensuring placeholder numbers in curly braces are preserved. Do not include additional numbers or extraneous information.\n'
 ]
+
