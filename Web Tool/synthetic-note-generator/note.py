@@ -1,16 +1,16 @@
 import datetime
 import random
+import re
 from constants import states, header_titles
-from utils import get_feature_probabilities, random_time_period, format_date, regenerate, replace_placeholders, \
-    regen_validation
+from utils import get_feature_probabilities, random_time_period, format_date, regenerate, replace_placeholders, regen_validation
 from data_elements import Patient, Author, PSA, Biopsy, Colonoscopy, Prostatectomy, AUA, SHIM, IPSS, ECOG, Vitals, \
     NoteDate, ProblemList, Imaging, SocialHistory, FamilyHistory, PriorTreatment, Allergies, Medications, \
     PerformanceScore, Staging, Dose, DateOffset
 
-
 class BaseNote:
     def __init__(self):
         self.note_text = ''
+        self.data_fields = {}
         self.feature_probabilities = get_feature_probabilities()
         self.base_date = NoteDate(offset_days=random.randint(0, 1000), direction=DateOffset.AFTER)
         self.patient = Patient()
@@ -19,35 +19,57 @@ class BaseNote:
         self.note_author = Author()
         self.note_cosigner = Author(create=self.is_cosigner)
         self.dose_data = None
-
-    def get_data_fields(self):
-        self.dose_data = {
+        
+    def generate_data(self):
+        """Generate all data fields for the note"""
+        self.data_fields = {
             'patient': self.patient,
             'note_author': self.note_author,
             'note_cosigner': self.note_cosigner,
             'base_date': self.base_date,
             'dose_data': self.dose_data
         }
-        return self.dose_data
+        return self.data_fields
+    
+    def generate_note_from_data(self):
+        """Generate the note text using the data fields"""
+        # Override in subclasses
+        pass
+
+    def get_data_fields(self):
+        """Return data fields, generating them if needed"""
+        if not self.data_fields:
+            self.generate_data()
+        return self.data_fields
+
+    def get_text(self):
+        """Return the note text, generating it if needed"""
+        if not self.note_text:
+            # Ensure data fields are generated first
+            if not self.data_fields:
+                self.generate_data()
+            # Generate the note using the data
+            self.generate_note_from_data()
+        return self.note_text
 
 
 class ConsultNote(BaseNote):
     def __init__(self, **kwargs):
         super().__init__()
-
+        
         # Initialize note type
-        self.note_type = kwargs.get('clinical_note_type', 'consult').lower()
-        self.note_generation_type = kwargs.get('note_generation_type', 'single').lower()
-
-        # Initialize section toggles based on note type
+        self.note_type = kwargs.get('clinical_note_type', 'consult')
+        self.note_generation_type = kwargs.get('note_generation_type', 'single')
+        
+        # Initialize section toggles
         self.include_sections = {
-            'hpi': kwargs.get('include_hpi', True) and self.note_type in ['initial', 'consult'],
+            'hpi': kwargs.get('include_hpi', True),
             'vitals': kwargs.get('include_vitals', True),
-            'social': kwargs.get('include_social', True) and self.note_type in ['initial', 'consult'],
+            'social': kwargs.get('include_social', True),
             'medical': kwargs.get('include_medical', True),
             'exam': kwargs.get('include_exam', True),
             'imaging': kwargs.get('include_imaging', True),
-            'plan': kwargs.get('include_plan', True) and self.note_type != 'summary'
+            'plan': kwargs.get('include_plan', True)
         }
 
         # Initialize regeneration options
@@ -55,144 +77,147 @@ class ConsultNote(BaseNote):
             'hpi_regen': kwargs.get('regen_hpi', False),
             'assessment_regen': kwargs.get('regen_assmplan', False)
         }
+        
+        # Store all kwargs for later use when generating data
+        self.kwargs = kwargs
 
+    def generate_data(self):
+        """Generate all data fields for the note"""
         # Initialize base date and patient
-        if kwargs.get('base_date'):
-            self.base_date = NoteDate(reference_date=kwargs.get('base_date'))
+        if self.kwargs.get('base_date'):
+            self.base_date = NoteDate(reference_date=self.kwargs.get('base_date'))
         else:
             self.base_date = NoteDate(offset_days=random.randint(0, 1000), direction=DateOffset.AFTER)
-
+        
         # Initialize patient demographics
         self.patient = Patient(
-            age=kwargs.get('patient_age'),
-            sex=kwargs.get('patient_sex'),
-            race=kwargs.get('patient_race'),
-            ethnicity=kwargs.get('patient_ethnicity'),
-            first_name=kwargs.get('patient_first_name'),
-            last_name=kwargs.get('patient_last_name'),
+            age=self.kwargs.get('patient_age'),
+            sex=self.kwargs.get('patient_sex'),
+            race=self.kwargs.get('patient_race'),
+            ethnicity=self.kwargs.get('patient_ethnicity'),
+            first_name=self.kwargs.get('patient_first_name'),
+            last_name=self.kwargs.get('patient_last_name'),
             reference_date=self.base_date.value
         )
 
-        # Initialize authors
-        if kwargs.get('note_author'):
-            self.note_author = Author(create=True, name=kwargs.get('note_author'))
+        # Initialize authors with provided values or defaults
+        if self.kwargs.get('note_author'):
+            self.note_author = Author(create=True, name=self.kwargs.get('note_author'))
         else:
             self.note_author = Author()
 
-        if kwargs.get('note_cosigner'):
+        if self.kwargs.get('note_cosigner'):
             self.is_cosigner = True
-            self.note_cosigner = Author(create=True, name=kwargs.get('note_cosigner'))
+            self.note_cosigner = Author(create=True, name=self.kwargs.get('note_cosigner'))
         else:
             self.is_cosigner = True if random.random() <= self.feature_probabilities['note_cosigner'] else False
             self.note_cosigner = Author(create=self.is_cosigner)
-
-        # Initialize PSA history
-        psa_value = kwargs.get('psa_score')
+        
+        # Initialize PSA history with provided value if available
+        psa_value = self.kwargs.get('psa_score')
         self.psa_history = self.generate_psa(psa_value)
         self.current_psa = self.psa_history[0]
-
-        # Initialize biopsy
+        
+        # Initialize biopsy with Gleason scores if provided
         self.biopsy_history = self.generate_biopsies(
-            gleason_primary=kwargs.get('gleason_primary'),
-            gleason_secondary=kwargs.get('gleason_secondary')
+            gleason_primary=self.kwargs.get('gleason_primary'),
+            gleason_secondary=self.kwargs.get('gleason_secondary')
         )
         self.current_biopsy = self.biopsy_history[0]
-
-        # Initialize medical values
-        self.aua = AUA(value=kwargs.get('aua'))
-        self.ipss = IPSS(value=kwargs.get('ipss'))
-        self.shim = SHIM(value=kwargs.get('shim'))
-        self.ecog = ECOG(value=kwargs.get('ecog'))
-
-        # Initialize lists
-        self.medications = Medications(medications=kwargs.get('medications'))
-        self.allergies = Allergies(allergies=kwargs.get('allergies'))
+        
+        # Initialize other medical values
+        self.aua = AUA(value=self.kwargs.get('aua'))
+        self.ipss = IPSS(value=self.kwargs.get('ipss'))
+        self.shim = SHIM(value=self.kwargs.get('shim'))
+        self.ecog = ECOG(value=self.kwargs.get('ecog'))
+        
+        # Initialize lists with provided values or random ones
+        self.medications = Medications(medications=self.kwargs.get('medications'))
+        self.allergies = Allergies(allergies=self.kwargs.get('allergies'))
         self.problem_list = ProblemList(
-            active_problems=kwargs.get('problem_list'),
-            surgical_history=kwargs.get('surgical_history')
+            active_problems=self.kwargs.get('problem_list'),
+            surgical_history=self.kwargs.get('surgical_history')
         )
-
+        
         # Initialize treatment records
-        self.colonoscopy = Colonoscopy(value=kwargs.get('colonoscopy'))
+        self.colonoscopy = Colonoscopy(value=self.kwargs.get('colonoscopy'))
         self.prostatectomy = Prostatectomy(
-            value=kwargs.get('prostatectomy'),
+            value=self.kwargs.get('prostatectomy'),
             patient_last_name=self.patient.last_name
         )
-
-        # Initialize vitals
+        
+        # Initialize vitals with provided values
         self.vitals = Vitals(
-            temperature=kwargs.get('temperature'),
-            systolic=kwargs.get('blood_pressure_systolic'),
-            diastolic=kwargs.get('blood_pressure_diastolic'),
-            pulse=kwargs.get('pulse'),
-            respiration=kwargs.get('respiration'),
-            weight=kwargs.get('weight'),
-            pain=kwargs.get('pain')
+            temperature=self.kwargs.get('temperature'),
+            systolic=self.kwargs.get('blood_pressure_systolic'),
+            diastolic=self.kwargs.get('blood_pressure_diastolic'),
+            pulse=self.kwargs.get('pulse'),
+            respiration=self.kwargs.get('respiration'),
+            weight=self.kwargs.get('weight'),
+            pain=self.kwargs.get('pain')
         )
-
+        
         self.staging = Staging(
-            risk_level=kwargs.get('risk_level'),
-            tnm=kwargs.get('tnm'),
-            group_stage=kwargs.get('group_stage'),
-            histology=kwargs.get('histology')
+            risk_level=self.kwargs.get('risk_level'),
+            tnm=self.kwargs.get('tnm'),
+            group_stage=self.kwargs.get('group_stage'),
+            histology=self.kwargs.get('histology')
         )
-
-        # Initialize dates
-        if kwargs.get('mri_date'):
-            self.mri_date = NoteDate(reference_date=kwargs.get('mri_date'))
+        
+        # Initialize dates - wrap all in NoteDate objects
+        if self.kwargs.get('mri_date'):
+            self.mri_date = NoteDate(reference_date=self.kwargs.get('mri_date'))
         else:
             self.mri_date = NoteDate(reference_date=self.base_date.value, direction=DateOffset.BEFORE, offset_days=200)
-
+            
         # Initialize imaging dates
-        pelvic_ct_date = kwargs.get('pelvic_ct_date')
-        pelvic_mri_date = kwargs.get('pelvic_mri_date')
-        bone_scan_date = kwargs.get('bone_scan_date')
+        pelvic_ct_date = self.kwargs.get('pelvic_ct_date')
+        pelvic_mri_date = self.kwargs.get('pelvic_mri_date')
+        bone_scan_date = self.kwargs.get('bone_scan_date')
 
-        self.pelvic_ct = kwargs.get('pelvic_ct_date') and NoteDate(reference_date=pelvic_ct_date) or \
-                         Imaging(image_type='pelvic_ct', base_date=self.base_date.value)
-        self.pelvic_mri = kwargs.get('pelvic_mri_date') and NoteDate(reference_date=pelvic_mri_date) or \
-                          Imaging(image_type='pelvic_mri', base_date=self.base_date.value)
-        self.bone_scan = kwargs.get('bone_scan_date') and NoteDate(reference_date=bone_scan_date) or \
-                         Imaging(image_type='bone_scan', base_date=self.base_date.value)
-
-        # Initialize histories
+        self.pelvic_ct = self.kwargs.get('pelvic_ct_date') and NoteDate(reference_date=pelvic_ct_date) or \
+                        Imaging(image_type='pelvic_ct', base_date=self.base_date.value)
+        self.pelvic_mri = self.kwargs.get('pelvic_mri_date') and NoteDate(reference_date=pelvic_mri_date) or \
+                         Imaging(image_type='pelvic_mri', base_date=self.base_date.value)
+        self.bone_scan = self.kwargs.get('bone_scan_date') and NoteDate(reference_date=bone_scan_date) or \
+                        Imaging(image_type='bone_scan', base_date=self.base_date.value)
+        
+        # Initialize histories with provided values
         self.social_history = SocialHistory(
             reference_date=self.base_date.value,
-            alcohol_history=kwargs.get('alcohol_history'),
-            smoking_history=kwargs.get('smoking_history')
+            alcohol_history=self.kwargs.get('alcohol_history'),
+            smoking_history=self.kwargs.get('smoking_history')
         )
-
+        
         self.family_history = FamilyHistory()
-
-        # Initialize prior treatment
-        prior_rt_date = kwargs.get('prior_rt_date')
-        hormone_therapy_date = kwargs.get('hormone_therapy_date')
-
+        
+        # Wrap prior treatment dates in NoteDate objects
+        prior_rt_date = self.kwargs.get('prior_rt_date')
+        hormone_therapy_date = self.kwargs.get('hormone_therapy_date')
+        
         self.prior_treatment = PriorTreatment(
             reference_date=self.base_date.value,
-            prior_rt=kwargs.get('prior_rt'),
+            prior_rt=self.kwargs.get('prior_rt'),
             prior_rt_date=prior_rt_date and NoteDate(reference_date=prior_rt_date),
-            chemotherapy_prescribed=kwargs.get('chemotherapy_prescribed'),
-            chemotherapy_drugs=kwargs.get('chemotherapy_drugs'),
-            hormone_therapy_prescribed=kwargs.get('hormone_therapy_prescribed'),
+            chemotherapy_prescribed=self.kwargs.get('chemotherapy_prescribed'),
+            chemotherapy_drugs=self.kwargs.get('chemotherapy_drugs'),
+            hormone_therapy_prescribed=self.kwargs.get('hormone_therapy_prescribed'),
             hormone_therapy_date=hormone_therapy_date and NoteDate(reference_date=hormone_therapy_date)
         )
-
-        self.performance_score = PerformanceScore(value=kwargs.get('performance_score'))
-
-    def get_text(self):
-        if self.note_text == '':
-            self.generate_note()
-        return self.note_text
-
-    def get_data_fields(self):
+        
+        self.performance_score = PerformanceScore(value=self.kwargs.get('performance_score'))
+        
+        # Initialize dose data
+        self.dose_data = Dose()
+        
+        # Store all data in data_fields dictionary
         if self.dose_data is not None:
             dose_data = self.dose_data.value
         else:
             dose_data = None
-
-        data_fields = {
-            'note_type': self.note_type,
+            
+        self.data_fields = {
+            'note_type': 'consult',
             'patient': self.patient.value,
             'note_author': self.note_author.value,
             'note_cosigner': self.note_cosigner.value,
@@ -220,160 +245,47 @@ class ConsultNote(BaseNote):
             'staging': self.staging.value,
             'mri_date': format_date(self.mri_date.value, date_format=2)
         }
+        
+        return self.data_fields
 
-        return data_fields
-
-    class NoteDate:
-        def __init__(self, reference_date=None, offset_days=0, direction=DateOffset.AFTER):
-            if reference_date:
-                self.value = reference_date
-            else:
-                base_date = datetime.date.today()
-                if direction == DateOffset.AFTER:
-                    self.value = base_date + datetime.timedelta(days=offset_days)
-                else:
-                    self.value = base_date - datetime.timedelta(days=offset_days)
-
-        def __str__(self):
-            return format_date(self.value)
-
-    def get_header(self):
-        """Generate header with note type identification"""
-        note_type_headers = {
-            'initial': 'INITIAL CONSULT NOTE',
-            'followup': 'FOLLOW-UP NOTE',
-            'treatment': 'ON-TREATMENT VISIT NOTE',
-            'summary': 'TREATMENT SUMMARY NOTE',
-            'consult': 'RADIATION ONCOLOGY CONSULT'  # default
-        }
-
-        header_title = note_type_headers.get(self.note_type, 'RADIATION ONCOLOGY NOTE')
-        text = f'{random.choice(header_titles)}\n'
-        text += f'Site: {random.choice(states)}\n'
-        text += f'Date: {self.base_date} \tAuthor: {self.note_author}\n\n'
-        text += f'LOCAL TITLE:\n'
-        text += f'STANDARD TITLE: {header_title}\n'
-        text += f'DATE OF NOTE: {self.base_date}\tENTRY DATE: {self.base_date}\n'
-        text += f'\tAUTHOR: {self.note_author}\t\tEXP COSIGNER: {self.note_cosigner}\n'
-        text += f'\tURGENCY\t\tSTATUS: COMPLETED\n'
-        return text
-
-    def generate_note(self):
-        """Generate note based on note type"""
+    def generate_note_from_data(self):
+        """Generate the note text using the data fields"""
         self.note_text = ''
         self.note_text += self.get_header()
-
-        if self.note_type == 'initial':
-            self.note_text += self._generate_initial_content()
-        elif self.note_type == 'followup':
-            self.note_text += self._generate_followup_content()
-        elif self.note_type == 'summary':
-            self.note_text += self._generate_summary_content()
-        elif self.note_type == 'treatment':  # New on-treatment visit type
-            self.note_text += self._generate_treatment_content()
-        else:  # Default consult
-            self.note_text += self._generate_consult_content()
-
+        
+        if self.include_sections['hpi']:
+            if self.regen_sections['hpi_regen']:
+                self.note_text += self.hpi(regen=True)
+            else:
+                self.note_text += self.hpi()
+        
+        if self.include_sections['exam']:
+            self.note_text += self.physical_exam()
+            
+        if self.include_sections['medical']:
+            self.note_text += str(self.problem_list)
+            self.note_text += str(self.medications)
+            self.note_text += str(self.allergies)
+            
+        if self.include_sections['imaging']:
+            self.note_text += str(self.pelvic_ct)
+            self.note_text += str(self.pelvic_mri)
+            self.note_text += str(self.bone_scan)
+            
+        if self.include_sections['social']:
+            self.note_text += str(self.social_history)
+            self.note_text += str(self.family_history)
+            self.note_text += str(self.prior_treatment)
+            
+        if self.include_sections['plan']:
+            if self.regen_sections['assessment_regen']:
+                self.note_text += self.assessment_plan(regen=True)
+            else:
+                self.note_text += self.assessment_plan()
+            
         self.note_text += self.get_footer()
-
-    def _generate_treatment_content(self):
-        """Generate content for on-treatment visits"""
-        # Initialize dose_data if not present
-        if self.dose_data is None:
-            self.dose_data = Dose()
-
-        content = '\nON-TREATMENT VISIT:\n'
-        content += f'Treatment Day: {random.randint(1, 45)} of {self.dose_data.num_fractions}\n'
-        content += f'Fractions Delivered: {random.randint(1, self.dose_data.num_fractions)}\n'
-        content += f'Current Dose: {round(self.dose_data.total_dose * 0.8)}cGy\n\n'
-
-        content += 'CURRENT SYMPTOMS:\n'
-        content += self._generate_treatment_side_effects()
-        content += str(self.vitals)
-        content += str(self.medications)
-        content += self._generate_treatment_assessment()
-        return content
-
-    def _generate_treatment_side_effects(self):
-        """Generate common radiation therapy side effects"""
-        side_effects = [
-            'Denies acute toxicity',
-            'Reports grade 1 fatigue',
-            'Mild skin erythema at treatment site',
-            'Occasional urinary frequency',
-            'Mild rectal irritation',
-            'No significant toxicities reported'
-        ]
-        return f'- {random.choice(side_effects)}\n- {random.choice(side_effects)}\n\n'
-
-    def _generate_treatment_assessment(self):
-        """Generate treatment-specific assessment"""
-        assessment = '\nTREATMENT ASSESSMENT:\n'
-        assessment += 'Patient tolerating treatment well. '
-        assessment += 'No significant deviations from treatment plan.\n'
-        assessment += f'Next treatment scheduled for {format_date(self.base_date.value + datetime.timedelta(days=1))}\n'
-        return assessment
-
-    def _generate_initial_content(self):
-        content = ''
-        if self.include_sections['hpi']:
-            content += self.hpi()
-        if self.include_sections['exam']:
-            content += self.physical_exam()
-        content += str(self.problem_list)
-        content += str(self.medications)
-        content += str(self.allergies)
-        content += str(self.social_history)
-        content += str(self.family_history)
-        content += self.assessment_plan()
-        return content
-
-    def _generate_followup_content(self):
-        content = ''
-        if self.include_sections['hpi']:
-            content += self.hpi(regen=True)
-        if self.include_sections['exam']:
-            content += self.physical_exam()
-        content += str(self.vitals)
-        content += str(self.medications)
-        content += self.assessment_plan()
-        return content
-
-    def _generate_summary_content(self):
-
-        if self.dose_data is None:
-            self.dose_data = Dose()
-
-        content = '\nTREATMENT SUMMARY:\n'
-        content += f'Patient: {self.patient.first_name} {self.patient.last_name}\n'
-        content += f'MRN: {random.randint(100000, 999999)}\n'
-        content += f'Diagnosis: {self.staging.risk} risk prostate cancer\n'
-
-        start_date = self.base_date.value - datetime.timedelta(days=30)
-        end_date = self.base_date.value
-        content += f'Treatment Dates: {format_date(start_date)} to {format_date(end_date)}\n'
-
-        if self.dose_data:
-            content += f'Total Dose: {self.dose_data.total_dose}cGy in {self.dose_data.num_fractions} fractions\n'
-        else:
-            content += 'Total Dose: Not specified\n'
-
-        content += '\nFINAL ASSESSMENT:\n'
-        content += 'Treatment completed without significant complications. '
-        content += 'Patient tolerated treatment well with minimal side effects.'
-        return content
-
-    def _generate_consult_content(self):
-        content = ''
-        if self.include_sections['hpi']:
-            content += self.hpi()
-        if self.include_sections['exam']:
-            content += self.physical_exam()
-        content += str(self.problem_list)
-        content += str(self.medications)
-        content += str(self.allergies)
-        content += self.assessment_plan()
-        return content
+        
+        return self.note_text
 
     def physical_exam(self):
         text = '\nPhysical Exam:\n'
@@ -406,17 +318,30 @@ class ConsultNote(BaseNote):
             ))
         return psa_entries
 
+    def get_header(self):
+        text = f'{random.choice(header_titles)}\n'
+        text += f'Site: {random.choice(states)}\n'
+        text += f'Date: {self.base_date} \tAuthor: {self.note_author}\n\n'
+        text += f'LOCAL TITLE:\n'
+        text += f'STANDARD TITLE: RADIATION ONCOLOGY CONSULT\n'
+        text += f'DATE OF NOTE: {self.base_date}\tENTRY DATE: {self.base_date}\n'
+        text += f'\tAUTHOR: {self.note_author}\t\tEXP COSIGNER: {self.note_cosigner}\n'
+        text += f'\tURGENCY\t\tSTATUS: COMPLETED\n'
+        return text
+
     def get_footer(self):
+        title = ['Attending', 'Staff Physician Radiation Oncologist', 'STAFF PHYSICIAN,RADIATION ONCO']
+        title_choice = random.choice(title)
         text = f'\n\n/es/ {self.note_author}\n'
         if self.is_cosigner:
-            text += f'Resident Physician\n'
-            text += f'Electronically Signed: {self.base_date}\n\n'
-            text += 'Cosigned By:\n'
-            text += f'/es/ {self.note_cosigner}\t{self.base_date}\n'
-            text += 'Attending Radiation Oncologist'
+            text += 'Resident\n'
+            text += f'Signed: {self.base_date}\n\n'
+            text += 'Receipt Acknowledged By:\n'
+            text += f'{self.base_date}\t\t/es/ {self.note_cosigner}\n'
+            text += title_choice
         else:
-            text += 'Attending Radiation Oncologist\n'
-            text += f'Electronically Signed: {self.base_date}\n'
+            text += title_choice + '\n'
+            text += f'Signed: {self.base_date}\n'
         return text
     
     def hpi(self, regen=False):
@@ -586,6 +511,6 @@ class ConsultNote(BaseNote):
                 text = regen_validation(text, hpi=False)
 
         text = replace_placeholders(text, mappings)
-        # Checks for additional periods
+        # Checks for added periods
         text = re.sub(r'\.\.', '.', text)
         return text
