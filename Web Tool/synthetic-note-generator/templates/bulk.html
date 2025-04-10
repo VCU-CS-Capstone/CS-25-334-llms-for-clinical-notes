@@ -21,6 +21,16 @@
                 <label for="numberOfNotes">Number of Notes to Generate:</label>
                 <input type="number" id="numberOfNotes" min="1" max="1000" value="5">
             </div>
+            <div class="input-group">
+                <label for="noteTypeSelect">Note Type:</label>
+                <select id="noteTypeSelect" class="range-preset">
+                    <option value="random">Random Note Type</option>
+                    <option value="initial">Only Initial Consultation</option>
+                    <option value="followup">Only Follow-Up</option>
+                    <option value="treatment">Only On-Treatment Visit</option>
+                    <option value="summary">Only Treatment Summary</option>
+                </select>
+            </div>
         </section>
 
         <!-- Patient Demographics -->

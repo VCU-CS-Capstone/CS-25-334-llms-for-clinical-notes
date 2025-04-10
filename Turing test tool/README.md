@@ -1,38 +1,50 @@
+# Turing Test Tool
 
-## Prerequisites
+This app serves randomized clinical note sections from a MySQL database and allows users to guess if they're synthetic or real. Responses are saved as text files.
 
-Ensure you have the following installed:
-- Python 3.8 or higher
-- Pip (Python package manager)
+## Getting Started
 
-After cloning, update the directory path in section.py for the clinical notes in the code to point to the correct location on your local machine where the notes are stored.
+### Prerequisites
 
-## Installation
+- Docker installed
+- Docker Desktop running
 
-1. **Create a virtual environment**:
-   ```bash
-   python -m venv venv
-   source venv/bin/activate  # On Windows: venv\Scripts\activate
-   ```
+## Running the App
 
-2. **Install dependencies**:
-   ```bash
-   pip install -r requirements.txt
-   ```
+1. Clone the repo and open the project folder.
+2. Make sure Docker is running.
+3. Run the app:
 
-3. **Set up environment variables**:
-   - Create a `.env` file in the root directory.
-   - Add your OpenAI API key to the file, API key can be created here -  https://platform.openai.com/api-keys :
-     ```
-     OPENAI_API_KEY=your_openai_api_key
-     ```
+   docker-compose up --build
 
-## Running the Application
+4. Once running, open your browser at:
 
-1. **Start the Flask server**:
-   ```bash
-   python section.py
-   ```
+   http://localhost:5001
 
-2. **Access the interface**:
-   Open a web browser and navigate to `http://127.0.0.1:5000/`.
+## API Endpoints
+
+- GET /generate-section  
+  Returns a random clinical note section from the database.
+
+- POST /submit-response  
+  Submits the user's guess and reasoning. Saves a text file in `responses/`.
+
+## Response File Location
+
+Response files are saved to /responses
+
+This folder is mounted into the container at /app/responses using Docker volumes.
+
+## Stopping the App
+
+To stop everything and remove containers + database data:
+
+docker-compose down -v
+
+## Troubleshooting
+
+- Port already in use?  
+  Change the host port in `docker-compose.yml` (e.g., 3308:3306 or 5003:5000)
+
+- Response file not saving?  
+  Make sure the `responses/` folder exists and is correctly mounted.

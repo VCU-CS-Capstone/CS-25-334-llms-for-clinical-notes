@@ -41,7 +41,7 @@ Status Report Fall Week XX.md is a template for to copy-paste into new Status re
 | Week 7 Status Report | Continue work on individual tasks. Implement Groq rephrasing for bulk generation. | Worked on individual tasks. Bulk generation done. Quiz format for turing test done. | No Problems to Report! |
 | Week 8 Status Report | Finish up remaining tasks. | Worked on individual tasks. | No Problems to Report! |
 | Week 9 Status Report | Finalize Abstract and poster | Worked on iteration of abstract and poster | No Problems to Report! |
-| Week 10 Status Report | | | |
+| Week 10 Status Report | Make final tweaks. | Discussed smaller things to finish up. | No Problems to Report! |
 | Week 11 Status Report | | | |
 | Week 12 Status Report | | | |
 | Week 13 Status Report | | | |

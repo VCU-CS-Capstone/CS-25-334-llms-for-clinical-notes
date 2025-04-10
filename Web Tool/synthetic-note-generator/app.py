@@ -4,12 +4,13 @@ import traceback
 from datetime import datetime
 import numpy as np
 import json
+import random
 from constants import medication_list, allergy_list, problem_list, surgery_list
 from constants import PRESET_RANGES, LIST_QUANTITY_RANGES
-import random
 
 app = Flask(__name__)
 
+# ---------- Custom JSON Encoder for numpy + datetime ----------
 class CustomJSONEncoder(json.JSONEncoder):
     def default(self, obj):
         if isinstance(obj, np.integer):
@@ -22,9 +23,9 @@ class CustomJSONEncoder(json.JSONEncoder):
             return obj.isoformat()
         elif hasattr(obj, 'to_dict'):
             return obj.to_dict()
-        return super(CustomJSONEncoder, self).default(obj)
+        return super().default(obj)
 
-app.json_encoder = CustomJSONEncoder
+app.json_encoder = CustomJSONEncoder  # Deprecated in Flask 2.3+, consider migration if needed
 
 def convert_numpy_types(obj):
     if isinstance(obj, dict):
@@ -39,63 +40,52 @@ def convert_numpy_types(obj):
         return obj.tolist()
     return obj
 
+# ---------- Safe Parsing Helpers ----------
 def safe_int(value, default=None, min_val=None, max_val=None):
-    """Safely convert value to integer with bounds checking"""
     if not value:
         return default
     try:
         result = int(value)
-        if min_val is not None and result < min_val:
-            return default
-        if max_val is not None and result > max_val:
+        if (min_val is not None and result < min_val) or (max_val is not None and result > max_val):
             return default
         return result
     except ValueError:
         return default
 
 def safe_float(value, default=None, min_val=None, max_val=None):
-    """Safely convert value to float with bounds checking"""
     if not value:
         return default
     try:
         result = float(value)
-        if min_val is not None and result < min_val:
-            return default
-        if max_val is not None and result > max_val:
+        if (min_val is not None and result < min_val) or (max_val is not None and result > max_val):
             return default
         return result
     except ValueError:
         return default
 
 def parse_date(date_str):
-    """Parse date string to datetime object"""
     if not date_str:
         return None
     try:
-        # Convert to datetime.date instead of datetime.datetime
-        dt = datetime.strptime(date_str, '%Y-%m-%d')
-        return dt.date()  # Return just the date portion
+        return datetime.strptime(date_str, '%Y-%m-%d').date()
     except ValueError:
         return None
 
+# ---------- Routes ----------
 @app.route('/')
 def index():
-    """Landing page to choose between single or bulk generation"""
     return render_template('landing.html')
 
 @app.route('/single')
 def single_note():
-    """Original single note generation page"""
-    return render_template('index.html')  
+    return render_template('index.html')
 
 @app.route('/bulk')
 def bulk_notes():
-    """New bulk note generation page"""
-    return render_template('bulk.html') 
+    return render_template('bulk.html')
 
 @app.route('/get_options')
 def get_options():
-    """Endpoint to provide options for dropdowns"""
     return jsonify({
         'medications': medication_list,
         'allergies': allergy_list,
@@ -103,12 +93,16 @@ def get_options():
         'surgery_list': surgery_list
     })
 
+@app.route('/get_ranges')
+def get_ranges():
+    return jsonify({**PRESET_RANGES, **LIST_QUANTITY_RANGES})
+
+# ---------- Single Note Generation ----------
 @app.route('/generate_note', methods=['POST'])
 def generate_note():
     try:
         data = request.get_json()
-        
-        # Extract all nested data (from note.py)
+
         patient = data.get('patient', {})
         note_type = data.get('noteType', {})
         include_sections = data.get('includeSections', {})
@@ -116,48 +110,39 @@ def generate_note():
         staging = data.get('staging', {})
         social_history = data.get('social_history', {})
         prior_treatment = data.get('prior_treatment', {})
-        regenerate = data.get('regenSections', {})
 
-        # Process the data with validation
         processed_data = {
-            # Note type settings
             'note_generation_type': note_type.get('generation'),
-            'clinical_note_type': note_type.get('clinical'),
-                
-            # Patient demographics
+            'clinical_note_type': note_type.get('clinical', 'consult').lower(),
+
             'patient_age': safe_int(patient.get('age'), None, 18, 100),
             'patient_sex': patient.get('sex'),
             'patient_race': patient.get('race'),
             'patient_ethnicity': patient.get('ethnicity'),
             'patient_first_name': patient.get('first_name'),
             'patient_last_name': patient.get('last_name'),
-                
-            # Authors - Fixed field names to match form
+
             'note_author': data.get('note_author'),
             'note_cosigner': data.get('note_cosigner'),
-            
-            # Medical values
+
             'aua': safe_int(data.get('aua')),
             'ipss': safe_int(data.get('ipss')),
             'shim': safe_int(data.get('shim')),
             'ecog': safe_int(data.get('ecog')),
             'psa_score': safe_float(data.get('psa', {}).get('score')),
             'performance_score': safe_int(data.get('performance_score')),
-            
-            # Lists
+
             'medications': data.get('medications', []),
             'allergies': data.get('allergies', []),
             'problem_list': data.get('problem_list', {}).get('active_problems', []),
             'surgical_history': data.get('problem_list', {}).get('surgical_history', []),
-            
-            # Dates
+
             'base_date': parse_date(data.get('base_date')),
             'mri_date': parse_date(data.get('mri_date')),
             'pelvic_ct_date': parse_date(data.get('pelvic_ct')),
             'pelvic_mri_date': parse_date(data.get('pelvic_mri')),
             'bone_scan_date': parse_date(data.get('bone_scan')),
-            
-            # Vitals
+
             'temperature': safe_float(vitals.get('temperature')),
             'blood_pressure_systolic': safe_int(vitals.get('blood_pressure', {}).get('systolic')),
             'blood_pressure_diastolic': safe_int(vitals.get('blood_pressure', {}).get('diastolic')),
@@ -165,28 +150,23 @@ def generate_note():
             'respiration': safe_int(vitals.get('respiration')),
             'weight': safe_int(vitals.get('weight')),
             'pain': safe_int(vitals.get('pain')),
-            
-            # Staging
+
             'risk_level': staging.get('risk'),
             'tnm': staging.get('tnm'),
             'group_stage': staging.get('group_stage'),
             'histology': staging.get('histology'),
-            
-            # Treatment
+
             'prostatectomy': data.get('prostatectomy'),
             'colonoscopy': data.get('colonoscopy'),
-            
-            # Prior treatment
+
             'prior_rt': prior_treatment.get('prior_rt'),
             'prior_rt_date': parse_date(prior_treatment.get('prior_rt_date')),
             'chemotherapy_prescribed': prior_treatment.get('chemotherapy_prescribed'),
             'hormone_therapy_prescribed': prior_treatment.get('hormone_therapy_prescribed'),
-            
-            # Social history
+
             'alcohol_history': social_history.get('alcohol_history'),
             'smoking_history': social_history.get('smoking_history'),
-            
-            # Section toggles
+
             'include_hpi': include_sections.get('hpi', True),
             'include_vitals': include_sections.get('vitals', True),
             'include_social': include_sections.get('social', True),
@@ -194,40 +174,31 @@ def generate_note():
             'include_exam': include_sections.get('exam', True),
             'include_imaging': include_sections.get('imaging', True),
             'include_plan': include_sections.get('plan', True),
-            
-            # Regeneration options
-            'regen_hpi':regenerate.get('regenerate_hpi', False),
-            'regen_assmplan': regenerate.get('regenerate_assmplan', True),
+
+            'regen_hpi': data.get('regenSections', {}).get('regenerate_hpi', False),
+            'regen_assmplan': data.get('regenSections', {}).get('regenerate_assmplan', False),
         }
-        
-        # Create the note object
+
         note = ConsultNote(**processed_data)
-        
-        # First generate just the data fields
-        note_data = convert_numpy_types(note.generate_data())
-        
-        # Then generate the note text using the data
-        note_text = note.generate_note_from_data()
+        note_data = convert_numpy_types(note.get_data_fields())
+        note_text = note.get_text()
 
         return jsonify({
             'text': note_text,
             'data': note_data
         })
-    except Exception as e:
-        print(f"Error generating note: {str(e)}")
-        print(traceback.format_exc())
-        return jsonify({
-            'error': str(e),
-            'trace': traceback.format_exc()
-        }), 500
 
-@app.route('/get_ranges')
-def get_ranges():
-    """Return all preset ranges for the frontend"""
-    return jsonify({
-        **PRESET_RANGES,
-        **LIST_QUANTITY_RANGES
-    })
+    except Exception as e:
+        print("Error generating note:", e)
+        print(traceback.format_exc())
+        return jsonify({'error': str(e), 'trace': traceback.format_exc()}), 500
+
+# ---------- Bulk Note Generation ----------
+def get_random_value_in_range(range_values):
+    min_val, max_val = range_values
+    if isinstance(min_val, float) or isinstance(max_val, float):
+        return round(random.uniform(min_val, max_val), 2)
+    return random.randint(min_val, max_val)
 
 @app.route('/generate_bulk_notes', methods=['POST'])
 def generate_bulk_notes():
@@ -235,158 +206,99 @@ def generate_bulk_notes():
         data = request.get_json()
         num_notes = int(data.get('num_notes', 1))
         ranges = data.get('ranges', {})
-        regen_sections = data.get('regenSections', {}) or data.get('ranges', {})
 
-        if num_notes < 1 or num_notes > 1000:
-            return jsonify({
-                'error': 'Number of notes must be between 1 and 1000'
-            }), 400
-        
+        if not (1 <= num_notes <= 1000):
+            return jsonify({'error': 'Number of notes must be between 1 and 1000'}), 400
+
         generated_notes = []
+
         for _ in range(num_notes):
-            # Create note parameters based on ranges
             note_params = {}
-            
-            # Handle basic numeric ranges
-            if 'age' in ranges:
-                note_params['patient_age'] = get_random_value_in_range(ranges['age'])
-            
-            if 'aua' in ranges:
-                note_params['aua'] = get_random_value_in_range(ranges['aua'])
-                
-            if 'ipss' in ranges:
-                note_params['ipss'] = get_random_value_in_range(ranges['ipss'])
-                
-            if 'shim' in ranges:
-                note_params['shim'] = get_random_value_in_range(ranges['shim'])
-                
-            if 'ecog' in ranges:
-                note_params['ecog'] = get_random_value_in_range(ranges['ecog'])
-                
-            if 'psa' in ranges:
-                note_params['psa_score'] = get_random_value_in_range(ranges['psa'])
-                
-            if 'performance_score' in ranges:
-                note_params['performance_score'] = get_random_value_in_range(ranges['performance_score'])
-                
-            if 'temperature' in ranges:
-                note_params['temperature'] = get_random_value_in_range(ranges['temperature'])
-                
-            if 'systolic' in ranges:
-                note_params['blood_pressure_systolic'] = get_random_value_in_range(ranges['systolic'])
-                
-            if 'diastolic' in ranges:
-                note_params['blood_pressure_diastolic'] = get_random_value_in_range(ranges['diastolic'])
-                
-            if 'pulse' in ranges:
-                note_params['pulse'] = get_random_value_in_range(ranges['pulse'])
-                
-            if 'respiration' in ranges:
-                note_params['respiration'] = get_random_value_in_range(ranges['respiration'])
-                
-            if 'weight' in ranges:
-                note_params['weight'] = get_random_value_in_range(ranges['weight'])
-                
-            if 'pain' in ranges:
-                note_params['pain'] = get_random_value_in_range(ranges['pain'])
 
-            # Handle categorical fields
-            if 'sexSelect' in ranges:
-                note_params['patient_sex'] = ranges['sexSelect']
-                
-            if 'raceSelect' in ranges:
-                note_params['patient_race'] = ranges['raceSelect']
-                
-            if 'ethnicitySelect' in ranges:
-                note_params['patient_ethnicity'] = ranges['ethnicitySelect']
-                
-            if 'tnmSelect' in ranges:
-                note_params['tnm'] = ranges['tnmSelect']
-                
-            if 'riskLevelSelect' in ranges:
-                note_params['risk_level'] = ranges['riskLevelSelect']
-                
-            if 'groupStageSelect' in ranges:
-                note_params['group_stage'] = ranges['groupStageSelect']
-                
-            if 'alcoholHistorySelect' in ranges:
-                note_params['alcohol_history'] = ranges['alcoholHistorySelect']
-                
-            if 'smokingStatusSelect' in ranges:
-                note_params['smoking_history'] = {'smoking_status': ranges['smokingStatusSelect']}
-                
-            if 'prostatectomySelect' in ranges:
-                note_params['prostatectomy'] = ranges['prostatectomySelect']
-                
-            if 'colonoscopySelect' in ranges:
-                note_params['colonoscopy'] = ranges['colonoscopySelect'] == 'true'
-                
-            if 'priorRtSelect' in ranges:
-                note_params['prior_rt'] = ranges['priorRtSelect'] == 'true'
-                
-            if 'chemotherapySelect' in ranges:
-                note_params['chemotherapy_prescribed'] = ranges['chemotherapySelect'] == 'true'
-                
-            if 'hormoneTherapySelect' in ranges:
-                note_params['hormone_therapy_prescribed'] = ranges['hormoneTherapySelect'] == 'true'
+            # Handle note type selection
+            note_type = ranges.get('noteType', 'random')
+            if note_type == 'random':
+                # Randomly select one of the four note types
+                clinical_note_type = random.choice(['initial', 'followup', 'treatment', 'summary'])
+            else:
+                clinical_note_type = note_type
+            
+            note_params['clinical_note_type'] = clinical_note_type
 
-            # Handle list quantities
+            # Process regeneration options
+            note_params['regen_hpi'] = ranges.get('regenerateHPI', False)
+            note_params['regen_assmplan'] = ranges.get('regenerateAssmPlan', False)
+
+            for field, range_values in ranges.items():
+                if field in ['noteType', 'regenerateHPI', 'regenerateAssmPlan']:
+                    # Skip these as they're handled separately
+                    continue
+                
+                if field == 'age':
+                    note_params['patient_age'] = get_random_value_in_range(range_values)
+                elif field in ['aua', 'ipss', 'shim', 'ecog', 'performance_score']:
+                    note_params[field] = get_random_value_in_range(range_values)
+                elif field == 'psa':
+                    note_params['psa_score'] = get_random_value_in_range(range_values)
+                elif field == 'temperature':
+                    note_params['temperature'] = get_random_value_in_range(range_values)
+                elif field == 'systolic':
+                    note_params['blood_pressure_systolic'] = get_random_value_in_range(range_values)
+                elif field == 'diastolic':
+                    note_params['blood_pressure_diastolic'] = get_random_value_in_range(range_values)
+                elif field in ['pulse', 'respiration', 'weight', 'pain']:
+                    note_params[field] = get_random_value_in_range(range_values)
+
             if 'medications' in ranges:
-                quantity = int(get_random_value_in_range(ranges['medications']))
-                if quantity > 0:
-                    note_params['medications'] = random.sample(medication_list, min(quantity, len(medication_list)))
-            
-            if 'allergies' in ranges:
-                quantity = int(get_random_value_in_range(ranges['allergies']))
-                if quantity > 0:
-                    note_params['allergies'] = random.sample(allergy_list, min(quantity, len(allergy_list)))
-            
-            if 'problems' in ranges:
-                quantity = int(get_random_value_in_range(ranges['problems']))
-                if quantity > 0:
-                    note_params['problem_list'] = random.sample(problem_list, min(quantity, len(problem_list)))
-            
-            if 'surgeries' in ranges:
-                quantity = int(get_random_value_in_range(ranges['surgeries']))
-                if quantity > 0:
-                    note_params['surgical_history'] = random.sample(surgery_list, min(quantity, len(surgery_list)))
-                    
-            note_params['regen_hpi'] = regen_sections.get('regenerate_hpi') or regen_sections.get('regenerateHPI', False)
-            note_params['regen_assmplan'] = regen_sections.get('regenerate_assmplan') or regen_sections.get('regenerateAssmPlan', False)
+                quantity = get_random_value_in_range(ranges['medications'])
+                note_params['medications'] = random.sample(medication_list, min(max(0, quantity), len(medication_list)))
 
-            # Generate the note using the ConsultNote class with the new separation of concerns
+            if 'allergies' in ranges:
+                quantity = get_random_value_in_range(ranges['allergies'])
+                note_params['allergies'] = random.sample(allergy_list, min(max(0, quantity), len(allergy_list)))
+
+            if 'problems' in ranges:
+                quantity = get_random_value_in_range(ranges['problems'])
+                note_params['problem_list'] = random.sample(problem_list, min(max(0, quantity), len(problem_list)))
+
+            if 'surgeries' in ranges:
+                quantity = get_random_value_in_range(ranges['surgeries'])
+                note_params['surgical_history'] = random.sample(surgery_list, min(max(0, quantity), len(surgery_list)))
+
+            # Handle categorical selections if present in ranges
+            categorical_fields = {
+                'sex': 'patient_sex',
+                'race': 'patient_race',
+                'ethnicity': 'patient_ethnicity',
+                'tnm': 'tnm',
+                'riskLevel': 'risk_level',
+                'groupStage': 'group_stage',
+                'alcoholHistory': 'alcohol_history',
+                'smokingStatus': 'smoking_status',
+                'prostatectomy': 'prostatectomy',
+                'colonoscopy': 'colonoscopy',
+                'priorRt': 'prior_rt',
+                'chemotherapy': 'chemotherapy_prescribed',
+                'hormoneTherapy': 'hormone_therapy_prescribed'
+            }
+            
+            for js_field, py_field in categorical_fields.items():
+                if js_field in ranges and ranges[js_field] != 'random':
+                    note_params[py_field] = ranges[js_field]
+
             note = ConsultNote(**note_params)
-            
-            # First generate just the data
-            note_data = convert_numpy_types(note.generate_data())
-            
-            # Then use the data to generate the note text
-            note_text = note.generate_note_from_data()
-            
             generated_notes.append({
-                'text': note_text,
-                'data': note_data
+                'text': note.get_text(),
+                'data': convert_numpy_types(note.get_data_fields())
             })
 
-        return jsonify({
-            'notes': generated_notes,
-            'count': len(generated_notes)
-        })
+        return jsonify({'notes': generated_notes, 'count': len(generated_notes)})
 
     except Exception as e:
-        print(f"Error generating bulk notes: {str(e)}")
+        print("Error generating bulk notes:", e)
         print(traceback.format_exc())
-        return jsonify({
-            'error': str(e),
-            'trace': traceback.format_exc()
-        }), 500
+        return jsonify({'error': str(e), 'trace': traceback.format_exc()}), 500
 
-def get_random_value_in_range(range_values):
-    """Get a random value within the specified range"""
-    min_val, max_val = range_values
-    if isinstance(min_val, float) or isinstance(max_val, float):
-        return round(random.uniform(min_val, max_val), 2)
-    return random.randint(min_val, max_val)
-
+# ---------- Main ----------
 if __name__ == '__main__':
     app.run(debug=True)

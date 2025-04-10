@@ -163,6 +163,11 @@ class RangeManager {
             'smokingStatusSelect', 'prostatectomySelect', 'colonoscopySelect',
             'priorRtSelect', 'chemotherapySelect', 'hormoneTherapySelect'
         ];
+
+        const noteTypeSelect = document.getElementById('noteTypeSelect');
+        if (noteTypeSelect) {
+            ranges.noteType = noteTypeSelect.value;
+        }
         
         categoryFields.forEach(fieldId => {
             const select = document.getElementById(fieldId);

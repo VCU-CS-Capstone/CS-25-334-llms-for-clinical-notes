@@ -4,18 +4,28 @@ from groq import Groq
 import os
 import calendar
 import re
+<<<<<<< HEAD
 from constants import hpi_command_phrases, asmplan_command_phrases
+=======
+>>>>>>> f07e32f2a8a89f1234843f178d485359ad139c9f
 from dotenv import load_dotenv
 
 load_dotenv()
 key = os.environ.get("GROQ_API_KEY")
 
+<<<<<<< HEAD
 def regenerate(note, temp=1.05, commandType='hpi'):
     # Different sections require different command types when regenerating
     if commandType == 'asmplan':
         request = random.choice(asmplan_command_phrases)
     else:
         request = random.choice(hpi_command_phrases)
+=======
+def regenerate(note):
+    request = f'Regenerate this note in a formal, clinical manner. Keep existing placeholder numbers in their curly braces.'\
+              f'Do not add any numbers or uneccessary information. Do not use helper phrases such as "Here is the rewritten note".'
+    request += note
+>>>>>>> f07e32f2a8a89f1234843f178d485359ad139c9f
 
     request += note
     client = Groq(
@@ -29,7 +39,7 @@ def regenerate(note, temp=1.05, commandType='hpi'):
                 "content": request
             }
         ],
-        temperature=temp,
+        temperature=1,
         max_tokens=2048,
         top_p=1,
         stream=True,
@@ -39,6 +49,7 @@ def regenerate(note, temp=1.05, commandType='hpi'):
     result = ""
     for chunk in completion:
         result += chunk.choices[0].delta.content or ""
+    print(result)
     return result
 
 def replace_placeholders(text, mappings):
@@ -47,6 +58,7 @@ def replace_placeholders(text, mappings):
         index = int(match.group(1))
         return str(mappings.get(index, match.group(0)))
 
+<<<<<<< HEAD
     # Last resort, delete unmapped bracketed numbers such as {32}
     # This code cleanly deletes them without removing any '\n's
     cleaned_lines = []
@@ -83,12 +95,18 @@ def regen_validation(text, hpi=True):
 
     while (1):
         # Makes sure that bracketed values in the regenerated text match the original text
+=======
+
+def regen_validation(regenerated_text, text):
+    pattern = r'\b\d+\b(?!%)(?![^{}]*})'
+    while True:
+>>>>>>> f07e32f2a8a89f1234843f178d485359ad139c9f
         t1 = set(re.findall(r'\{(\d+)\}', text))
         t2 = set(re.findall(r'\{(\d+)\}', regenerated_text))
-
         outside_values = re.findall(pattern, regenerated_text)
 
         if not outside_values and t2.issubset(t1):
+<<<<<<< HEAD
                 print("\nProper regeneration without alterations")
                 break
         else:
@@ -109,6 +127,15 @@ def clean_sentences(text):
         cleaned = [s for s in sentences if not re.search(r'\b(here|rewritten|note|rephrased)\b', s, re.IGNORECASE)]
         cleaned_lines.append(' '.join(cleaned))
     return '\n'.join(cleaned_lines)
+=======
+            print("\nValidation passed.")
+            break
+        else:
+            print("\n***** Anomaly detected. Regenerating... *****")
+            regenerated_text = regenerate(text)
+
+    return regenerated_text
+>>>>>>> f07e32f2a8a89f1234843f178d485359ad139c9f
 
 def get_feature_probabilities():
     probabilities = {
