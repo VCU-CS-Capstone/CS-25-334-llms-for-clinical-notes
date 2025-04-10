@@ -65,8 +65,6 @@ def replace_placeholders(text, mappings):
     cleaned_text = '\n'.join(cleaned_lines)
     return re.sub(r'\{(\d+)\}', replacement, cleaned_text)
 
-
-
 def regen_validation(text, hpi=True):
     # Checks for numbers inside brackets, followed by a percentage sign, or bulleted such as '3.'
     pattern = r'(?<!\{)\b\d+\b(?!\})(?!\s*%)(?!\.)'
