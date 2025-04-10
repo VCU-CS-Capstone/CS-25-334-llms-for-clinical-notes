@@ -13,11 +13,16 @@ This app serves randomized clinical note sections from a MySQL database and allo
 
 .
 ├── app.py                  # Flask application
+
 ├── Dockerfile              # Flask app container
+
 ├── docker-compose.yml      # Compose file to run app + MySQL
+
 ├── requirements.txt        # Flask & MySQL dependencies
+
 ├── scripts/
 │   └── init.sql            # SQL to initialize the database
+
 └── responses/              # Saved user responses
 
 ## Running the App
