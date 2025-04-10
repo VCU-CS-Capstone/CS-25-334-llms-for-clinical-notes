@@ -95,7 +95,7 @@ def regen_validation(text, hpi=True):
             # Decrease temperature to prevent infinite loop regeneration
             regenerated_text = regenerate(text, newTemp - 0.01, type)
 
-    # Clean unwanted helper sentences. They appear even when specified not to.
+    # Clean unwanted helper sentences. They appear even when specified not to
     cleaned_text = clean_sentences(regenerated_text)
     return cleaned_text
 

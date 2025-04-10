@@ -201,7 +201,7 @@ hpi_command_phrases = [
 ]
 
 asmplan_command_phrases = [
-    'Regenerate this note in a concise, clinical manner. Keep existing placeholder numbers in their curly braces. Do not add any numbers or unnecessary information. Do not use helper phrases such as "Here is the rewritten note".\n',
+    'Regenerate this note in a concise clinical manner. Keep existing placeholder numbers in their curly braces. Do not add any numbers or unnecessary information. Do not use helper phrases such as "Here is the rewritten note".\n',
     'Rewrite this note formally and clinically, preserving placeholder numbers in curly braces. Avoid adding any numbers or extra details. Do not use introductory phrases like "Here is the rewritten note".\n',
     'Reconstruct this note in a clinical and concise, maintaining the placeholder numbers within curly braces. Do not introduce new numbers or superfluous content. Exclude lead-in phrases such as "Here is the rewritten note".\n',
     'Transform this note into a clinical, concise version. Retain placeholder numbers in curly braces without adding new numbers or unnecessary details. Omit preambles like "Here is the rewritten note".\n',

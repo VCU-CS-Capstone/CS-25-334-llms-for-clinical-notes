@@ -511,6 +511,6 @@ class ConsultNote(BaseNote):
                 text = regen_validation(text, hpi=False)
 
         text = replace_placeholders(text, mappings)
-        # Checks for additional periods
+        # Checks for added periods
         text = re.sub(r'\.\.', '.', text)
         return text
