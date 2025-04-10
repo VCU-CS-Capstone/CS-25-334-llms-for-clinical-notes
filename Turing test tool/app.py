@@ -5,8 +5,7 @@ import time
 
 app = Flask(__name__)
 
-DIRECTORY = "/Users/shashanksinha/Desktop/synthetic note generator"
-SAVE_DIRECTORY = "/Users/shashanksinha/Desktop/synthetic note generator/responses"
+SAVE_DIRECTORY = "/app/responses"
 
 # Ensure the save directory exists
 os.makedirs(SAVE_DIRECTORY, exist_ok=True)
@@ -14,7 +13,7 @@ os.makedirs(SAVE_DIRECTORY, exist_ok=True)
 def get_db_connection():
     try:
         conn = mysql.connector.connect(
-            host="127.0.0.1",
+            host="mysql",
             port="3306",
             user="root",
             password="client_section1",

@@ -18,7 +18,6 @@ INSERT INTO `clinical_note_sections` (`id`,`label`,`content`,`section_type`) VAL
 INSERT INTO `clinical_note_sections` (`id`,`label`,`content`,`section_type`) VALUES (9,'Allergies','amoxicillin','synthetic');
 INSERT INTO `clinical_note_sections` (`id`,`label`,`content`,`section_type`) VALUES (10,'Social History','Denies tobacco use. Used to drink 4-5 beers per week, has since quit.','synthetic');
 INSERT INTO `clinical_note_sections` (`id`,`label`,`content`,`section_type`) VALUES (11,'Family History','Aunt had ovarian ca, uncle had head and neck ca','synthetic');
-INSERT INTO `clinical_note_sections` (`id`,`label`,`content`,`section_type`) VALUES (12,'Cancer Treatment History','Radiation:\nChemotherapy:\nHormone Therapy:','synthetic');
 INSERT INTO `clinical_note_sections` (`id`,`label`,`content`,`section_type`) VALUES (13,'Assessment and Plan','1. Stage T2bN0M1c prostate cancer\n2. Gleason score Gleason score 6(3+3)\n3. PSA 19.69\n4. Will proceed with radiation therapy planning\n5. Dose: 7200 cGy / 40 fractions','synthetic');
 INSERT INTO `clinical_note_sections` (`id`,`label`,`content`,`section_type`) VALUES (14,'LOCAL TITLE','STANDARD TITLE: RADIATION ONCOLOGY CONSULT\nDATE OF NOTE: 2022-03-27\nENTRY DATE: 2022-03-27\nAUTHOR: Dr. Parker\nEXP COSIGNER: Dr. Matthews\nURGENCY STATUS: COMPLETED','synthetic');
 INSERT INTO `clinical_note_sections` (`id`,`label`,`content`,`section_type`) VALUES (15,'Patient Information','Hensley, William is a 43 year old male with a history of recently diagnosed very high prostate cancer...','synthetic');
@@ -34,7 +33,6 @@ INSERT INTO `clinical_note_sections` (`id`,`label`,`content`,`section_type`) VAL
 INSERT INTO `clinical_note_sections` (`id`,`label`,`content`,`section_type`) VALUES (25,'Signatures','/es/ Dr. Parker\nResident\nSigned: 2022-03-27','synthetic');
 INSERT INTO `clinical_note_sections` (`id`,`label`,`content`,`section_type`) VALUES (26,'Receipt Acknowledged By','2022-03-27 /es/ Dr. Matthews STAFF PHYSICIAN,RADIATION ONCO','synthetic');
 INSERT INTO `clinical_note_sections` (`id`,`label`,`content`,`section_type`) VALUES (27,'Diagnosis','1.4 cm RUL nodule, presumed NSCLC\nStage: cT1b N0 Mx (PET Pending), Stage IA2\nPrognostic factors: prior smoker, 1.5 ppd x 14 years, quit 1980','real');
-INSERT INTO `clinical_note_sections` (`id`,`label`,`content`,`section_type`) VALUES (28,'Prior Radiation','denies','real');
 INSERT INTO `clinical_note_sections` (`id`,`label`,`content`,`section_type`) VALUES (29,'History of Connective Tissue Diseases','denies','real');
 INSERT INTO `clinical_note_sections` (`id`,`label`,`content`,`section_type`) VALUES (30,'History of Implanted Cardiac Device','denies','real');
 INSERT INTO `clinical_note_sections` (`id`,`label`,`content`,`section_type`) VALUES (31,'HPI','Unnamed is a 75yo MALE with history of aortic insufficiency status post aortic valve root repair with bioprosthetic valve, with a growing RUL nodule, now 1.4 cm, concerning for NSCLC, cT1b N0 Mx (PET Pending), Stage IA2...','real');
