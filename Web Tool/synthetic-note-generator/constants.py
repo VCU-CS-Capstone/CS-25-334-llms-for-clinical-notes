@@ -190,7 +190,6 @@ LIST_QUANTITY_RANGES = {
         {"label": "Moderate surgical history", "range": [2, 3]},
         {"label": "Extensive surgical history", "range": [4, 5]}
     ]
-<<<<<<< HEAD
 }
 
 hpi_command_phrases = [
@@ -208,6 +207,3 @@ asmplan_command_phrases = [
     'Transform this note into a clinical, concise version. Retain placeholder numbers in curly braces without adding new numbers or unnecessary details. Omit preambles like "Here is the rewritten note".\n',
     'Rephrase this note with a clinical and formal tone, ensuring placeholder numbers in curly braces are preserved. Do not include additional numbers or extraneous information.\n'
 ]
-=======
-}
->>>>>>> f07e32f2a8a89f1234843f178d485359ad139c9f
