@@ -443,8 +443,7 @@ class ConsultNote(BaseNote):
                         'Biopsy on {16} showed Gleason {5}. {10}')
 
         if regen:
-            regenerated_text = regenerate(text)
-            text = regen_validation(regenerated_text, text)
+            text = regen_validation(text)
 
         text = replace_placeholders(text, mappings)
         # Replaces double period problem with mapping {10}
@@ -508,9 +507,8 @@ class ConsultNote(BaseNote):
                     '5. Dose: {8} cGy / {9} fractions\n')
 
 
-        # if regen:
-        #     regenerated_text = regenerate(text)
-        #     text = regen_validation(regenerated_text, text)
+        if regen:
+                text = regen_validation(text, hpi=False)
 
         text = replace_placeholders(text, mappings)
         # Checks for additional periods

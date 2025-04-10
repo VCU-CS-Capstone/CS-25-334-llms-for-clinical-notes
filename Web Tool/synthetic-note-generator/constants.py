@@ -192,10 +192,18 @@ LIST_QUANTITY_RANGES = {
     ]
 }
 
-command_phrases = [
-    'Regenerate this note in a concise, clinical manner. Keep existing placeholder numbers in their curly braces. Do not add any numbers or unnecessary information. Do not use helper phrases such as "Here is the rewritten note". If the variable {10} is present, treat it like a whole sentence. Otherwise, do not add it.',
-    'Rewrite this note formally and clinically, preserving placeholder numbers in curly braces. Avoid adding any numbers or extra details. Do not use introductory phrases like "Here is the rewritten note". If the variable {10} is present, treat it like a whole sentence. Otherwise, do not add it.',
-    'Reconstruct this note in a clinical and concise, maintaining the placeholder numbers within curly braces. Do not introduce new numbers or superfluous content. Exclude lead-in phrases such as "Here is the rewritten note". If the variable {10} is present, treat it like a whole sentence. Otherwise, do not add it.',
-    'Transform this note into a clinical, concise version. Retain placeholder numbers in curly braces without adding new numbers or unnecessary details. Omit preambles like "Here is the rewritten note". If the variable {10} is present, treat it like a whole sentence. Otherwise, do not add it.',
-    'Rephrase this note with a clinical and formal tone, ensuring placeholder numbers in curly braces are preserved. Do not include additional numbers or extraneous information. Avoid introductory statements like "Here is the rewritten note". If the variable {10} is present, treat it like a whole sentence. Otherwise, do not add it.'
+hpi_command_phrases = [
+    'Regenerate this note in a concise, clinical manner. Keep existing placeholder numbers in their curly braces. Do not add any numbers or unnecessary information. Do not use helper phrases such as "Here is the rewritten note". If the variable {10} is present, treat it like a whole sentence. Otherwise, do not add it.\n',
+    'Rewrite this note formally and clinically, preserving placeholder numbers in curly braces. Avoid adding any numbers or extra details. Do not use introductory phrases like "Here is the rewritten note". If the variable {10} is present, treat it like a whole sentence. Otherwise, do not add it.\n',
+    'Reconstruct this note in a clinical and concise, maintaining the placeholder numbers within curly braces. Do not introduce new numbers or superfluous content. Exclude lead-in phrases such as "Here is the rewritten note". If the variable {10} is present, treat it like a whole sentence. Otherwise, do not add it.\n',
+    'Transform this note into a clinical, concise version. Retain placeholder numbers in curly braces without adding new numbers or unnecessary details. Omit preambles like "Here is the rewritten note". If the variable {10} is present, treat it like a whole sentence. Otherwise, do not add it.\n',
+    'Rephrase this note with a clinical and formal tone, ensuring placeholder numbers in curly braces are preserved. Do not include additional numbers or extraneous information. Avoid introductory statements like "Here is the rewritten note". If the variable {10} is present, treat it like a whole sentence. Otherwise, do not add it.\n'
+]
+
+asmplan_command_phrases = [
+    'Regenerate this note in a concise, clinical manner. Keep existing placeholder numbers in their curly braces. Do not add any numbers or unnecessary information. Do not use helper phrases such as "Here is the rewritten note".\n',
+    'Rewrite this note formally and clinically, preserving placeholder numbers in curly braces. Avoid adding any numbers or extra details. Do not use introductory phrases like "Here is the rewritten note".\n',
+    'Reconstruct this note in a clinical and concise, maintaining the placeholder numbers within curly braces. Do not introduce new numbers or superfluous content. Exclude lead-in phrases such as "Here is the rewritten note".\n',
+    'Transform this note into a clinical, concise version. Retain placeholder numbers in curly braces without adding new numbers or unnecessary details. Omit preambles like "Here is the rewritten note".\n',
+    'Rephrase this note with a clinical and formal tone, ensuring placeholder numbers in curly braces are preserved. Do not include additional numbers or extraneous information.\n'
 ]
